@@ -2,76 +2,68 @@
 
 本页包含内容：
 
--   [初始化（Initialization）](#initialization)
+- [初始化](#initialization)
+- [访问属性](#accessing_properties)
+- [方法](#working_with_methods)
+- [id 兼容性](#id_compatibility)
+- [为空性和可选类型](#Nullability_and_Optionals)
+- [扩展](#extensions)
+- [闭包](#closures)
+- [对象比较](#object_comparison)
+- [Swift 类型兼容性](#swift_type_compatibility)
+- [轻量泛型](#Lightweight_Generics)
+- [Objective-C 选择器](#objective_c_selectors)
 
--   [访问属性（Accessing Properties）](#accessing_properties)
+*互用性*是能让 Swift 和 Objective-C 相接合的特性，这使你能够在一种语言编写的文件中使用另一种语言。当你准备开始把 Swift 融入到你的开发流程中时，学会如何利用互用性来重新定义，改善并增强你编写 Cocoa 应用的方式真是极好的。
 
--   [方法（Working with Methods）](#working_with_methods)
-
--   [id 兼容性](#id_compatibility)
-
--   [为空性和可选（Nullability and Optionals）](#Nullability_and_Optionals)
-
--   [扩展（Extensions）](#extensions)
-
--   [闭包（Closures）](#closures)
-
--   [对象比较（Object Comparison）](#object_comparison)
-
--   [Swift 类型兼容性（Swift Type Compatibility）](#swift_type_compatibility)
-
--   [轻量级泛型（Lightweight Generics）](#Lightweight_Generics)
-
--   [Objective-C 选择器（Objective-C Selectors）](#objective_c_selectors)
-
-**互用性**是让 Swift 和 Objective-C 相接合的一种特性，使你能够在一种语言编写的文件中使用另一种语言。当你准备开始把 Swift 融入到你的开发流程中时，你应该学会如何利用互用性来重新定义，改善并提高你编写 Cocoa 应用的方式。
-
-互用性很重要的一点就是允许你在写 Swift 代码时使用 Objective-C 的 API。当你导入一个 Objective-C 框架后，你可以使用原生的 Swift 语法实例化这些类并与之交互。
+互用性很重要的一点就是允许你在编写 Swift 代码时使用 Objective-C API。当你导入一个 Objective-C 框架后，你可以使用原生的 Swift 语法实例化这些类并与之交互。
 
 <a name="initialization"></a>
-## 初始化（Initialization）
+## 初始化
 
-为了使用 Swift 实例化一个 Objective-C 的类，你应该使用 Swift 语法调用它的一个初始化器。当 Objective-C 的`init`方法转换到 Swift，它们将用原生 Swift 初始化语法呈现。“init”前缀被截断，当作一个关键字，用来表明该方法是初始化方法。那些以“initWith”开头的`init`方法，“With”也会被去除。原初始化方法的方法名的第一部分去除“init”或者“initWith”后，首字母变成小写，并且被当做是新初始化方法第一个参数的参数名。原初始化方法的方法名其余的每一部分方法名依次变为参数名。这些方法名片段都跑到了圆括号中，方法调用时都是必须写的。
+要在 Swift 中实例化一个 Objective-C 类，你应该使用 Swift 语法调用它的一个构造器。当 Objective-C 的`init`方法导入到 Swift 后，它们将用原生的 Swift 构造语法呈现。构造方法的“init”前缀会被截断，并作为一个关键字，用来表明该方法是构造方法。那些以“initWith”开头的`init`方法，“With”也会被去除。然后再将首字母变成小写，并作为 Swift 构造方法第一个参数的参数名。余下的每一部分方法名依次作为剩余的各个参数的参数名。所有这些方法名片段都位于构造方法的圆括号中，并且在调用构造方法时必须写上。
 
-举个例子，你在使用 Objective-C 时会这样做：
+举个例子，你在 Objective-C 中会这样写：
 
 ```objective-c
 UITableView *myTableView = [[UITableView alloc] initWithFrame:CGRectZero 
                                                         style:UITableViewStyleGrouped];
 ```
-在 Swift 中，你应该这样做：
+在 Swift 中，你应该这样写：
 
 ```swift
 let myTableView: UITableView = UITableView(frame: CGRectZero, style: .Grouped)
 ```
 
-你不需要调用`alloc`，Swift 能够正确的为你处理。注意，当使用 Swift 风格的初始化方法的时候，“init”不会出现。
+你不需要调用`alloc`，Swift 会为你处理。注意，调用任何 Swift 构造方法时都不会出现“init”单词。
 
-你可以在初始化时显式地声明对象的类型，也可以忽略它，Swift 能够正确推断对象的类型。
+你可以在初始化时显式地声明对象的类型，也可以忽略它，Swift 能正确推断对象的类型。
 
 ```swift
 let myTextField = UITextField(frame: CGRect(x: 0.0, y: 0.0, width: 200.0, height: 40.0))
 ```
 
-这里的`UITableView`和`UITextField`对象和你在 Objective-C 中使用它们时具有相同的功能。你可以用一样的方式使用它们，访问属性或者调用各自类中的方法。
+这里的`UITableView`和`UITextField`对象和你在 Objective-C 中使用的一样。你可以用同样的方式使用它们，例如访问属性或者调用各自类中的方法。
 
-为了统一和简洁，Objective-C 的工厂方法也在 Swift 中映射为**便捷初始化方法**（**convenience initializers**）。这种映射能够让它们使用同样简洁明了的初始化方法。例如，在 Objective-C 中你可能会像下面这样调用一个工厂方法：
+为了统一和简洁，Objective-C 的工厂方法在 Swift 中映射为便利构造器，从而能使用同样简洁明了的构造语法。例如，在 Objective-C 中你可能会像下面这样调用一个工厂方法：
 
 ```objective-c
 UIColor *color = [UIColor colorWithRed:0.5 green:0.0 blue:0.5 alpha:1.0];
 ```
 
-在 Swift 中，你应该这样做：
+在 Swift 中，你应该这样写：
 
 ```swift
 let color = UIColor(red: 0.5, green: 0.0, blue: 0.5, alpha: 1.0)
 ```
 
-### 可失败初始化（Failable Initialization）
+### 可失败初始化
 
-在 Objective-C 中，构造器会直接返回他们初始化的对象。为了告知调用者初始化失败，Objective-C 中的构造器会返回`nil`。在 Swift 中，这种模式被内置到语言特性中，被称为**可失败初始化**（**failable initialization**）。在 iOS 和 OS X 系统框架中许多 Objective-C 构造器会被检查是否会初始化失败。你可以在你的 Objective-C 代码中，使用**为空性标注**（**nullability annotations**）来指明初始化是否会失败，正如 [为空性和可选（Nullability and Optionals）](#Nullability_and_Optionals)中所描述。如果初始化不会失败，这些 Objective-C 构造器便会以`init(...)`被导入，如果初始化可能会失败，则会以`init?(...)`被导入。否则，构造器会以`init!(...)`被导入。
+在 Objective-C 中，构造器会直接返回它们初始化的对象。初始化失败时，为了告知调用者，Objective-C 中的构造器会返回`nil`。在 Swift 中，这种模式被内置到语言特性中，被称为*可失败初始化*。
 
-例如，当图片文件在指定路径中不存在时，`UIImage(contentsOfFile:)`构造器初始化`UIImage`对象便会失败。如果初始化成功，我们可以用可选绑定来对可失败初始化的结果进行解包。
+许多在 iOS 和 OS X 系统框架中的 Objective-C 构造器在导入到 Swift 时会被检查初始化是否可能会失败。你可以在你的 Objective-C 代码中，使用*为空性注释*来指明初始化是否可能会失败，正如[为空性和可选类型](#Nullability_and_Optionals)中所描述的那样。如果初始化不会失败，这些 Objective-C 构造器便会作为`init(...)`导入，而如果初始化可能会失败，则会作为`init?(...)`导入。在没有任何为空性注释的情况下，构造器会作为`init!(...)`导入。
+
+例如，当指定路径的图片文件不存在时，`UIImage(contentsOfFile:)`构造器初始化`UIImage`对象便会失败。而如果初始化成功，则可以用可选绑定对可选类型的返回值进行解包。
 
 ```swift
 if let image = UIImage(contentsOfFile: "MyImage.png") {
@@ -82,30 +74,31 @@ if let image = UIImage(contentsOfFile: "MyImage.png") {
 ```
 
 <a name="accessing_properties"></a>
-## 访问属性（Accessing Properties）
+## 访问属性
 
-Objective-C 使用`@property`关键字声明属性，导入 Swift 中时，遵循以下规则：
-- 拥有`nonnull`，`nullable`，`null_resettable`修饰符的属性，作为可选或者非可选属性导入。参见 [为空性和可选（Nullability and Optionals）](#Nullability_and_Optionals)中的描述。
-- 拥有`readonly`修饰符的属性，作为只读计算属性（`{ get }`）导入。
-- 拥有`weak`修饰符的属性，作为标记`weak`关键字的属性（`weak var`）导入。
-- 拥有`assign`，`copy`，`strong`，`unsafe_unretained`修饰符的属性，导入后会拥有相应的内存管理策略。
-- `atomic`，`nonatomic`修饰符会被忽略。Swift 中所有属性都是`nonatomic`的。
-- `getter=`，`setter=`修饰符会被忽略。
+在 Objective-C 中使用`@property`关键字声明的属性，导入到 Swift 时，会遵循以下规则：
 
-在 Swift 中访问和设置 Objective-C 对象的属性时，使用点语法，直接使用属性名即可，不需要附加圆括号：
+- 拥有为空性属性特性的属性（`nonnull`，`nullable`，`null_resettable`），作为可选类型或者非可选类型的属性导入。参见[为空性和可选类型](#Nullability_and_Optionals)中的描述。
+- 拥有`readonly`属性特性的属性，作为只读计算属性（`{ get }`）导入。
+- 拥有`weak`属性特性的属性，作为标记`weak`关键字（`weak var`）的属性导入。
+- 拥有`assign`，`copy`，`strong`，`unsafe_unretained`属性特性的属性，导入后会具有相应的内存管理策略。
+- 原子属性特性（`atomic`，`nonatomic`）会被忽略，在 Swift 中所有属性都是`nonatomic`的。
+- 存取器属性特性（`getter=`，`setter=`）也会被忽略。
+
+在 Swift 中使用点语法对属性进行存取，直接使用属性名即可，不需要附加圆括号：
 
 ```swift
 myTextField.textColor = UIColor.darkGrayColor()
 myTextField.text = "Hello world"
 ```
->注意
 
->`darkGrayColor()`跟着一对圆括号，因为它是一个类方法，而不是一个属性。
+> 注意  
+> `darkGrayColor()`后跟一对圆括号，因为它是一个类方法，而不是一个属性。
 
-在 Objective-C 中，一个有返回值的无参数方法可以像属性那样使用点语法调用。但在 Swift 中不再能够这样做了，只有在 Objective-C 中 使用`@property`关键字声明的属性才会被作为属性引入。方法的导入和调用见 [方法（Working with Methods）](#working_with_methods)中的描述。
+在 Objective-C 中，一个有返回值的无参数方法可以像属性那样使用点语法调用。但在 Swift 中不能再这样了，因为它们会被导入为实例方法，只有在 Objective-C 中使用`@property`关键字声明的属性才会被作为属性导入。方法的导入和调用请参见[方法](#working_with_methods)中的描述。
 
 <a name="working_with_methods"></a>
-## 方法（Working with Methods）
+## 方法
 
 在 Swift 中调用 Objective-C 方法时，使用点语法。
 
