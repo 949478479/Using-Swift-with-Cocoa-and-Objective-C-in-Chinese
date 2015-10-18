@@ -148,7 +148,7 @@ myObject.characterAtIndex(5)
 // crash, myObject does't respond to that method
 ```
 
-不过，你可以利用 Swift 中可选类型的特性来避免这个 Objective-C 中的常见错误，当你用`AnyObject`类型的实例调用一个 Objective-C 方法时，方法调用在行为上类似于隐式解包可选。你可以像调用协议中的可选方法那样，利用可选链语法在`AnyObject`类型的实例上调用方法。
+不过，你可以利用 Swift 中可选类型的特性来避免这个 Objective-C 中的常见错误，当你用`AnyObject`类型的实例调用一个 Objective-C 方法时，你可以像调用协议中的可选方法那样，使用可选链语法在`AnyObject`类型的实例上调用方法。
 
 > 注意  
 > 通过`AnyObject`类型的实例访问属性将总是返回一个可选类型的值,而不会引发运行时错误。
@@ -189,17 +189,17 @@ let myDate = lastRefreshDate as! NSString // Error
 因此，你应该只在完全确定`AnyObject`类型实例的真实类型时才使用强制下转。
 
 <a name="Nullability_and_Optionals"></a>
-## 为空性和可选（Nullability and Optionals）
+## 为空性和可选类型
 
-在 Objective-C 中，对象的引用可以是值为`NULL`的原始指针（在 Objective-C 中称为`nil`）。而在 Swift 中，所有的值，包括结构体与对象的引用，都保证为非空。作为替代，你将可以为空的值包装为**可选类型**（**optional type**）。当你需要指明值为空时，你需要使用`nil`赋值。想要了解更多关于可选的信息，可以看看[《The Swift Programming Language 中文版》](http://wiki.jikexueyuan.com/project/swift/)中的 [可选（Optionals）](http://wiki.jikexueyuan.com/project/swift/chapter2/01_The_Basics.html#optionals)部分。
+在 Objective-C 中，用于操作对象的原始指针的值可能会是`NULL`（在 Objective-C 中称为`nil`）。而在 Swift 中，所有的值，包括结构体与对象的引用，都能确保是非空值。作为替代，你可以将可能会值缺失的值包装为该类型的*可选类型*。当你需要表示值缺失的情况时，你可以将其赋值为`nil`。更多关于可选类型的信息，可以参看 [The Swift Programming Language 中文版](http://wiki.jikexueyuan.com/project/swift/)中的[可选类型](http://wiki.jikexueyuan.com/project/swift/chapter2/01_The_Basics.html#optionals)部分。
 
-Objective-C 可以使用**为空性标注**（**nullability annotations**）来指明一个参数类型，属性类型或者返回值类型是否可以为`NULL`或者`nil`值。单个类型声明可以使用`_Nullable`和`_Nonnull`标注，单个属性声明可以使用`nullable`，`nonnull`，`null_resettable`属性修饰符，范围性标注可以使用`NS_ASSUME_NONNULL_BEGIN`和`NS_ASSUME_NONNULL_END`宏。如果一个类型没有任何为空性标注，Swift 就不能分辨出其到底是可选还是非可选，并且将作为隐式解包可选导入。
+Objective-C 可以使用*为空性注释*来指明一个参数类型，属性类型或者返回值类型是否可以为`NULL`或者`nil`值。单个类型声明可以使用`_Nullable`和`_Nonnull`注释，单个属性声明可以使用`nullable`，`nonnull`，`null_resettable`属性特性，大范围注释可以使用`NS_ASSUME_NONNULL_BEGIN`和`NS_ASSUME_NONNULL_END`这对宏。如果一个类型没有任何为空性注释，Swift 将无法分辨出它是可选类型还是非可选类型，并将其作为隐式解包可选类型导入。
 
--  以`_Nonnull`或者范围宏标注的类型，作为**非可选**（**non-optional**）导入到 Swift。
--  以`_Nullable`标注的类型，作为**可选**（**optional**）导入到 Swift。
--  没有为空性标注的类型，作为**隐式解包可选**（**implicitly unwrapped optional**）导入到 Swift。
+- 以`_Nonnull`或者范围宏注释的类型，会作为*非可选类型*导入到 Swift。
+- 以`_Nullable`注释的类型，会作为*可选类型*导入到 Swift。
+- 没有为空性注释的类型，会作为*隐式解包可选类型*导入到 Swift。
 
-例如，考虑如下的 Objective-C 声明：
+举个例子，思考如下 Objective-C 声明：
 
 ```objective-c
 @property (nullable) id nullableProperty;
@@ -218,7 +218,7 @@ NS_ASSUME_NONNULL_END
 - (void)takesUnannotatedParameter:(id)value;
 ```
 
-下面是它们如何被导入 Swift 中的：
+当它们导入到 Swift 后：
 
 ```Swift
 var nullableProperty: AnyObject?
@@ -234,7 +234,8 @@ func takesNullableParameter(value: AnyObject?)
 func returnsUnannotatedValue() -> AnyObject!
 func takesUnannotatedParameter(value: AnyObject!)
 ```
-大多数 Objective-C 的系统框架，包括Foundation，都已经提供了为空性标注，符合你的使用习惯，且让你能以类型安全的方式与各种值打交道。
+
+大多数 Objective-C 系统框架，包括 Foundation，都已经提供了为空性注释，使你能以符合原有习惯且更加类型安全的方式去使用它们。
 
 <a name="extensions"></a>
 ## 扩展（Extensions）
@@ -368,7 +369,7 @@ class Белка: NSObject {
 
 使用轻量级泛型参数化声明的 Objective-C 类型，如`NSArray`，`NSSet`以及`NSDictionary`，在被导入到 Swift 时会附带上它们保存的内容的类型。
 
-例如，考虑下面的 Objective-C 属性声明：
+举个例子，思考如下 Objective-C 属性声明：
 
 ```objective-c
 @property NSArray<NSDate *>* dates;
