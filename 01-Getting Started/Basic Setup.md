@@ -26,7 +26,7 @@ Swift 被设计用来无缝兼容 Cocoa 和 Objective-C。在 Swift 中，你可
 
 2.点击 Language 弹出菜单并选择 Swift。
 
-![image](https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/BuildingCocoaApps/Art/newproject_2x.png)
+![image](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/01-Getting%20Started/newproject_2x.png)
 
 Swift 项目的结构几乎和 Objective-C 项目一模一样，只有一个重要的区别：Swift 没有头文件。在接口和实现之间没有显示的划分，所以一个类中的所有信息都在一个单独的`.swift`文件中。
 
