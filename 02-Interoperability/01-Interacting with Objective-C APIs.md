@@ -7,11 +7,11 @@
 - [方法](#working_with_methods)
 - [id 兼容性](#id_compatibility)
 - [为空性和可选类型](#Nullability_and_Optionals)
+- [轻量泛型](#Lightweight_Generics)
 - [扩展](#extensions)
 - [闭包](#closures)
 - [对象比较](#object_comparison)
 - [Swift 类型兼容性](#swift_type_compatibility)
-- [轻量泛型](#Lightweight_Generics)
 - [Objective-C 选择器](#objective_c_selectors)
 
 *互用性* 是能让 Swift 和 Objective-C 相接合的特性，这使你能够在一种语言编写的文件中使用另一种语言。当你准备开始把 Swift 融入到你的开发流程中时，学会如何利用互用性来重新定义，改善并增强你编写 Cocoa 应用的方式真是极好的。
@@ -237,12 +237,36 @@ func takesUnannotatedParameter(value: AnyObject!)
 
 大多数 Objective-C 系统框架，包括 Foundation，都已经提供了为空性注释，使你能以符合原有习惯且更加类型安全的方式去使用它们。
 
+<a name="Lightweight_Generics"></a>
+## 轻量泛型
+
+Objective-C 中的`NSArray`，`NSSet`以及`NSDictionary`类型的声明在使用轻量泛型参数化后，被导入到 Swift 时会附带容器中元素的类型信息。
+
+举个例子，思考如下 Objective-C 属性声明：
+
+```objective-c
+@property NSArray<NSDate *>* dates;
+@property NSSet<NSString *>* words;
+@property NSDictionary<NSURL *, NSData *>* cachedData;
+```
+
+导入到 Swift 后：
+
+```swift
+var dates: [NSDate]
+var words: Set<String>
+var cachedData: [NSURL: NSData]
+```
+
+> 注意  
+> 除了 Foundation 中的集合类型，其他 Objective-C 类型使用轻量泛型会被 Swift 忽略。
+
 <a name="extensions"></a>
-## 扩展（Extensions）
+## 扩展
 
-Swift 的扩展和 Objective-C 的分类(Category)相似。扩展可以为原有的类，结构和枚举扩充功能，即使它们是在 Objective-C 中定义的。你可以为系统框架中的类型或者你的自定义类型定义扩展，只需要导入合适的模块。
+Swift 的扩展和 Objective-C 的分类相似。扩展可以为既有类，结构和枚举扩充功能，即使它们是在 Objective-C 中定义的。通过导入相应的模块，你还可以为系统框架中的类型或者你自己的类型定义扩展。
 
-举个例子，你可以扩展`UIBezierPath`类来创建一个简单的三角形路径，这个方法只需提供三角形的边长与起点。
+例如，你可以扩展`UIBezierPath`类来创建一个简单的三角形路径，这个方法只需提供三角形的边长与起点。
 
 ```swift
 extension UIBezierPath {
@@ -258,9 +282,9 @@ extension UIBezierPath {
 }
 ```
 
-你也可以使用扩展来增加属性（包括类的属性与静态属性）。然而，这些属性必须是计算属性，扩展不能为类，结构体，枚举添加存储属性。
+你还可以利用扩展来增加属性（包括类型属性和静态属性）。然而，这些属性必须是计算型属性，因为扩展不能为类，结构体，枚举添加存储型属性。
 
-下面这个例子为`CGRect`类增加了一个叫`area`的属性。
+下面这个例子为`CGRect`类增加了一个叫`area`的计算型属性：
 
 ```swift
 extension CGRect {
@@ -272,14 +296,14 @@ let rect = CGRect(x: 0.0, y: 0.0, width: 10.0, height: 50.0)
 let area = rect.area
 ```
 
-你同样可以使用扩展让类，结构或枚举符合协议而无需继承，即使它们是在 Objective-C 中定义的。
+你甚至可以利用扩展为类添加协议符合性而无需子类化。如果协议是在 Swift 中定义的，你还可以为结构或是枚举添加协议符合性，即使它们是在 Objective-C 中定义的。
 
-你不能使用扩展来覆盖 Objective-C 类型中存在的方法与属性。
+注意，你无法通过扩展来覆盖类型中既有的方法与属性。
 
 <a name="closures"></a>
-## 闭包（Closures）
+## 闭包
 
-Objective-C 中的`block`会被自动作为 Swift 中的闭包导入。（Objective-C blocks are automatically imported as Swift closures with Objective-C block calling convention, denoted by the @convention(block) attribute.）例如，下面是一个 Objective-C 中的 block 变量：
+Objective-C 中的 block 会作为符合其调用约定的 Swift 闭包导入，通过`@convention(block)`属性表示。例如，下面是一个 Objective-C 中的 block 变量：
 
 ```objective-c
 void (^completionBlock)(NSData *, NSError *) = ^(NSData *data, NSError *error) {
@@ -287,7 +311,7 @@ void (^completionBlock)(NSData *, NSError *) = ^(NSData *data, NSError *error) {
 }
 ```
 
-而它在 Swift 中的形式为
+它在 Swift 中像下面这样：
 
 ```swift
 let completionBlock: (NSData, NSError) -> Void = { (data, error) in 
@@ -295,9 +319,9 @@ let completionBlock: (NSData, NSError) -> Void = { (data, error) in
 }
 ```
 
-Swift 的闭包与 Objective-C 的 block 能够兼容，所以你可以把一个 Swift 闭包传递给一个接收 block 作为参数的 Objective-C 方法。Swift 闭包与函数具有相同的类型，所以你甚至可以传递 Swift 函数的函数名。
+Swift 的闭包与 Objective-C 的 block 兼容，因此你可以把一个 Swift 闭包传递给一个接收 block 作为参数的 Objective-C 方法。又因为 Swift 闭包与函数类型相同，你甚至可以直接传递一个 Swift 函数的函数名过去。
 
-闭包与 block 有相似的捕获语义，但有个关键的不同：捕获的变量是可以直接修改的，而不是像 block 那样会拷贝变量。换句话说，Swift 中变量的默认行为与 Objective-C 中`__block`变量一致。
+闭包与 block 有相似的捕获语义，但有个关键的不同：被捕获的变量是可以直接修改的，而 block 捕获的只是变量的拷贝。换句话说，Swift 闭包捕获的变量等效于 Objective-C 中的`__block`变量。
 
 <a name="object_comparison"></a>
 ## 对象比较（Object Comparison）
@@ -363,31 +387,6 @@ class Белка: NSObject {
 `@objc`属性将你的 Swift API 暴露给了 Objective-C runtime，但是它并不能保证属性，方法，下标，或构造器的动态派发。Swift 编译器可能仍然通过绕过 Objective-C runtime 来消虚拟化（devirtualize）或内联成员访问来优化代码的性能。当一个成员声明用`dynamic`修饰符标记时，对该成员的访问将始终是动态派发的。由于标记`dynamic`修饰符后需要用 Objective-C runtime 来派发，因此会被隐式地标记`@objc`属性。
 
 一般很少需要动态派发。但是，当你要在运行时替换一个 API 的实现时你必须使用`dynamic`修饰符。例如，你可以使用 Objective-C runtime 的`method_exchangeImplementations`函数在应用程序运行中替换某个方法的实现。如果 Swift 编译器内联了方法的实现或者消虚拟化对它的访问，新的实现将不会被使用。
-
-<a name="Lightweight_Generics"></a>
-## 轻量级泛型（Lightweight Generics）
-
-使用轻量级泛型参数化声明的 Objective-C 类型，如`NSArray`，`NSSet`以及`NSDictionary`，在被导入到 Swift 时会附带上它们保存的内容的类型。
-
-举个例子，思考如下 Objective-C 属性声明：
-
-```objective-c
-@property NSArray<NSDate *>* dates;
-@property NSSet<NSString *>* words;
-@property NSDictionary<NSURL *, NSData *>* cachedData;
-```
-
-下面是 Swift 导入后：
-
-```swift
-var dates: [NSDate]
-var words: Set<String>
-var cachedData: [NSURL: NSData]
-```
-
-> 注意
-
-> 除了 Foundation 中的集合类，其他 Objective-C 类型使用轻量级泛型会被 Swift 忽略。
 
 <a name="objective_c_selectors"></a>
 ## Objective-C 选择器
