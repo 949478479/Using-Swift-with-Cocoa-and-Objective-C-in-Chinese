@@ -319,9 +319,9 @@ let completionBlock: (NSData, NSError) -> Void = { (data, error) in
 }
 ```
 
-Swift 的闭包与 Objective-C 的 block 兼容，因此你可以把一个 Swift 闭包传递给一个接收 block 作为参数的 Objective-C 方法。又因为 Swift 闭包与函数类型相同，你甚至可以直接传递一个 Swift 函数的函数名过去。
+Swift 闭包与 Objective-C block 兼容，因此你可以把一个 Swift 闭包传递给一个接收 block 作为参数的 Objective-C 方法。而且因为 Swift 闭包与函数类型相同，你甚至可以直接传递一个 Swift 函数的函数名过去。
 
-闭包与 block 有相似的捕获语义，但有个关键的不同：被捕获的变量是可以直接修改的，而 block 捕获的只是变量的拷贝。换句话说，Swift 闭包捕获的变量等效于 Objective-C 中的`__block`变量。
+闭包与 block 有相似的捕获语义，但有个关键的不同：被捕获的变量是可以直接修改的，而 block 在默认情况下捕获的只是变量的值拷贝。换句话说，Swift 闭包在默认情况下捕获的变量就等效于 Objective-C 中的`__block`变量。
 
 <a name="object_comparison"></a>
 ## 对象比较（Object Comparison）
