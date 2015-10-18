@@ -14,7 +14,7 @@
 - [轻量泛型](#Lightweight_Generics)
 - [Objective-C 选择器](#objective_c_selectors)
 
-*互用性*是能让 Swift 和 Objective-C 相接合的特性，这使你能够在一种语言编写的文件中使用另一种语言。当你准备开始把 Swift 融入到你的开发流程中时，学会如何利用互用性来重新定义，改善并增强你编写 Cocoa 应用的方式真是极好的。
+*互用性* 是能让 Swift 和 Objective-C 相接合的特性，这使你能够在一种语言编写的文件中使用另一种语言。当你准备开始把 Swift 融入到你的开发流程中时，学会如何利用互用性来重新定义，改善并增强你编写 Cocoa 应用的方式真是极好的。
 
 互用性很重要的一点就是允许你在编写 Swift 代码时使用 Objective-C API。当你导入一个 Objective-C 框架后，你可以使用原生的 Swift 语法实例化这些类并与之交互。
 
@@ -61,7 +61,7 @@ let color = UIColor(red: 0.5, green: 0.0, blue: 0.5, alpha: 1.0)
 
 在 Objective-C 中，构造器会直接返回它们初始化的对象。初始化失败时，为了告知调用者，Objective-C 中的构造器会返回`nil`。在 Swift 中，这种模式被内置到语言特性中，被称为*可失败初始化*。
 
-许多在 iOS 和 OS X 系统框架中的 Objective-C 构造器在导入到 Swift 时会被检查初始化是否可能会失败。你可以在你的 Objective-C 代码中，使用*为空性注释*来指明初始化是否可能会失败，正如[为空性和可选类型](#Nullability_and_Optionals)中所描述的那样。如果初始化不会失败，这些 Objective-C 构造器便会作为`init(...)`导入，而如果初始化可能会失败，则会作为`init?(...)`导入。在没有任何为空性注释的情况下，构造器会作为`init!(...)`导入。
+许多在 iOS 和 OS X 系统框架中的 Objective-C 构造器在导入到 Swift 时会被检查初始化是否可能会失败。你可以在你的 Objective-C 代码中，使用 *为空性注释* 来指明初始化是否可能会失败，正如[为空性和可选类型](#Nullability_and_Optionals)中所描述的那样。如果初始化不会失败，这些 Objective-C 构造器便会作为`init(...)`导入，而如果初始化可能会失败，则会作为`init?(...)`导入。在没有任何为空性注释的情况下，构造器会作为`init!(...)`导入。
 
 例如，当指定路径的图片文件不存在时，`UIImage(contentsOfFile:)`构造器初始化`UIImage`对象便会失败。而如果初始化成功，则可以用可选绑定对可选类型的返回值进行解包。
 
@@ -191,13 +191,13 @@ let myDate = lastRefreshDate as! NSString // Error
 <a name="Nullability_and_Optionals"></a>
 ## 为空性和可选类型
 
-在 Objective-C 中，用于操作对象的原始指针的值可能会是`NULL`（在 Objective-C 中称为`nil`）。而在 Swift 中，所有的值，包括结构体与对象的引用，都能确保是非空值。作为替代，你可以将可能会值缺失的值包装为该类型的*可选类型*。当你需要表示值缺失的情况时，你可以将其赋值为`nil`。更多关于可选类型的信息，可以参看 [The Swift Programming Language 中文版](http://wiki.jikexueyuan.com/project/swift/)中的[可选类型](http://wiki.jikexueyuan.com/project/swift/chapter2/01_The_Basics.html#optionals)部分。
+在 Objective-C 中，用于操作对象的原始指针的值可能会是`NULL`（在 Objective-C 中称为`nil`）。而在 Swift 中，所有的值，包括结构体与对象的引用，都能确保是非空值。作为替代，你可以将可能会值缺失的值包装为该类型的 *可选类型*。当你需要表示值缺失的情况时，你可以将其赋值为`nil`。更多关于可选类型的信息，可以参看 [The Swift Programming Language 中文版](http://wiki.jikexueyuan.com/project/swift/)中的[可选类型](http://wiki.jikexueyuan.com/project/swift/chapter2/01_The_Basics.html#optionals)部分。
 
-Objective-C 可以使用*为空性注释*来指明一个参数类型，属性类型或者返回值类型是否可以为`NULL`或者`nil`值。单个类型声明可以使用`_Nullable`和`_Nonnull`注释，单个属性声明可以使用`nullable`，`nonnull`，`null_resettable`属性特性，大范围注释可以使用`NS_ASSUME_NONNULL_BEGIN`和`NS_ASSUME_NONNULL_END`这对宏。如果一个类型没有任何为空性注释，Swift 将无法分辨出它是可选类型还是非可选类型，并将其作为隐式解包可选类型导入。
+Objective-C 可以使用 *为空性注释* 来指明一个参数类型，属性类型或者返回值类型是否可以为`NULL`或者`nil`值。单个类型声明可以使用`_Nullable`和`_Nonnull`注释，单个属性声明可以使用`nullable`，`nonnull`，`null_resettable`属性特性，大范围注释可以使用`NS_ASSUME_NONNULL_BEGIN`和`NS_ASSUME_NONNULL_END`这对宏。如果一个类型没有任何为空性注释，Swift 将无法分辨出它是可选类型还是非可选类型，并将其作为隐式解包可选类型导入。
 
-- 以`_Nonnull`或者范围宏注释的类型，会作为*非可选类型*导入到 Swift。
-- 以`_Nullable`注释的类型，会作为*可选类型*导入到 Swift。
-- 没有为空性注释的类型，会作为*隐式解包可选类型*导入到 Swift。
+- 以`_Nonnull`或者范围宏注释的类型，会作为 *非可选类型* 导入到 Swift。
+- 以`_Nullable`注释的类型，会作为 *可选类型* 导入到 Swift。
+- 没有为空性注释的类型，会作为 *隐式解包可选类型* 导入到 Swift。
 
 举个例子，思考如下 Objective-C 声明：
 
