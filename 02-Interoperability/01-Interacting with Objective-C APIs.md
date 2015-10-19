@@ -125,9 +125,9 @@ myTableView.layoutIfNeeded()
 <a name="id_compatibility"></a>
 ## id 兼容性
 
-Swift 中有一种叫做`AnyObject`的协议类型，用于表示任意类型的实例，就像 Objective-C 中的`id`一样。`AnyObject`协议使你能编写类型安全的 Swift 代码，同时还维持了无类型实例的灵活性。因为`AnyObject`协议提供了安全保证，Swift 将`id`类型导入为`AnyObject`类型。
+Swift 中有一种叫做`AnyObject`的协议类型，用于表示任意类型对象，就像 Objective-C 中的`id`一样。`AnyObject`协议使你能编写类型安全的 Swift 代码，同时还维持了无类型对象的灵活性。因为`AnyObject`协议提供了安全保证，Swift 将`id`类型导入为`AnyObject`类型。
 
-举个例子，和`id`类型一样，你可以为`AnyObject`类型的常量或变量分配任何类型的实例。如果是变量，你还可以再次为其重新分配任意类型的实例。
+举个例子，和`id`类型一样，你可以为`AnyObject`类型的常量或变量分配任意类型对象。如果是变量，你还可以再次为其重新分配任意类型对象。
 
 ```swift
 var myObject: AnyObject = UITableViewCell()
@@ -141,19 +141,19 @@ let futureDate = myObject.dateByAddingTimeInterval(10)
 let timeSinceNow = myObject.timeIntervalSinceNow
 ```
 
-然而，因为直到运行时才能确定`AnyObject`类型的实例的真实类型，所以有可能在不经意间写出不安全代码。和 Objective-C 一样，如果用`AnyObject`类型的实例调用不存在的方法，将引发运行时错误。比如下面的代码在运行时将会引发一个选择器未识别的的错误：
+然而，因为直到运行时才能确定`AnyObject`类型对象的真实类型，所以有可能在不经意间写出不安全代码。和 Objective-C 一样，如果用`AnyObject`类型对象调用不存在的方法，将引发运行时错误。比如下面的代码在运行时将会引发一个选择器未识别的的错误：
 
 ```swift
 myObject.characterAtIndex(5)
 // crash, myObject does't respond to that method
 ```
 
-不过，你可以利用 Swift 中可选类型的特性来避免这个 Objective-C 中的常见错误，当你用`AnyObject`类型的实例调用一个 Objective-C 方法时，你可以像调用协议中的可选方法那样，使用可选链语法在`AnyObject`类型的实例上调用方法。
+不过，你可以利用 Swift 中可选类型的特性来避免这个 Objective-C 中的常见错误，当你用`AnyObject`类型对象调用一个 Objective-C 方法时，你可以像调用协议中的可选方法那样，使用可选链语法在`AnyObject`类型对象上调用方法。
 
 > 注意  
-> 通过`AnyObject`类型的实例访问属性将总是返回一个可选类型的值,而不会引发运行时错误。
+> 通过`AnyObject`类型对象访问属性将总是返回一个可选类型的值,而不会引发运行时错误。
 
-举个例子，在下面的代码中，第一和第二行代码不会被执行，因为`count`属性和`characterAtIndex:`方法不存在于`NSDate`实例中。`myCount`常量会被推断成可选类型的`Int`并被赋值为`nil`。你也可以使用`if-let`语句来解包这种未必存在的方法的返回值，就像第三行所做的一样。
+举个例子，在下面的代码中，第一和第二行代码不会被执行，因为`count`属性和`characterAtIndex:`方法不存在于`NSDate`对象中。`myCount`常量会被推断成可选类型的`Int`并被赋值为`nil`。你也可以使用`if-let`语句来解包这种未必存在的方法的返回值，就像第三行所做的一样。
 
 ```swift
 let myCount = myObject.count
@@ -163,7 +163,7 @@ if let fifthCharacter = myObject.characterAtIndex?(5) {
 }
 ```
 
-在使用`AnyObject`类型的实例时，如果知道其真实类型，那么将其向下转换到真实类型当然是极好的。然而，因为`AnyObject`可以表示任何类型，所以转换到具体类型时难以保证必定成功。你可以使用条件下转操作符（`as?`）来转换，这将返回下转操作目标类型的可选类型：
+在使用`AnyObject`类型对象时，如果知道其真实类型，那么将其向下转换到真实类型当然是极好的。然而，因为`AnyObject`可以表示任何类型，所以转换到具体类型时难以保证必定成功。你可以使用条件下转操作符（`as?`）来转换，这将返回下转操作目标类型的可选类型：
 
 ```swift
 let userDefaults = NSUserDefaults.standardUserDefaults()
@@ -173,7 +173,7 @@ if let date = lastRefreshDate as? NSDate {
 }
 ```
 
-当然，如果你能完全确定这个实例的类型，你可以使用强制下转操作符（`as!`）来进行强制转换，这将返回下转操作目标类型的非可选类型：
+当然，如果你能完全确定这个对象的类型，你可以使用强制下转操作符（`as!`）来进行强制转换，这将返回下转操作目标类型的非可选类型：
 
 ```swift
 let myDate = lastRefreshDate as! NSDate
@@ -186,7 +186,7 @@ let timeInterval = myDate.timeIntervalSinceReferenceDate
 let myDate = lastRefreshDate as! NSString // Error
 ```
 
-因此，你应该只在完全确定`AnyObject`类型实例的真实类型时才使用强制下转。
+因此，你应该只在完全确定`AnyObject`类型对象的真实类型时才使用强制下转。
 
 <a name="Nullability_and_Optionals"></a>
 ## 为空性和可选类型
@@ -348,15 +348,13 @@ self.closure = { [unowned self] in
 可以参看 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中[解决闭包引起的循环强引用](http://wiki.jikexueyuan.com/project/swift/chapter2/16_Automatic_Reference_Counting.html#resolving_strong_reference_cycles_for_closures)小节来获取更多信息。
 
 <a name="object_comparison"></a>
-## 对象比较（Object Comparison）
+## 对象比较
 
-当比较两个 Swift 中的对象时，可以使用两种方式。第一种，使用 ==，判断两个对象内容是否相同。第二种，使用 === ，判断常量或者变量是否引用同一个对象的实例。
+在 Swift 中，比较两个对象可以使用两种方式。第一种，使用 ==，比较两个对象内容是否相同。第二种，使用 === ，判断常量或者变量是否引用同一个对象。
 
-Swift 与 Objective-C 一般使用 == 与 === 操作符来做比较。Swift 的 == 操作符为源自`NSObject` 的对象提供了默认的实现。在 == 操作符的实现中，Swift 调用`NSObject`定义的`isEqual:`方法。
+Swift 的 == 操作符为继承自`NSObject`类的对象提供了默认实现。在 == 操作符的实现中，Swift 调用`NSObject`类中定义的`isEqual:`方法。`NSObject`类的实现仅仅比较两个对象地址是否相同，所以你需要在你自己的类中重新实现`isEqual:`方法。因为你可以直接传递 Swift 对象（包括那些不继承自`NSObject`的）给 Objective-C API，所以如果你希望比较两个对象的内容而不仅仅是比较其地址的话，你应该为这些对象实现`isEqual:`方法。
 
-`NSObject`类仅仅做了同一性比较（地址相同），所以你需要在你自己的类中重新实现`isEqual:`方法。因为你可以直接传递 Swift 对象（包括那些不继承自`NSObject`的）给 Objective-C 的 API，所以如果你希望比较两个对象的内容是否相同而不是仅仅比较其同一性的话，你应该为这些对象实现`isEqual:` 方法。
-
-作为实现比较的一部分，确保根据 [Object comparison](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/DevPedia-CocoaCore/ObjectComparison.html#//apple_ref/doc/uid/TP40008195-CH37) 实现对象的`hash`属性。更进一步的说，如果你希望你的类能够作为字典中的键，还需要遵从`Hashable`协议以及实现`hashValues`属性。
+作为实现比较的一部分，确保根据 [Object comparison](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/DevPedia-CocoaCore/ObjectComparison.html#//apple_ref/doc/uid/TP40008195-CH37) 中的规则实现对象的`hash`属性。如果你希望你的类的实例能够作为字典中的键，还需要符合`Hashable`协议并实现`hashValues`属性。
 
 <a name="swift_type_compatibility"></a>
 ## Swift 类型兼容性
@@ -444,7 +442,7 @@ class MyViewController: UIViewController {
 
 你可以使用`performSelector(_:)`方法以及它的变体向 Objective-C 兼容的对象发送消息。
 
-`performSelector`系列 API 可以向指定线程发送消息，或者延迟发送没有返回值的消息。该系列 API 同步执行，并返回隐式解包可选的非托管实例（`Unmanaged<AnyObject>!`），因为返回值的类型和所有权无法在编译期决定。可以查看[非托管对象](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02Interoperability/03Working%20with%20Cocoa%20Data%20Types.md#%E9%9D%9E%E6%89%98%E7%AE%A1%E5%AF%B9%E8%B1%A1)获取更多信息。
+`performSelector`系列 API 可以向指定线程发送消息，或者延迟发送没有返回值的消息。该系列 API 同步执行，并返回隐式解包可选的非托管对象（`Unmanaged<AnyObject>!`），因为返回值的类型和所有权无法在编译期决定。可以查看[非托管对象](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02Interoperability/03Working%20with%20Cocoa%20Data%20Types.md#%E9%9D%9E%E6%89%98%E7%AE%A1%E5%AF%B9%E8%B1%A1)获取更多信息。
 
 ```swift
 let string: NSString = "Hello, Cocoa!"
