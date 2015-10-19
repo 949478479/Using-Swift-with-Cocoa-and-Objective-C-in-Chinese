@@ -359,32 +359,28 @@ Swift 的 == 操作符为继承自`NSObject`类的对象提供了默认实现。
 <a name="swift_type_compatibility"></a>
 ## Swift 类型兼容性
 
-当你在 Swift 中创建了一个继承自 Objective-C 类的子类时，该类以及该类的成员：属性，方法，下标和构造器，便会在 Objective-C 中自动可用。在某些情况下，你需要更细粒度地控制如何将 Swift API 暴露给 Objective-C。如果你的 Swift 类没有继承自 Objective-C 的类，又或者你想更改暴露给 Objective-C 代码的接口中的符号名称，你便可以使用`@objc`属性。如果你正在使用诸如键值观察这种需要动态替换方法实现的 API，还可以通过使用`dynamic`修饰符来要求访问成员变量时通过 Objective-C 运行时的动态派发。
+当你在 Swift 中创建一个继承自 Objective-C 类的子类时，该类以及该类的成员：属性，方法，下标和构造器，都将兼容 Objective-C，即它们在 Objective-C 中可直接使用。在某些情况下，你需要更细粒度地控制如何将 Swift API 暴露给 Objective-C。如果你的 Swift 类没有继承自 Objective-C 类，又或者你想更改当前 Swift 接口暴露给 Objective-C 代码后的符号名称，可以使用`@objc`属性。如果你需要使用诸如键值观察（KVO）这种需要动态替换方法实现的 API，则可使用`dynamic`修饰符标记成员变量，从而通过 Objective-C 运行时的动态派发来访问成员变量。
 
-### 在 Objective-C 中暴露 Swift 接口（Exposing Swift Interfaces in Objective-C）
+### 暴露 Swift 接口给 Objective-C
 
-当你定义一个继承自`NSObject`类或者其他 Objective-C 类的 Swift 子类时，该类便会自动兼容 Objective-C。Swift 编译器已经为你做好了这部分所需要的工作。所有的步骤都由 Swift 编译器自动完成，如果你不会在 Objective-C 代码中导入 Swift 类，你也不需要担心类型适配问题。否则，如果你的 Swift 类并不继承于 Objective-C 类而你希望能在 Objective-C 的代码中使用它，你可以使用下面描述的`@objc`属性。
+当你定义一个继承自`NSObject`类或者其他 Objective-C 类的 Swift 子类时，该类便会自动兼容 Objective-C。如果你的 Swift 类并不继承于 Objective-C 类，而你又希望能在 Objective-C 代码中使用它，你可以使用下面描述的`@objc`属性。
 
-`@objc`可以让你的 Swift API 在 Objective-C 以及 Objective-C runtime 中使用。换句话说，你可以通过在任何 Swift 方法，属性，下标，构造器，类，枚举前添加`@objc`，从而让它们可以在 Objective-C 代码中使用。
+`@objc`属性可以让你的 Swift API 在 Objective-C 以及 Objective-C 运行时中可用。换句话说，你可以在任意 Swift 方法，属性，下标，构造器，类，协议，枚举前标记`@objc`，从而可以在 Objective-C 代码中使用它们。
 
 > 注意  
+> 嵌套类型声明不能标记`@objc`属性。  
+> 另外，只有原始值为整形的 Swift 枚举，例如`Int`，才能使用`@objc`属性。
 
-> 嵌套类型不能标记`objc`属性。  
-> 另外只有原始值为整形的 Swift 枚举，例如`Int`，才能使用`objc`属性。
+如果你的类继承自 Objective-C 类，编译器会自动为你插入`@objc`属性。如果一个类标记了`@objc`属性，编译器就会在类中所有成员前添加`@objc`属性。当你使用`@IBOutlet`，`@IBAction`，或者是`@NSManaged`属性时，`@objc`属性也会被自动添加。
 
-如果你的类继承自 Objective-C，编译器会自动帮助你完成这一步。而如果一个类前面加上了`@objc`关键字，编译器就会在类中所有成员前加`@objc`。当你使用`@IBOutlet`，`@IBAction`，或者是`@NSManaged`属性时，`@objc`属性也会自动添加。当一个 Objetive-C 类使用选择器来实现 target-action 设计模式时，也要用到此属性，例如，`NSTimer`或者`UIButton`。
+只有源自`NSObject`的类才可以在类声明前标记`@objc`属性，当然，编译器会自动为你标记。另外，你也可以在不源自`NSObject`的类中的某个 API 前标记`@objc`属性。当你使用类似`NSTimer`或者`UIButton`中的一些使用 Objective-C 选择器的 API 时，你就需要为你的 Swift 类中的相关方法标记`@objc`属性。
 
-> 注意
+> 注意  
+> 如果声明前标记了`private`访问级别修饰符，编译器将不会为声明自动插入`@objc`属性。
 
-> 如果标记了`private`访问级别修饰符，编译器将不会自动插入`@objc`属性。
+当你在 Objective-C 中使用 Swift API 时，编译器通常会对语句做直接翻译。例如，Swift API `func playSong(name: String)`在 Objective-C 中会被导入为`- (void)playSong:(NSString *)name`。然而，有一个例外：当在 Objective-C 中使用 Swift 构造器时，编译器会在方法前添加“initWith”并将原构造器第一个参数名的首字母大写。例如，这个 Swift 构造器`init(songName: String, artist: String)`在 Objective-C 中将被导入为`- (instancetype)initWithSongName:(NSString *)songName artist:(NSString *)artist`。
 
-当你在 Objective-C 中使用 Swift API 时，编译器通常会对语句做直接翻译。
-
-例如，Swift API `func playSong(name: String)`在 Objective-C 中会被解释为`- (void)playSong:(NSString *)name`。然而，有一个例外：当在 Objective-C 中使用 Swift 的初始化函数时，编译器会在方法前添加“initWith”并且将原初始化函数的第一个参数首字母大写。
-
-例如，这个 Swift 初始化函数`init(songName: String, artist: String)`在 Objective-C 中将被翻译为`- (instancetype)initWithSongName:(NSString *)songName artist:(NSString *)artist`。
-
-Swift 同时也提供了一个`@objc`属性的变体，通过它你可以指定转换到 Objective-C 后的符号名。例如，如果你的 Swift 类的名字包含 Objective-C 中不支持的字符，你就可以为 Objective-C 提供一个可供替代的名字。如果你要为 Swift 函数提供一个 Objective-C 选择器风格的名字，记得在参数名后添加冒号：
+Swift 同时也提供了一个`@objc`属性的变体，通过它你可以指定导入到 Objective-C 后的符号名。例如，如果你的 Swift 类的类名包含 Objective-C 中不支持的字符，你就可以为其提供一个在 Objective-C 中的别名。如果你要为 Swift 函数提供一个 Objective-C 选择器风格的别名，记得在参数名后添加冒号：
 
 ```swift
 @objc(Squirrel)
@@ -402,7 +398,10 @@ class Белка: NSObject {
 }
 ```
 
-当你在 Swift 类中使用`@objc(name)`关键字时，该类可在 Objective-C 没有任何命名空间。因此，这个关键字在你迁徙被归档的 Objecive-C 类到 Swift 时非常有用。由于归档过的对象存储了类的名字，你应该使用`@objc(name)`来声明与旧的归档过的类相同的名字，这样旧的类才能被新的 Swift 类解档。
+这个属性在你迁徙被归档的 Objecive-C 类到 Swift 时会非常有用。由于被归档的对象存储了类名，如果你的 Swift 新类改了类名，你应该使用`@objc(name)`属性来声明被归档的 Objective-C 类的类名，这样才能正确地将该 Objective-C 类解档为新的 Swift 类。
+
+> 注意  
+> 相反，Swift 还提供了`@nonobjc`属性，从而使一个 Swift 声明在 Objective-C 中不可用。你可以利用它来解决桥接方法循环，以及允许重载被标记`@objc`属性的类中的方法。如果一个 Objective-C 方法在 Swift 中被重载后，无法再以 Objective-C 的语言特性表示，例如将参数变为了可变参数，那么这个方法必须标记为`@nonobjc`。
 
 ### 要求动态派发（Requiring Dynamic Dispatch）
 
