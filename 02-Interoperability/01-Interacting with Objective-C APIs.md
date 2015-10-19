@@ -191,7 +191,7 @@ let myDate = lastRefreshDate as! NSString // Error
 <a name="Nullability_and_Optionals"></a>
 ## 为空性和可选类型
 
-在 Objective-C 中，用于操作对象的原始指针的值可能会是`NULL`（在 Objective-C 中称为`nil`）。而在 Swift 中，所有的值，包括结构体与对象的引用，都能确保是非空值。作为替代，你可以将可能会值缺失的值包装为该类型的 *可选类型*。当你需要表示值缺失的情况时，你可以将其赋值为`nil`。更多关于可选类型的信息，可以参看 [The Swift Programming Language 中文版](http://wiki.jikexueyuan.com/project/swift/)中的[可选类型](http://wiki.jikexueyuan.com/project/swift/chapter2/01_The_Basics.html#optionals)部分。
+在 Objective-C 中，用于操作对象的原始指针的值可能会是`NULL`（在 Objective-C 中称为`nil`）。而在 Swift 中，所有的值，包括结构体与对象的引用，都能确保是非空值。作为替代，你可以将可能会值缺失的值包装为该类型的 *可选类型*。当你需要表示值缺失的情况时，你可以将其赋值为`nil`。更多关于可选类型的信息，可以参看 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的[可选类型](http://wiki.jikexueyuan.com/project/swift/chapter2/01_The_Basics.html#optionals)部分。
 
 Objective-C 可以使用 *为空性注释* 来指明一个参数类型，属性类型或者返回值类型是否可以为`NULL`或者`nil`值。单个类型声明可以使用`_Nullable`和`_Nonnull`注释，单个属性声明可以使用`nullable`，`nonnull`，`null_resettable`属性特性，大范围注释可以使用`NS_ASSUME_NONNULL_BEGIN`和`NS_ASSUME_NONNULL_END`这对宏。如果一个类型没有任何为空性注释，Swift 将无法分辨出它是可选类型还是非可选类型，并将其作为隐式解包可选类型导入。
 
@@ -322,6 +322,30 @@ let completionBlock: (NSData, NSError) -> Void = { (data, error) in
 Swift 闭包与 Objective-C block 兼容，因此你可以把一个 Swift 闭包传递给一个接收 block 作为参数的 Objective-C 方法。而且因为 Swift 闭包与函数类型相同，你甚至可以直接传递一个 Swift 函数的函数名过去。
 
 闭包与 block 有相似的捕获语义，但有个关键的不同：被捕获的变量是可以直接修改的，而 block 在默认情况下捕获的只是变量的值拷贝。换句话说，Swift 闭包在默认情况下捕获的变量就等效于 Objective-C 中的`__block`变量。
+
+### 避免强引用循环
+
+在 Objective-C 中，如果 block 捕获了`self`，一定要慎重考虑内存管理问题。
+
+block 会维持对被捕获对象的强引用，包括`self`。一旦`self`也持有对 block 的强引用，例如一个 copy 语义的 block 属性，就将导致强引用循环。你可以让 block 捕获`self`的弱引用来避免此问题：
+
+```objective-c
+__weak typeof(self) weakSelf = self;
+self.block = ^{
+    __strong typeof(self) strongSelf = weakSelf;
+    [strongSelf doSomething];
+};
+```
+
+和 Objective-C block 类似，Swift 闭包也会维持对被捕获对象的强引用，包括`self`。为了避免强引用循环，你可以在闭包的捕获列表中指定`self`为`unowned`:
+
+```swift
+self.closure = { [unowned self] in
+    self.doSomething()
+}
+```
+
+可以参看 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中[解决闭包引起的循环强引用](http://wiki.jikexueyuan.com/project/swift/chapter2/16_Automatic_Reference_Counting.html#resolving_strong_reference_cycles_for_closures)小节来获取更多信息。
 
 <a name="object_comparison"></a>
 ## 对象比较（Object Comparison）
