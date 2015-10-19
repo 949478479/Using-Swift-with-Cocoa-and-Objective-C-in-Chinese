@@ -134,7 +134,7 @@ var myObject: AnyObject = UITableViewCell()
 myObject = NSDate()
 ```
 
-你也可以在调用 Objective-C 方法或者访问属性时不将它转换为具体的类型，包括标记`@objc`的 Objective-C 兼容方法。
+你也可以在调用 Objective-C 方法或者访问属性时不将它转换为具体的类型，包括标记`@objc`的兼容 Objective-C 的方法。
 
 ```swift
 let futureDate = myObject.dateByAddingTimeInterval(10)
@@ -403,16 +403,16 @@ class Белка: NSObject {
 > 注意  
 > 相反，Swift 还提供了`@nonobjc`属性，从而使一个 Swift 声明在 Objective-C 中不可用。你可以利用它来解决桥接方法循环，以及允许重载被标记`@objc`属性的类中的方法。如果一个 Objective-C 方法在 Swift 中被重载后，无法再以 Objective-C 的语言特性表示，例如将参数变为了可变参数，那么这个方法必须标记为`@nonobjc`。
 
-### 要求动态派发（Requiring Dynamic Dispatch）
+### 要求动态派发
 
-`@objc`属性将你的 Swift API 暴露给了 Objective-C runtime，但是它并不能保证属性，方法，下标，或构造器的动态派发。Swift 编译器可能仍然通过绕过 Objective-C runtime 来消虚拟化（devirtualize）或内联成员访问来优化代码的性能。当一个成员声明用`dynamic`修饰符标记时，对该成员的访问将始终是动态派发的。由于标记`dynamic`修饰符后需要用 Objective-C runtime 来派发，因此会被隐式地标记`@objc`属性。
+`@objc`属性能将你的 Swift API 暴露给 Objective-C 运行时，但它并不能保证属性，方法，下标，或构造器的动态派发。Swift 编译器依旧可能绕过 Objective-C 运行时，通过消虚拟化或内联成员访问来优化代码的性能。当一个成员声明用`dynamic`修饰符标记时，对该成员的访问将始终是动态派发的。由于将声明标记`dynamic`修饰符后会用 Objective-C 运行时来动态派发，因此声明也会被隐式地标记`@objc`属性。
 
-一般很少需要动态派发。但是，当你要在运行时替换一个 API 的实现时你必须使用`dynamic`修饰符。例如，你可以使用 Objective-C runtime 的`method_exchangeImplementations`函数在应用程序运行中替换某个方法的实现。如果 Swift 编译器内联了方法的实现或者消虚拟化对它的访问，新的实现将不会被使用。
+一般很少需要动态派发，但是，如果你要在运行时替换一个 API 的实现，你就必须使用`dynamic`修饰符。例如，你可以使用 Objective-C 运行时的`method_exchangeImplementations`函数在应用程序运行过程中替换某个方法的实现。如果 Swift 编译器内联了方法的实现或者消虚拟化对它的访问，新的实现将不会被使用。
 
 <a name="objective_c_selectors"></a>
 ## Objective-C 选择器
 
-Objective-C 选择器是一种用于引用 Objective-C 方法名的类型。在 Swift 中，Objective-C 选择器用`Selector`结构体表示。你可以通过字符串字面量创建一个选择器，比如`let mySelector: Selector = "tappedButton:"`。因为字符串字面量能够自动被转换为选择器，所以你可以把字符串字面量直接传递给任何能够接受选择器的方法。
+Objective-C 选择器是一种用于引用 Objective-C 方法名的类型。在 Swift 中，Objective-C 选择器用`Selector`结构体表示。你可以通过字符串字面量创建一个选择器，例如`let mySelector: Selector = "tappedButton:"`。因为字符串字面量能够自动转换为选择器，你可以将其直接传递给任何接受选择器的方法。
 
 ```swift
 import UIKit
@@ -435,13 +435,13 @@ class MyViewController: UIViewController {
 }
 ```
 
-如果你的 Swift 类继承自 Objective-C 类，那么所有方法和属性都可以用于 Objective-C 选择器。反之，如果你的 Swift 类不是继承自 Objective-C 类，你需要在要用于选择器的方法前面加上`@objc`属性前缀，详情请看 [Swift 类型兼容性](#swift_type_compatibility)。
+如果你的 Swift 类继承自 Objective-C 类，那么所有方法和属性都可以用于 Objective-C 选择器。反之，你需要在要用于选择器的方法前面添加`@objc`属性，详情参看 [Swift 类型兼容性](#swift_type_compatibility)。
 
 ### 使用 performSelector 发送消息
 
-你可以使用`performSelector(_:)`方法以及它的变体向 Objective-C 兼容的对象发送消息。
+你可以使用`performSelector(_:)`方法以及它的变体向兼容 Objective-C 的对象发送消息。
 
-`performSelector`系列 API 可以向指定线程发送消息，或者延迟发送没有返回值的消息。该系列 API 同步执行，并返回隐式解包可选的非托管对象（`Unmanaged<AnyObject>!`），因为返回值的类型和所有权无法在编译期决定。可以查看[非托管对象](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02Interoperability/03Working%20with%20Cocoa%20Data%20Types.md#%E9%9D%9E%E6%89%98%E7%AE%A1%E5%AF%B9%E8%B1%A1)获取更多信息。
+`performSelector`系列 API 可以向指定线程发送消息，或者延迟发送没有返回值的消息。该系列 API 同步执行，并返回隐式解包可选类型的非托管对象（`Unmanaged<AnyObject>!`），这是因为返回值的类型和所有权无法在编译期决定。可以参看[非托管对象](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02Interoperability/03Working%20with%20Cocoa%20Data%20Types.md#%E9%9D%9E%E6%89%98%E7%AE%A1%E5%AF%B9%E8%B1%A1)获取更多信息。
 
 ```swift
 let string: NSString = "Hello, Cocoa!"
@@ -460,4 +460,4 @@ let invalidSelector: Selector = "invalid"
 array.performSelector(invalidSelector) // raises an exception
 ```
 
-在 Objective-C 运行时中直接向对象发送消息是内在不安全的，因为编译器无法保证消息发送的结果，或是消息是否能在第一时间被处理。同样的，不鼓励使用`performSelector`系列 API，除非你的代码确实依赖于 Objective-C 运行时提供的动态方法决议。否则，正如 [id 兼容性](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02Interoperability/01Interacting%20with%20Objective-C%20APIs.md#id-%E5%85%BC%E5%AE%B9%E6%80%A7)中所描述的那样，使用可选链向`AnyObject`类型发送消息更为安全方便。
+在 Objective-C 运行时中直接向对象发送消息并非内在安全的，因为编译器无法保证消息发送的结果，或是消息是否能在第一时间被处理。同样不鼓励使用`performSelector`系列 API，除非你的代码确实依赖于 Objective-C 运行时提供的动态方法决议。否则，正如 [id 兼容性](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02Interoperability/01Interacting%20with%20Objective-C%20APIs.md#id-%E5%85%BC%E5%AE%B9%E6%80%A7)中所描述的，将对象转换为`AnyObject`类型，再使用可选链语法调用方法会更为安全方便。
