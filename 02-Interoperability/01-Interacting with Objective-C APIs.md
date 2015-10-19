@@ -441,7 +441,7 @@ class MyViewController: UIViewController {
 
 你可以使用`performSelector(_:)`方法以及它的变体向兼容 Objective-C 的对象发送消息。
 
-`performSelector`系列 API 可以向指定线程发送消息，或者延迟发送没有返回值的消息。该系列 API 同步执行，并返回隐式解包可选类型的非托管对象（`Unmanaged<AnyObject>!`），这是因为返回值的类型和所有权无法在编译期决定。可以参看[非托管对象](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02Interoperability/03Working%20with%20Cocoa%20Data%20Types.md#%E9%9D%9E%E6%89%98%E7%AE%A1%E5%AF%B9%E8%B1%A1)获取更多信息。
+`performSelector`系列 API 可以向指定线程发送消息，或者延迟发送没有返回值的消息。该系列 API 同步执行，并返回隐式解包可选类型的非托管对象（`Unmanaged<AnyObject>!`），这是因为返回值的类型和所有权无法在编译期决定。可以参看[非托管对象](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02-Interoperability/03-Working%20with%20Cocoa%20Data%20Types.md#%E9%9D%9E%E6%89%98%E7%AE%A1%E5%AF%B9%E8%B1%A1)获取更多信息。
 
 ```swift
 let string: NSString = "Hello, Cocoa!"
@@ -460,4 +460,4 @@ let invalidSelector: Selector = "invalid"
 array.performSelector(invalidSelector) // raises an exception
 ```
 
-在 Objective-C 运行时中直接向对象发送消息并非内在安全的，因为编译器无法保证消息发送的结果，或是消息是否能在第一时间被处理。同样不鼓励使用`performSelector`系列 API，除非你的代码确实依赖于 Objective-C 运行时提供的动态方法决议。否则，正如 [id 兼容性](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02Interoperability/01Interacting%20with%20Objective-C%20APIs.md#id-%E5%85%BC%E5%AE%B9%E6%80%A7)中所描述的，将对象转换为`AnyObject`类型，再使用可选链语法调用方法会更为安全方便。
+在 Objective-C 运行时中直接向对象发送消息并非内在安全的，因为编译器无法保证消息发送的结果，或是消息是否能在第一时间被处理。同样不鼓励使用`performSelector`系列 API，除非你的代码确实依赖于 Objective-C 运行时提供的动态方法决议。否则，正如 [id 兼容性](#id_compatibility)中所描述的，将对象转换为`AnyObject`类型，再使用可选链语法调用方法会更为安全方便。
