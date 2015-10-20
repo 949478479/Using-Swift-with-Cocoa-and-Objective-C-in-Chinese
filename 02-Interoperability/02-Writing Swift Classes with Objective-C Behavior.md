@@ -1,35 +1,24 @@
-> 翻译：[halinuya](https://github.com/halinuya)
-
-> 校对：[song-buaa](https://github.com/song-buaa) [MonicaZhou](https://github.com/MonicaZhou) [ChildhoodAndy](https://github.com/dabing1022)
-
-# 使用 Objective-C 特性编写 Swift 类（Writing Swift Classes with Objective-C Behavior）
+# 使用 Objective-C 特性编写 Swift 类
 
 本节包括内容：
 
--  [继承 Objective-C 类（Inheriting from Objective-C Classes）](#inheriting_from_objective-c_classes)
+- [继承 Objective-C 类](#inheriting_from_objective-c_classes)
+- [采纳协议](#adopting_protocols)
+- [编写构造器和析构器](#writing_initializers_and_deinitializers)
+- [兼容使用 Swift 类名的 Objective-C API](#using_swift_class_names_with_objective_c_apis)
+- [与 Interface Builder 结合](#integrating_with_interface_builder)
+- [指定属性特性](#specifying_property_attributes)
+- [子类化 NSManagedObject](#implementing_core_data_managed_object_subclasses)
 
--  [采用协议（Adopting Protocols）](#adopting_protocols)
-
--  [编写构造器和析构器（Writing Initializers and Deinitializers）](#writing_initializers_and_deinitializers)
-
--  [集成 Interface Builder（Integrating with Interface Builder）](#integrating_with_interface_builder)
-
--  [指明属性特性（Specifying Property Attributes）](#specifying_property_attributes)
-
--  [实现 Core Data Managed Object 子类（Implementing Core Data Managed Object Subclasses）](#implementing_core_data_managed_object_subclasses)
-
--  [兼容使用 Swift 类名的 Objective-C API（Using Swift Class Names with Objective-C APIs）](#using_swift_class_names_with_objective_c_apis)
-
-**互用性**使开发者可以定义融合了 Objective-C 语言特性的 Swift 类。编写 Swift 类时，不仅可以继承 Objective-C 中的类，采用 Objective-C 中的协议，还可以利用 Objective-C 的一些其它功能。这意味着，开发者可以基于 Objective-C 中耳熟能详的既有特性来创建 Swift 类，并可以结合 Swift 提供的更为强大的现代化语言特性对其进行优化。
+*互用性* 让你可以编写融合了 Objective-C 语言特性的 Swift 类。在编写 Swift 类时，你不仅可以继承 Objective-C 类，采纳 Objective-C 协议，还可以使用 Objective-C 的一些其它功能。这意味着你可以基于 Objective-C 中耳熟能详的既有特性来编写 Swift 类，还可以结合 Swift 提供的更为强大的现代化语言特性对其进行改进。
 
 <a name="inheriting_from_objective-c_classes"></a>
-## 继承 Objective-C 类（Inheriting from Objective-C Classes）
+## 继承 Objective-C 类
 
-在 Swift 中，你可以定义一个继承自 Objective-C 类的 Swift 子类。创建该子类的方法是，在 Swift 的类名后面加上一个冒号（:），冒号后面跟上 Objective-C 类的类名。
+在 Swift 中，你可以定义一个继承自 Objective-C 类的 Swift 子类。在 Swift 的类名后面加上一个冒号（:），冒号后面跟上 Objective-C 类的类名即可。
 
 ```swift
 import UIKit
-
 class MySwiftViewController: UIViewController {
 	// 定义类
 }
@@ -37,9 +26,9 @@ class MySwiftViewController: UIViewController {
 
 你能从 Objective-C 父类中继承所有的功能。如果你要覆盖父类中的实现，不要忘记使用`override`关键字。
 
-### NSCoding 协议（NSCoding）
+### NSCoding 协议
 
-`NSCoding`协议要求符合的类型实现所需的构造器`init(coder:)`。直接采用`NSCoding`协议的类必须实现这个方法。对于采用`NSCoding`协议的类的子类，如果有一个或者多个自定义的构造器或者有不带初始值的属性，也必须实现这个方法。Xcode 提供了下面这个 fix-it 作为一个占位实现：
+`NSCoding`协议要求采纳协议的类型实现其所要求的构造器`init(coder:)`。直接采纳`NSCoding`协议的类必须实现这个方法。对于采纳`NSCoding`协议的类的子类，如果有一个或者多个自定义的构造器或者有不带初始值的属性，也必须实现这个方法。Xcode 提供了下面这个 fix-it 来提供一个占位实现：
 
 ```swift
 required init(coder aDecoder: NSCoder) {
@@ -47,12 +36,12 @@ required init(coder aDecoder: NSCoder) {
 }
 ```
 
-对那些从 Storyboards 里加载的对象，或者用`NSUserDefaults`或`NSKeyedArchiver`类归档到磁盘的对象，你必须提供该构造器的完整实现。当然，当一个类型不会以此种方式实例化的时候，你并不需要具体实现该构造器。
+对那些从 Storyboards 里加载的对象，或者用`NSUserDefaults`或`NSKeyedArchiver`类归档到磁盘的对象，你必须提供该构造器的完整实现。当然，当一个类型不会以此种方式实例化的时候，你并不需要提供该构造器的完整实现。
 
 <a name="adopting_protocols"></a>
-## 采用协议（Adopting Protocols）
+## 采纳协议
 
-在 Swift 中，你可以采用在 Objective-C 中定义的协议。和 Swift 协议一样，所有 Objective-C 协议都写在一个用逗号隔开的列表中，跟在所在类的父类名后面（如果它有父类的话）。
+Objective-C 协议会被导入为 Swift 协议。所有协议都写在一个用逗号隔开的列表中，跟在父类类名后面（如果该类有父类的话）。
 
 ```swift
 class MySwiftViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
@@ -60,12 +49,18 @@ class MySwiftViewController: UIViewController, UITableViewDelegate, UITableViewD
 }
 ```
 
-Objective-C 协议与 Swift 协议使用上是一致的。如果你想在 Swift 代码中引用 `UITableViewDelegate`协议，可以直接用`UITableViewDelegate`表示（跟在 Objective-C 中用`id<UITableViewDelegate>`表示是等价的）。
+声明符合单个协议的类型时，直接使用协议名作为其类型，类似于 Objective-C 中`id<SomeProtocol>`这种形式。声明符合多个协议的类型时，使用`protocol<SomeProtocol, AnotherProtocol>`这种协议组合的形式，类似于 Objective-C 中`id<SomeProtocol, AnotherProtocol>`这种形式。
 
-因为在 Swift 中，类和协议的命名空间是统一的，Objective-C 里的`NSObject`协议被重新映射到 Swift 里的`NSObjectProtocol`。
+```swift
+var textFieldDelegate: UITextFieldDelegate
+var tableViewController: protocol<UITableViewDataSource, UITableViewDelegate>
+```
+
+> 注意  
+> 在 Swift 中，类和协议的命名空间是统一的，因此 Objective-C 的`NSObject`协议会被重映射为 Swift 的`NSObjectProtocol`。
 
 <a name="writing_initializers_and_deinitializers"></a>
-## 编写构造器和析构器（Writing Initializers and Deinitializers）
+## 编写构造器和析构器
 
 Swift 的编译器确保在初始化后类里不会有任何未初始化的属性，这样做能够增加代码的安全性和可预测性。另外，与 Objective-C 不同，Swift 不提供单独的内存分配方法供开发者调用。当你使用原生的 Swift 初始化方法时（即使是和 Objective-C 类协作），Swift 会将 Objective-C 的初始化方法转换为 Swift 的初始化方法。关于如何实现自定义构造器的更多信息，请查看[《The Swift Programming Language 中文版》](http://wiki.jikexueyuan.com/project/swift/)中的 [构造器（Initializers）](http://wiki.jikexueyuan.com/project/swift/chapter2/14_Initialization.html)部分。
 
