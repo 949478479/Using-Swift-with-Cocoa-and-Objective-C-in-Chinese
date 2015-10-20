@@ -54,7 +54,7 @@ import Foundation
 - 重映射 Objective-C 核心类型到 Swift 中的替代类型，就像`NSString`到`String`
 - 重映射 Objective-C 概念到 Swift 中相对应的概念，就像指针到可选
 
-在[与 Objective-C API 交互](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02-Interoperability/01-Interacting%20with%20Objective-C%20APIs.md)章节，你将会了解到关于这些映射的更多信息，以及如何在你的 Swift 代码中利用它们。导入 Swift 的模块到 Objective-C 和将 Objective-C 的模块导入到 Swift 的过程是非常相似的。Swift 声明它的 API，比如来自系统框架的 API，作为 Swift 模块。伴随这些 Swift 模块的生成，还会生成 Objective-C 头文件。这些头文件声明了那些可以映射回 Objective-C 的 API。一些 Swift API 无法映射回 Objective-C，因为它们利用了 Objective-C 中不存在的语言特性。关于在 Objective-C 中使用 Swift 的更多信息，请参看[在同一工程中使用 Swift 和 Objective-C](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/03-Mix%20and%20Match/Swift%20and%20Objective-C%20in%20the%20Same%20Project.md)。
+在[与 Objective-C API 交互](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02-Interoperability/01-Interacting%20with%20Objective-C%20APIs.md)章节，你将会了解到关于这些映射的更多信息，以及如何在你的 Swift 代码中利用它们。导入 Swift 的模块到 Objective-C 和将 Objective-C 的模块导入到 Swift 的过程是非常相似的。Swift 声明它的 API，比如来自系统框架的 API，作为 Swift 模块。伴随这些 Swift 模块的生成，还会生成 Objective-C 头文件。这些头文件声明了那些可以映射回 Objective-C 的 API。一些 Swift API 无法映射回 Objective-C，因为它们利用了 Objective-C 中不存在的语言特性。关于在 Objective-C 中使用 Swift 的更多信息，请参见[在同一工程中使用 Swift 和 Objective-C](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/03-Mix%20and%20Match/Swift%20and%20Objective-C%20in%20the%20Same%20Project.md)。
 
 > 注意  
 > 你不能直接把 C++ 代码导入 Swift，必须为 C++ 代码创建一个 Objective-C 或者 C 的封装。
