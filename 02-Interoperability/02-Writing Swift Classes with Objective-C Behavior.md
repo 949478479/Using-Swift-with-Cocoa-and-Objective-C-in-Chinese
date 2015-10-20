@@ -62,9 +62,9 @@ var tableViewController: protocol<UITableViewDataSource, UITableViewDelegate>
 <a name="writing_initializers_and_deinitializers"></a>
 ## 编写构造器和析构器
 
-Swift 的编译器确保在初始化后类里不会有任何未初始化的属性，这样做能够增加代码的安全性和可预测性。另外，与 Objective-C 不同，Swift 不提供单独的内存分配方法供开发者调用。当你使用原生的 Swift 初始化方法时（即使是和 Objective-C 类协作），Swift 会将 Objective-C 的初始化方法转换为 Swift 的初始化方法。关于如何实现自定义构造器的更多信息，请查看[《The Swift Programming Language 中文版》](http://wiki.jikexueyuan.com/project/swift/)中的 [构造器（Initializers）](http://wiki.jikexueyuan.com/project/swift/chapter2/14_Initialization.html)部分。
+Swift 编译器能确保构造器不会遗留任何未初始化的属性，从而增加代码的安全性和可预测性。另外，与 Objective-C 不同，Swift 不提供单独的内存分配方法。你会始终使用原生的 Swift 构造器，即使是和 Objective-C 类协作，Swift 也会将 Objective-C 构造器转换为 Swift 构造器。你可以参看[构造器](http://wiki.jikexueyuan.com/project/swift/chapter2/14_Initialization.html)章节来了解关于如何实现构造器的更多信息。
 
-当你希望在实例被释放前，执行额外的清理工作时，你可以实现一个析构器来代替`dealloc`方法。在实例被释放前，Swift 会自动调用析构器来执行析构过程。Swift 调用完子类的析构器后，会自动调用父类的析构器。当你使用 Objective-C 类或者是继承自 Objective-C 类的 Swift 类时，Swift 也会自动为开发者调用这个类的父类里的`dealloc`方法。关于如何实现自定义析构器的更多信息，请查看[《The Swift Programming Language 中文版》](http://wiki.jikexueyuan.com/project/swift/)中的 [析构器（Deinitializers）](http://wiki.jikexueyuan.com/project/swift/chapter2/15_Deinitialization.html)部分。
+如果你希望在对象释放前进行额外的清理工作，你可以实现一个析构器来代替`dealloc`方法。在对象被释放前，Swift 会自动调用析构器。当 Swift 调用完子类的析构器后，会自动调用父类的析构器。当你使用 Objective-C 类或者继承自 Objective-C 类的 Swift 类时，Swift 同样也会为你自动调用该类父类中的`dealloc`方法。你可以参看 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的[析构器](http://wiki.jikexueyuan.com/project/swift/chapter2/15_Deinitialization.html)章节来了解关于如何实现析构器的更多信息。
 
 <a name="integrating_with_interface_builder"></a>
 ## 集成 Interface Builder（Integrating with Interface Builder）
