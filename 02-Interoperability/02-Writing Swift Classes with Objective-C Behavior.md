@@ -62,9 +62,9 @@ var tableViewController: protocol<UITableViewDataSource, UITableViewDelegate>
 <a name="writing_initializers_and_deinitializers"></a>
 ## 编写构造器和析构器
 
-Swift 编译器能确保构造器不会遗留任何未初始化的属性，从而增加代码的安全性和可预测性。另外，与 Objective-C 不同，Swift 不提供单独的内存分配方法。你会始终使用原生的 Swift 构造器，即使是和 Objective-C 类协作，Swift 也会将 Objective-C 构造器转换为 Swift 构造器。请参看 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的[构造器](http://wiki.jikexueyuan.com/project/swift/chapter2/14_Initialization.html)章节来了解关于如何实现构造器的更多信息。
+Swift 编译器能确保构造器不会遗留任何未初始化的属性，从而增加代码的安全性和可预测性。另外，与 Objective-C 不同，Swift 不提供单独的内存分配方法。你会始终使用原生的 Swift 构造器，即使是和 Objective-C 类协作，Swift 也会将 Objective-C 构造器转换为 Swift 构造器。请参见 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的[构造器](http://wiki.jikexueyuan.com/project/swift/chapter2/14_Initialization.html)章节来了解关于如何实现构造器的更多信息。
 
-如果你希望在对象释放前进行额外的清理工作，你可以实现一个析构器来代替`dealloc`方法。在对象被释放前，Swift 会自动调用析构器。当 Swift 调用完子类的析构器后，会自动调用父类的析构器。当你使用 Objective-C 类或者继承自 Objective-C 类的 Swift 类时，Swift 同样也会为你自动调用该类父类中的`dealloc`方法。请参看 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的[析构器](http://wiki.jikexueyuan.com/project/swift/chapter2/15_Deinitialization.html)章节来了解关于如何实现析构器的更多信息。
+如果你希望在对象释放前进行额外的清理工作，你可以实现一个析构器来代替`dealloc`方法。在对象被释放前，Swift 会自动调用析构器。当 Swift 调用完子类的析构器后，会自动调用父类的析构器。当你使用 Objective-C 类或者继承自 Objective-C 类的 Swift 类时，Swift 同样也会为你自动调用该类父类中的`dealloc`方法。请参见 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的[析构器](http://wiki.jikexueyuan.com/project/swift/chapter2/15_Deinitialization.html)章节来了解关于如何实现析构器的更多信息。
 
 <a name="using_swift_class_names_with_objective_c_apis"></a>
 ## 兼容使用 Swift 类名的 Objective-C API
@@ -129,15 +129,15 @@ class MyCustomView: UIView {
 
 ### 强引用和弱引用
 
-Swift 属性默认都是强引用，可以使用`weak`关键字修饰一个属性，指明该属性持有其存储对象的弱引用。该关键字仅能修饰可选类型。想了解更多信息，请参看 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的[类和结构](http://wiki.jikexueyuan.com/project/swift/chapter2/09_Classes_and_Structures.html)章节。
+Swift 属性默认都是强引用，可以使用`weak`关键字修饰一个属性，指明该属性持有其存储对象的弱引用。该关键字仅能修饰可选类型。想了解更多信息，请参见 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的[类和结构](http://wiki.jikexueyuan.com/project/swift/chapter2/09_Classes_and_Structures.html)章节。
 
 ### 可读写和只读
 
-在 Swift 中，没有`readwrite`和`readonly`特性。声明一个存储型属性时，使用`let`使其只读；使用`var`使其可读写。声明一个计算型属性时，为其提供一个 getter 方法使其只读；提供 getter 方法和 setter 方法使其可读写。想了解更多信息，请参看 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的[属性](http://wiki.jikexueyuan.com/project/swift/chapter2/10_Properties.html)章节。
+在 Swift 中，没有`readwrite`和`readonly`特性。声明一个存储型属性时，使用`let`使其只读；使用`var`使其可读写。声明一个计算型属性时，为其提供一个 getter 方法使其只读；提供 getter 方法和 setter 方法使其可读写。想了解更多信息，请参见 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的[属性](http://wiki.jikexueyuan.com/project/swift/chapter2/10_Properties.html)章节。
 
 ### 拷贝语义
 
-在 Swift 中，Objective-C 中的`copy`属性特性被转化为`@NSCopying`。这种类型的属性必须符合`NSCopying`协议。想了解更多信息，请参看 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的[类和结构](http://wiki.jikexueyuan.com/project/swift/chapter2/09_Classes_and_Structures.html)章节。
+在 Swift 中，Objective-C 中的`copy`属性特性被转化为`@NSCopying`。这种类型的属性必须符合`NSCopying`协议。想了解更多信息，请参见 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的[类和结构](http://wiki.jikexueyuan.com/project/swift/chapter2/09_Classes_and_Structures.html)章节。
 
 <a name="implementing_core_data_managed_object_subclasses"></a>
 ## 子类化 NSManagedObject
