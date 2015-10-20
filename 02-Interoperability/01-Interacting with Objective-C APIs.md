@@ -78,7 +78,7 @@ if let image = UIImage(contentsOfFile: "MyImage.png") {
 
 在 Objective-C 中使用`@property`关键字声明的属性，导入到 Swift 时，会遵循以下规则：
 
-- 拥有为空性属性特性的属性（`nonnull`，`nullable`，`null_resettable`），作为可选类型或者非可选类型的属性导入。参见[为空性和可选类型](#Nullability_and_Optionals)中的描述。
+- 拥有为空性属性特性的属性（`nonnull`，`nullable`，`null_resettable`），作为可选类型或者非可选类型的属性导入。请参见[为空性和可选类型](#Nullability_and_Optionals)中的描述。
 - 拥有`readonly`属性特性的属性，作为只读计算属性（`{ get }`）导入。
 - 拥有`weak`属性特性的属性，作为标记`weak`关键字（`weak var`）的属性导入。
 - 拥有`assign`，`copy`，`strong`，`unsafe_unretained`属性特性的属性，导入后会具有相应的内存管理策略。
@@ -191,7 +191,7 @@ let myDate = lastRefreshDate as! NSString // Error
 <a name="Nullability_and_Optionals"></a>
 ## 为空性和可选类型
 
-在 Objective-C 中，用于操作对象的原始指针的值可能会是`NULL`（在 Objective-C 中称为`nil`）。而在 Swift 中，所有的值，包括结构体与对象的引用，都能确保是非空值。作为替代，你可以将可能会值缺失的值包装为该类型的 *可选类型*。当你需要表示值缺失的情况时，你可以将其赋值为`nil`。更多关于可选类型的信息，可以参看 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的[可选类型](http://wiki.jikexueyuan.com/project/swift/chapter2/01_The_Basics.html#optionals)部分。
+在 Objective-C 中，用于操作对象的原始指针的值可能会是`NULL`（在 Objective-C 中称为`nil`）。而在 Swift 中，所有的值，包括结构体与对象的引用，都能确保是非空值。作为替代，你可以将可能会值缺失的值包装为该类型的 *可选类型*。当你需要表示值缺失的情况时，你可以将其赋值为`nil`。更多关于可选类型的信息，请参见 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的[可选类型](http://wiki.jikexueyuan.com/project/swift/chapter2/01_The_Basics.html#optionals)小节。
 
 Objective-C 可以使用 *为空性注释* 来指明一个参数类型，属性类型或者返回值类型是否可以为`NULL`或者`nil`值。单个类型声明可以使用`_Nullable`和`_Nonnull`注释，单个属性声明可以使用`nullable`，`nonnull`，`null_resettable`属性特性，大范围注释可以使用`NS_ASSUME_NONNULL_BEGIN`和`NS_ASSUME_NONNULL_END`这对宏。如果一个类型没有任何为空性注释，Swift 将无法分辨出它是可选类型还是非可选类型，并将其作为隐式解包可选类型导入。
 
@@ -345,7 +345,7 @@ self.closure = { [unowned self] in
 }
 ```
 
-可以参看 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中[解决闭包引起的循环强引用](http://wiki.jikexueyuan.com/project/swift/chapter2/16_Automatic_Reference_Counting.html#resolving_strong_reference_cycles_for_closures)小节来获取更多信息。
+请参见 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的[解决闭包引起的循环强引用](http://wiki.jikexueyuan.com/project/swift/chapter2/16_Automatic_Reference_Counting.html#resolving_strong_reference_cycles_for_closures)小节来获取更多信息。
 
 <a name="object_comparison"></a>
 ## 对象比较
@@ -435,13 +435,13 @@ class MyViewController: UIViewController {
 }
 ```
 
-如果你的 Swift 类继承自 Objective-C 类，那么所有方法和属性都可以用于 Objective-C 选择器。反之，你需要在要用于选择器的方法前面添加`@objc`属性，详情参看 [Swift 类型兼容性](#swift_type_compatibility)。
+如果你的 Swift 类继承自 Objective-C 类，那么所有方法和属性都可以用于 Objective-C 选择器。反之，你需要在要用于选择器的方法前面添加`@objc`属性，详情请参见 [Swift 类型兼容性](#swift_type_compatibility)。
 
 ### 使用 performSelector 发送消息
 
 你可以使用`performSelector(_:)`方法以及它的变体向兼容 Objective-C 的对象发送消息。
 
-`performSelector`系列 API 可以向指定线程发送消息，或者延迟发送没有返回值的消息。该系列 API 同步执行，并返回隐式解包可选类型的非托管对象（`Unmanaged<AnyObject>!`），这是因为返回值的类型和所有权无法在编译期决定。可以参看[非托管对象](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02-Interoperability/03-Working%20with%20Cocoa%20Data%20Types.md#%E9%9D%9E%E6%89%98%E7%AE%A1%E5%AF%B9%E8%B1%A1)获取更多信息。
+`performSelector`系列 API 可以向指定线程发送消息，或者延迟发送没有返回值的消息。该系列 API 同步执行，并返回隐式解包可选类型的非托管对象（`Unmanaged<AnyObject>!`），这是因为返回值的类型和所有权无法在编译期决定。请参见[非托管对象](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02-Interoperability/03-Working%20with%20Cocoa%20Data%20Types.md#%E9%9D%9E%E6%89%98%E7%AE%A1%E5%AF%B9%E8%B1%A1)来获取更多信息。
 
 ```swift
 let string: NSString = "Hello, Cocoa!"
