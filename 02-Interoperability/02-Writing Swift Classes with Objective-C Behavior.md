@@ -91,11 +91,11 @@ class MyViewController: UIViewController {
 
 在`buttonTapped`方法中，消息发送者参数没有被使用，因此可以省略该参数名。
 
-### 实时渲染（live rendering）
+### 实时渲染
 
-你可以在 Interface Builder 中用`@IBDesignable`和`@IBInspectable`来创建生动的交互式自定义视图。你继承`UIView`或者`NSView`来自定义一个视图时，可以在类声明前添加`@IBDesignable`属性。当你在 Interface Builder 里添加了自定义的视图后（在监视器面板的自定义视图类中进行设置），Interface Builder 将在画布上渲染你自定义的视图。
+你可以使用`@IBDesignable`和`@IBInspectable`属性开启实时渲染，在 Interface Builder 中对自定义视图进行交互式设计。当你继承`UIView`或者`NSView`来自定义一个视图时，可以在类声明前添加`@IBDesignable`属性。在 Interface Builder 里添加该自定义的视图后（在 Identity Inspector 面板的 Class 输入框中进行设置），Interface Builder 将在画布上实时渲染你的自定义视图。
 
-你还可以将`@IBInspectable`属性添加到和用户定义的运行时属性（user defined runtime attributes）类型兼容的属性前。这样，当你将自定义的视图添加到 Interface Builder 中后，就可以在监视器面板中编辑这些属性。
+你还可以将`@IBInspectable`属性添加到类型兼容用户定义运行时属性（可以在 Identity Inspector 面板的 User Defined Runtime Attributes 中查看）的属性前。当你将自定义的视图添加到 Interface Builder 后，就可以在 Attributes Inspector 面板中编辑这些属性。
 
 ```swift
 @IBDesignable
@@ -106,8 +106,11 @@ class MyCustomView: UIView {
 }
 ```
 
+![]()
+![]()
+
 <a name="specifying_property_attributes"></a>
-## 指明属性特性（Specifying Property Attributes）
+## 指定属性特性
 
 在 Objective-C 中，属性通常都有一系列属性特性来指明该属性的一些附加信息。在 Swift 中，你可以通过不同的方法来指明属性的这些特性。
 
