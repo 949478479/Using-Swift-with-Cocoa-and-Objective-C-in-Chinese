@@ -67,32 +67,29 @@ Swift 编译器能确保构造器不会遗留任何未初始化的属性，从�
 如果你希望在对象释放前进行额外的清理工作，你可以实现一个析构器来代替`dealloc`方法。在对象被释放前，Swift 会自动调用析构器。当 Swift 调用完子类的析构器后，会自动调用父类的析构器。当你使用 Objective-C 类或者继承自 Objective-C 类的 Swift 类时，Swift 同样也会为你自动调用该类父类中的`dealloc`方法。你可以参看 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的[析构器](http://wiki.jikexueyuan.com/project/swift/chapter2/15_Deinitialization.html)章节来了解关于如何实现析构器的更多信息。
 
 <a name="integrating_with_interface_builder"></a>
-## 集成 Interface Builder（Integrating with Interface Builder）
+## 与 Interface Builder 结合
 
-Swift 编译器包含一些特性，使你的 Swift 类集成了 Interface Builder 里的一些特色功能。和 Objective-C 里一样，你能在 Swift 里面使用 outlets，actions 和实时渲染（live rendering）。
+Swift 编译器包含一些属性，能让你的 Swift 类使用 Interface Builder 的一些特色功能。和 Objective-C 中一样，在 Swift 中你也可使用 outlets，actions 和实时渲染。
 
-### 使用 Outlet 和 Action（Working with Outlets and Actions）
+### 使用 Outlets 和 Actions
 
-使用 Outlet 和 Action 可以连接源代码和 Interface Builder 中的 UI 对象。在 Swift 中使用 Outlet 和 Action，需要在属性或方法声明前插入`@IBOutlet`或`@IBAction`关键字。声明一个 Outlet 集合同样是用`@IBOutlet`属性，只不过为该类型指定了一个数组。
+使用 Outlets 和 Actions 可以连接源代码和 Interface Builder 中的 UI 对象，只需在属性或方法声明前添加`@IBOutlet`或`@IBAction`属性。声明一个 outlet 集合同样是用`@IBOutlet`属性，只不过会为该类型指定一个数组。
 
-当你在 Swift 中声明一个 Outlet 时，你应该将类型声明为隐式解包可选。通过这种方式，Swift 编译器会自动为它分配一个空值`nil`，因此你就不需要在构造器中为其分配一个初始值了。初始化过程完成后，storyboard 会将 Outlet 进行连接。如果你从 storyboard 或者`xib`文件里面初始化对象，你可以认为 Outlet 已经连接好了。
+在 Swift 中声明一个 outlet 时，应该将类型声明为隐式解包可选类型。通过这种方式，Swift 编译器会自动为它分配空值`nil`，就不需要在构造器中为其分配初始值了。在运行时，构造过程完成后，storyboard 会将 outlets 进行连接。如果你从 storyboard 或者`xib`文件实例化对象，你可以假定 outlet 已经连接完毕。
 
-例如，下面的 Swift 代码声明了一个拥有 Outlet、Outlet 集合和 Action 的类：
+例如，下面的 Swift 代码声明了一个拥有 outlet、outlet 集合和 action 的类：
 
 ```swift
 class MyViewController: UIViewController {
-
     @IBOutlet weak var button: UIButton!
-    
-    @IBOutlet var textFields: [UITextField]!
-    
+    @IBOutlet var textFields: [UITextField]! // outlet 集合必须用强引用
     @IBAction func buttonTapped(_: AnyObject) {
         print("button tapped!")
     }
 }
 ```
 
-在`buttonTapped`方法中，消息发送者的信息没有被使用，因此可以省略该方法的参数名。
+在`buttonTapped`方法中，消息发送者参数没有被使用，因此可以省略该参数名。
 
 ### 实时渲染（live rendering）
 
