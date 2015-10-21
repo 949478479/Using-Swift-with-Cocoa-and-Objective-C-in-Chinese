@@ -1,33 +1,23 @@
-> 翻译：[wongzigii](https://github.com/wongzigii)、[星夜暮晨](https://github.com/SemperIdem)
-
-> 校对：[ChildhoodAndy](https://github.com/dabing1022)
-
-#与 Cocoa 数据类型共舞（Working with Cocoa Data Types）
+# 与 Cocoa 数据类型协作
 
 本节内容包括：
 
--  [字符串（Strings）](#strings)
+- [字符串](#strings)
+- [数值](#numbers)
+- [集合类](#collection_classes)
+- [错误](#errors)
+- [Foundation 数据类型](#foundation_data_types)
+- [Foundation 函数](#foundation_functions)
+- [Core Foundation](#core_foundation)
 
--  [数值（Numbers）](#numbers)
+Swift 提供了高效便捷的方式来处理 Cocoa 数据类型，从而增强与 Objective-C 之间的互用性。
 
--  [集合类（Collection Classes）](#collection_classes)
+Swift 会自动将一些 Objective-C 类型转换为 Swift 类型，也会将一些 Swift 类型转换为 Objective-C 类型。在 Objective-C 和 Swift 中还有一些数据类型可以互换使用。那些可转换或者可互换的数据类型被称为 *桥接* 数据类型。例如，在 Swift 中，你可以将一个`Array`类型的值传递给一个接收`NSArray`对象的方法。你也可以在一个桥接类型和它的对应类型间相互转换。你可以使用`as`操作符在桥接类型间转换，或者显式提供常量或变量的类型，由 Swift 负责桥接这些数据类型。
 
--  [错误（Errors）](#errors)
-
--  [Foundation 数据类型（Foundation Data Types）](#foundation_data_types)
-
--  [Foundation 函数（Foundation Functions）](#foundation_functions)
-
--  [Core Foundation](#core_foundation)
-
-作为与 Objective-C 之间的互用性的一部分，Swift 提供了高效便捷的方式来处理 Cocoa 数据类型。
-
-Swift 会自动将一些 Objective-C 类型转换为 Swift 类型，以及将一些 Swift 类型转换为 Objective-C 类型。在 Objective-C 和 Swift 中还有一些数据类型可以互换使用。那些可转换或者可互换的数据类型被称为 **bridged** 数据类型。举个例子，在 Swift 中，你可以将一个`Array`类型的值传递给一个接收`NSArray`对象的方法。你也可以在一个 bridged 类型和它的对应类型间相互转换。你可以使用`as`操作符在 bridged 类型间转换，或者显式地提供常量或变量的类型，由 Swift 负责桥接这些数据类型。
-
-Swift 也提供了一些简单便捷的方法来与 Foundation 数据类型配合，让你在使用原生 Swift 语言与 Foundation 数据类型配合时，语法上更加自然、统一。
+Swift 还提供了一些简单便捷的方法与 Foundation 数据类型配合，使你在操作 Foundation 数据类型时，在语法上更加自然、统一。
 
 <a name = "strings"></a>
-## 字符串（Strings）
+## 字符串
 
 Swift 会在`String`类型和`NSString`类型间自动桥接。这意味着在可以使用`NSString`对象的地方，你可以使用一个 Swift 的`String`类型去替换，这样做会同时拥有它们各自的特点，比如说`String`类型的字符串插值，以及一些基于 Swift 设计的 API，乃至`NSString`类的广泛功能。因此，你几乎不必再在代码中直接使用`NSString`类。事实上，当 Swift 导入 Objective-C API 时，它将把所有`NSString`类型替换为`String`类型。当你在 Objective-C 代码中使用 Swift 类时，会将导入的 API 中所有`String`类型替换成`NSString`类型。
 
