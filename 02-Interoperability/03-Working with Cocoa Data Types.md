@@ -19,9 +19,9 @@ Swift 还提供了一些简单便捷的方法与 Foundation 数据类型配合�
 <a name = "strings"></a>
 ## 字符串
 
-Swift 会在`String`类型和`NSString`类型间自动桥接。这意味着在可以使用`NSString`对象的地方，你可以使用一个 Swift 的`String`类型去替换，这样做会同时拥有它们各自的特点，比如说`String`类型的字符串插值，以及一些基于 Swift 设计的 API，乃至`NSString`类的广泛功能。因此，你几乎不必再在代码中直接使用`NSString`类。事实上，当 Swift 导入 Objective-C API 时，它将把所有`NSString`类型替换为`String`类型。当你在 Objective-C 代码中使用 Swift 类时，会将导入的 API 中所有`String`类型替换成`NSString`类型。
+Swift 会在`String`类型和`NSString`类型间自动桥接。这意味着你可以将一个 Swift 的`String`类型的值用在任何使用`NSString`对象的地方，并且可以得益于它们各自的特性，例如`String`类型的字符串插值，以及一些基于 Swift 设计的 API，乃至`NSString`类的广泛功能。因此，你几乎不必再直接使用`NSString`类。事实上，当 Objective-C API 导入到 Swift 时，所有`NSString`类型会被替换为`String`类型。当 Swift API 导入到 Objective-C 时，所有`String`类型又会被替换成`NSString`类型。
 
-为了能够桥接字符串，只需导入 Foundation 框架。举个例子，你在 Swift 中的一个字符串中可以访问`capitalizedString`属性，这是`NSString`类中的一个属性，Swift 会自动将`String`桥接为`NSString`对象来访问这个属性。这个属性甚至会返回一个 Swift 的`String`类型，因为它在导入的时候就被转换了。
+要对字符串进行桥接，只需导入 Foundation 框架。例如，你可以用 Swift 字符串访问`capitalizedString`属性，这是`NSString`类中的一个属性，Swift 会自动将`String`类型的值桥接为`NSString`对象来访问该属性。这个属性甚至会返回一个`String`类型的值，因为它在被导入的时候就被转换了。
 
 ```swift
 import Foundation
@@ -29,7 +29,8 @@ let greeting = "hello, world!"
 let capitalizedGreeting = greeting.capitalizedString
 // capitalizedGreeting: String = Hello, World!
 ```
-如果确实需要使用一个`NSString`对象，可以用一个 Swift 的`String`类型的值转换过去。`String`类型总是可以从一个`NSString`对象转换为一个 Swift 的`String`类型的值。因此，没有必要再去使用可选版本的类型转换操作符（`as?`）。你也可以通过显式指明常量或变量的类型来利用 Swift 的字符串字面量创建一个`NSString`对象。
+
+如果确实需要使用`NSString`对象，可以用`String`类型的值进行转换。另外，一个`NSString`对象总是可以转换为一个`String`类型的值，不必使用可选类型版本的类型转换操作符（`as?`）。也可以显式指明常量或变量的类型，利用 Swift 的字符串字面量创建一个`NSString`对象。
 
 ```swift
 import Foundation
@@ -40,9 +41,12 @@ if let integerValue = Int(myString as String) {
 // prints "123 is the integer 123"
 ```
 
-### 本地化（Localization）
+> 注意  
+> 一个`String`实例无法用`AnyObject`表示，因为`AnyObject`只能表示 class 类型的实例，而`String`是个结构类型。然而，经过桥接后，`String`就可以赋值给`AnyObject`类型的常量或者变量，因为它已经被桥接为`NSString`。
 
-在 Objective-C 中，你通常用`NSLocalizedString`家族的宏来本地化一个字符串。这套宏包括`NSLocalizedString`，`NSLocalizedStringFromTable`，`NSLocalizedStringFromTableInBundle`，和`NSLocalizedStringWithDefaultValue`。而在 Swift 中，只用一个函数就可以实现跟整套`NSLocalizedString`宏一样的功能，即`NSLocalizedString(key:tableName:bundle:value:comment:)`函数。该函数为`tableName`，`bundle`和`value`参数提供了默认值。你可以用它来取代宏。
+### 本地化
+
+在 Objective-C 中，你通常用`NSLocalizedString`系列的宏来本地化一个字符串。这套宏包括`NSLocalizedString`，`NSLocalizedStringFromTable`，`NSLocalizedStringFromTableInBundle`，以及`NSLocalizedStringWithDefaultValue`。而在 Swift 中，只用一个函数就可以实现跟整套`NSLocalizedString`宏一样的功能，即`NSLocalizedString(key:tableName:bundle:value:comment:)`函数。该函数为`tableName`，`bundle`和`value`参数提供了默认值。你可以用该函数取代以前的宏。
 
 <a name = "numbers"></a>
 ## 数值（Numbers）
