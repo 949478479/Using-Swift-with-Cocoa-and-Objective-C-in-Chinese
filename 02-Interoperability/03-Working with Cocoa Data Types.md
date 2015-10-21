@@ -49,27 +49,30 @@ if let integerValue = Int(myString as String) {
 在 Objective-C 中，你通常用`NSLocalizedString`系列的宏来本地化一个字符串。这套宏包括`NSLocalizedString`，`NSLocalizedStringFromTable`，`NSLocalizedStringFromTableInBundle`，以及`NSLocalizedStringWithDefaultValue`。而在 Swift 中，只用一个函数就可以实现跟整套`NSLocalizedString`宏一样的功能，即`NSLocalizedString(key:tableName:bundle:value:comment:)`函数。该函数为`tableName`，`bundle`和`value`参数提供了默认值。你可以用该函数取代以前的宏。
 
 <a name = "numbers"></a>
-## 数值（Numbers）
+## 数值
 
-Swift 会自动将某些原生数值类型桥接为`NSNumber`，例如`Int`和`Float`。这样的桥接允许你基于其中一种类型创建一个`NSNumber`：
+Swift 会自动将某些原生数值类型桥接为`NSNumber`，例如`Int`和`Float`。这样的桥接使你可以基于其中某种类型创建一个`NSNumber`：
 
 ```swift
 let n = 42
 let m: NSNumber = n
 ```
 
-你也能传递一个`Int`类型的值给一个接收`NSNumber`类型的参数，诸如此类。需要注意的是，`NSNumber`可以包含多种不同的类型，因此这种传递反过来并不成立，例如你不能把`NSNumber`类型传递给一个接收`Int`类型的参数。
+你还可以传递一个`Int`类型的值给一个接收`NSNumber`类型的参数。需要注意的是，`NSNumber`可以包含多种不同的类型，因此反向传递并不成立，例如你不能把`NSNumber`类型传递给一个接收`Int`类型的参数。
 
 下面所列出的类型都会自动桥接为`NSNumber`：
 
-* `Int`
-* `UInt`
-* `Float`
-* `Double`
-* `Bool`
+- `Int`
+- `UInt`
+- `Float`
+- `Double`
+- `Bool`
+
+> 注意  
+> Swift 中的这些数值类型都是结构类型，因此无法直接用`AnyObject`表示，必须先桥接为`NSNumber`。
 
 <a name = "collection_classes"></a>
-## 集合类（Collection Classes）
+## 集合类
 
 Swift 会自动将`NSArray`、`NSSet`和`NSDictionary`桥接为 Swift 中对应的：`Array`、`Set`和`Dictionary`。这意味着你将受益于 Swift 强大的算法和自然的语法来处理集合，并可将 Foundation 和 Swift 集合类型互相转换。
 
