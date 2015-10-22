@@ -74,11 +74,11 @@ let m: NSNumber = n
 <a name = "collection_classes"></a>
 ## 集合类
 
-Swift 会分别将`NSArray`、`NSSet`和`NSDictionary`桥接为`Array`、`Set`和`Dictionary`。这意味着在处理集合时，你不但可以得益于 Swift 强大的算法和自然的语法，还可将 Foundation 和 Swift 集合类型互相转换。
+Swift 会分别将`NSArray`、`NSSet`和`NSDictionary`桥接为`Array`、`Set`和`Dictionary`。这意味着在处理集合时，不但可以得益于 Swift 强大的算法和自然的语法，还可将 Foundation 和 Swift 集合类型互相转换。
 
 ### 数组
 
-Swift 会在`Array`类型和`NSArray`类型间自动桥接。从一个使用了轻量泛型的`NSArray`对象桥接到一个 Swift 数组的结果会是一个`[ObjectType]`类型的数组。如果`NSArray`对象没有使用轻量泛型，那么它将被桥接为`[AnyObject]`类型的数组。
+Swift 会在`Array`类型和`NSArray`类型间自动桥接。从一个使用了轻量泛型的`NSArray`对象桥接到一个 Swift 数组的结果会是一个`[ObjectType]`类型的数组。如果`NSArray`对象没有使用轻量泛型，那么它会被桥接为`[AnyObject]`类型的数组。
 
 例如，思考以下 Objective-C 声明：
 
@@ -96,9 +96,9 @@ func datesBeforeDate(date: NSDate) -> [NSDate]
 func addDatesParsedFromTimestamps(timestamps: [String])
 ```
 
-如果某个实例是 Objective-C 或 Swift 类的对象，或者能够桥接过去，那么这个实例就兼容`AnyObject`。你可以将任意`NSArray`对象桥接成一个 Swift 数组，因为所有 Objective-C 对象都兼容`AnyObject`。正因如此，Swift 编译器会在导入 Objective-C API 的时候将`NSArray`替换成`[AnyObject]`。
+如果某个实例是 Objective-C 或 Swift 类的对象，或者能够桥接过去，那么这个实例就兼容`AnyObject`。可以将任意`NSArray`对象桥接成一个 Swift 数组，因为所有 Objective-C 对象都兼容`AnyObject`。正因如此，Swift 编译器会在导入 Objective-C API 的时候将`NSArray`替换成`[AnyObject]`。
 
-当你将一个`NSArray`对象桥接为一个 Swift 数组后，你还可以将数组向下转换成更明确的类型。与从`NSArray`桥接到`[AnyObject]`不同，从`AnyObject`类型向下转换成具体类型不能确保一定成功。由于直到运行时编译器才能知道数组中的元素能否被向下转换为你所指定的类型，因此，你可以使用可选类型版本的类型转换操作符`as?`，将`[AnyObject]`转换为`[SomeType]`。如果你确定转换一定会成功，则可以使用强制类型转换操作符`as!`。例如，如果你知道一个 Swift 数组只包含`NSView`类的实例(或者`NSView`类的子类的实例)，你可以将`AnyObject`类型的数组向下转换为`NSView`类型的数组。如果数组中的元素实际上不是`NSView`对象，那么转换会返回`nil`。
+将一个`NSArray`对象桥接为一个 Swift 数组后，还可以将数组向下转换成更明确的类型。与从`NSArray`桥接到`[AnyObject]`不同，从`AnyObject`类型向下转换成具体类型不能确保一定成功。由于直到运行时编译器才能知道数组中的元素能否被向下转换为你所指定的类型，因此，可以使用可选类型版本的类型转换操作符`as?`，将`[AnyObject]`转换为`[SomeType]`。如果能确定转换一定会成功，则可以使用强制类型转换操作符`as!`。例如，如果能确定一个 Swift 数组只包含`NSView`类的实例(或者`NSView`类的子类的实例)，就可以将`AnyObject`类型的数组向下转换为`NSView`类型的数组。如果数组中的元素实际上不是`NSView`对象，那么转换会返回`nil`。
 
 ```swift
 let swiftyArray = foundationArray as [AnyObject]
@@ -107,7 +107,7 @@ if let downcastedSwiftArray = swiftArray as? [NSView] {
 }
 ```
 
-你也可以在 for 循环中将`NSArray`对象直接向下转换为特定类型的 Swift 数组：
+也可以在 for 循环中将`NSArray`对象直接向下转换为特定类型的 Swift 数组：
 
 ```swift
 for view in foundationArray as! [NSView] {
@@ -115,13 +115,13 @@ for view in foundationArray as! [NSView] {
 }
 ```
 
-从 Swift 数组桥接为`NSArray`对象时，Swift 数组里的元素必须兼容`AnyObject`。例如，一个`[Int]`类型的 Swift 数组包含`Int`类型的元素。`Int`类型并不是 class 类型，但由于`Int`类型可桥接成`NSNumber`类，因此`Int`类型兼容`AnyObject`。综上所述，你可以将一个`[Int]`类型的 Swift 数组桥接为`NSArray`对象。如果 Swift 数组里的某个元素不兼容`AnyObject`，那么桥接到`NSArray`对象时就会发生运行时错误。
+从 Swift 数组桥接为`NSArray`对象时，Swift 数组里的元素必须兼容`AnyObject`。例如，一个`[Int]`类型的 Swift 数组包含`Int`类型的元素。`Int`类型并不是 class 类型，但由于`Int`类型可桥接成`NSNumber`类，因此`Int`类型兼容`AnyObject`。综上所述，可以将一个`[Int]`类型的 Swift 数组桥接为`NSArray`对象。如果 Swift 数组里的某个元素不兼容`AnyObject`，那么桥接到`NSArray`对象时就会发生运行时错误。
 
 > 注意  
 > 为了优化性能，将一个集合强制向下转换为特定类型的集合时，例如`NSArray as! [String]`，针对集合中每个元素的类型检查可能会被推迟到它们被单独访问时。因此，将集合强制转换为不兼容类型的集合可能会成功，直到元素被访问时才会因为类型转换失败而引发运行时错误。  
 > 使用可选类型版本的向下转换操作符进行转换时，例如`NSArray as? [String]`，将立即针对每个元素进行类型检查，如果任意元素类型转换失败就会返回`nil`。
 
-还可以直接通过 Swift 数组字面量创建一个`NSArray`对象，这同样遵循上面提到的桥接规则。将一个常量或变量声明为一个`NSArray`对象并分配一个数组字面量时，Swift 将会创建`NSArray`对象，而不是 Swift 数组。
+还可以直接利用 Swift 数组字面量创建一个`NSArray`对象，这同样遵循上面提到的桥接规则。将一个常量或变量声明为一个`NSArray`类型并分配一个数组字面量时，Swift 将会创建`NSArray`对象，而不是 Swift 数组。
 
 ```swift
 let schoolSupplies: NSArray = ["Pencil", "Eraser", "Notebkko"]
@@ -130,13 +130,13 @@ let schoolSupplies: NSArray = ["Pencil", "Eraser", "Notebkko"]
 
 在上面的例子中，Swift 数组字面量包含三个`String`字面量。因为`String`会桥接为`NSString`，因此数组字面量被桥接成一个`NSArray`对象，并成功分配给`schoolSupplies`常量。
 
-当你在 Objective-C 代码中使用 Swift 类或者协议时，导入器会将被导入的 API 中所有任意类型的 Swift 数组替换为`NSArray`。如果你传递一个`NSArray`对象给接收数组的 Swift API，但是元素类型不兼容，就会发生运行时错误。如果 Swift API 返回一个 Swift 数组，但却不能被桥接为`NSArray`，也会发生运行时错误。
+在 Objective-C 代码中使用 Swift 类或者协议时，导入器会将被导入的 API 中所有任意类型的 Swift 数组替换为`NSArray`。如果传递一个`NSArray`对象给接收数组的 Swift API，但是元素类型不兼容，就会发生运行时错误。如果 Swift API 返回一个 Swift 数组，但却不能被桥接为`NSArray`，也会发生运行时错误。
 
-### 集合（Sets）
+### 集合
 
-除了数组以外，Swift 还会自动在`Set`类型和`NSSet`类之间进行桥接。当你从一个使用了轻量泛型的`NSSet`对象桥接为 Swift 集合之后，得到的结果是`Set<ObjectType>`类型的集合。而如果`NSSet`对象没有使用轻量泛型，它将会桥接为`Set<AnyObject>`类型的 Swift 集合。
+Swift 也会在`Set`类型和`NSSet`类之间自动桥接。从一个使用了轻量泛型的`NSSet`对象桥接到一个 Swift 集合的结果会是一个`Set<ObjectType>`类型的集合。而如果`NSSet`对象没有使用轻量泛型，那么它会被桥接为`Set<AnyObject>`类型的集合。
 
-例如，考虑以下 Objective-C 声明：
+例如，思考以下 Objective-C 声明：
 
 ```objective-c
 @property NSSet<NSString *>* words;
@@ -144,7 +144,7 @@ let schoolSupplies: NSArray = ["Pencil", "Eraser", "Notebkko"]
 - (void)removeWords:(NSSet<NSString *> *)words;
 ```
 
-那么，转换到 Swift，则是这个样子的：
+导入到 Swift 后将如下所示：
 
 ```swift
 var words: Set<String>
@@ -152,17 +152,17 @@ func wordsMatchingPredicate(predicate: NSPredicate) -> Set<String>
 func removeWords(words: Set<String>)
 ```
 
-你可以将所有`NSSet`对象桥接为 Swift 集合，因为所有的 Objective-C 对象都可以被桥接为`AnyObject`。所有的`NSSet`对象都能够桥接为 Swift 集合，因此 Swift 编译器将会在导入 Objective-C API 的时候，将所有的`NSSet`类替换为`Set<AnyObject>`。同理，当你在 Objective-C 中使用 Swift 类或者协议的时候，导入器会将 Swift 集合重新映射为 Objective-C 兼容的`NSSet`对象。
+可以将所有`NSSet`对象桥接为 Swift 集合，因为所有 Objective-C 对象都可以被桥接为`AnyObject`。正因如此，Swift 编译器会在导入 Objective-C API 的时候，将所有的`NSSet`类替换为`Set<AnyObject>`。同理，在 Objective-C 中使用 Swift 类或者协议的时候，导入器会将 Swift 集合重新映射为兼容 Objective-C 的`NSSet`对象。
 
-当你将`NSSet`对象桥接为 Swift 集合后，还可以将集合向下转换为特定类型。就如同 Swift 数组的向下转换一样，Swift 集合的向下转换不确保一定成功。对`Set<AnyObject>`使用`as?`操作符向下转换为特定类型的结果将是一个可选值。
+将`NSSet`对象桥接为 Swift 集合后，还可以将集合向下转换为特定类型。就如同 Swift 数组的向下转换一样，Swift 集合的向下转换也无法确保一定成功。对`Set<AnyObject>`使用`as?`操作符向下转换为特定类型的结果将是一个可选类型的值。
 
-你还可以直接从 Swift 数组字面量创建一个`NSSet`对象，这同样遵循上面提到的桥接规则。当你明确地将某个常量或者变量定义为`NSSet`对象，并且使用一个数组字面量来赋值的时候，Swift 将会创建一个`NSSet`对象，而不是 Swift 集合。
+还可以直接利用 Swift 数组字面量创建一个`NSSet`对象，这同样遵循上面提到的桥接规则。显式地将某个常量或者变量声明为`NSSet`类型，并使用一个数组字面量来赋值时，Swift 将会创建一个`NSSet`对象，而不是 Swift 集合。
 
-### 字典（Dictionaries）
+### 字典
 
-Swift 同样可以在`Dictionary`类型和`NSDictionary`类之间自动桥接。当你将使用轻量泛型的`NSDictionary`对象桥接为 Swift 字典之后，得到的结果是一个`[ObjectType]`类型的字典。如果`NSDictionary`对象没有使用轻量泛型，那么它将会被桥接为`[NSObject : AnyObject]`类型的 Swift 字典。
+Swift 同样会在`Dictionary`类型和`NSDictionary`类之间自动桥接。从一个使用轻量泛型的`NSDictionary`对象桥接到 Swift 字典的结果会是一个`[ObjectType]`类型的字典。如果`NSDictionary`对象没有使用轻量泛型，那么它会被桥接为`[NSObject : AnyObject]`类型的字典。
 
-例如，考虑以下 Objective-C 声明：
+例如，思考以下 Objective-C 声明：
 
 ```objective-c
 @property NSDictionary<NSURL *, NSData *>* cachedData;
@@ -170,7 +170,7 @@ Swift 同样可以在`Dictionary`类型和`NSDictionary`类之间自动桥接。
 - (void)setCacheExpirations:(NSDictionary<NSURL *, NSDate *> *)expirations;
 ```
 
-那么，转换到 Swift，则是这个样子的：
+导入到 Swift 后将如下所示：
 
 ```swift
 var cachedData: [NSURL : NSData]
@@ -178,13 +178,13 @@ func fileSizesForURLsWithSuffix(suffix: String) -> [NSURL : NSNumber]
 func setCacheExpirations(expirations: [NSURL : NSDate])
 ```
 
-你可以将所有的`NSDictionary`对象转换为 Swift 字典，因为所有的 Objective-C 对象都是`AnyObject`类型兼容的。重申一下，某个对象能够兼容`AnyObject`，指的是它是 Objective-C 或 Swift 类的一个实例，或者是能够转换为这两者之一的东西。所有的`NSDictionary`对象都能够桥接为 Swift 字典，因此 Swift 编译器会在导入 Objective-C API 的时候，将所有的`NSDictionary`类替换成`[NSObject : AnyObject]`。同理，当你在 Objective-C 中使用 Swift 类或者协议的时候，导入器将会将 Swift 字典重新映射为 Objective-C 兼容的`NSDictionary`对象。
+可以将所有`NSDictionary`对象转换为 Swift 字典，因为所有 Objective-C 对象都兼容`AnyObject`。重申一下，某个实例能兼容`AnyObject`，指的是它是 Objective-C 或 Swift 类的一个对象，或者能够桥接过去。正因如此，Swift 编译器会在导入 Objective-C API 的时候，将所有的`NSDictionary`类替换成`[NSObject : AnyObject]`。同理，在 Objective-C 中使用 Swift 类或者协议的时候，导入器会将 Swift 字典重新映射为兼容 Objective-C 的`NSDictionary`对象。
 
-当你将`NSDictionary`对象转换为 Swift 字典后，还可以将字典向下转换为其他特定类型。就如同 Swift 数组的向下转换一样，Swift 字典的向下转换不确保一定成功。对`[NSObject : AnyObject]`使用`as?`操作符向下转换为特定类型的结果将是一个可选值。
+将`NSDictionary`对象转换为 Swift 字典后，还可以将字典向下转换为特定类型。就如同 Swift 数组的向下转换一样，Swift 字典的向下转换不确保一定成功。对`[NSObject : AnyObject]`使用`as?`操作符向下转换为特定类型的结果将是一个可选类型的值。
 
-当你进行反向转换，也就是将 Swift 字典转换为`NSDictionary`对象的过程中，其键值都必须是某个类的实例，或者能够被桥接为某个类的实例。
+在进行反向转换，也就是将 Swift 字典转换为`NSDictionary`对象的过程中，其键值都必须是某个类的对象，或者能够被桥接为某个类的对象。
 
-你还可以直接从 Swift 字典字面量创建一个`NSDictionary`对象，这同样遵循上面提到的桥接规则。当你明确地将某个常量或者变量定义为`NSDictionary`对象，并且分配一个字典字面量的时候，Swift 将会创建一个`NSDictionary`对象，而不是 Swift 字典。
+还可以直接利用 Swift 字典字面量创建一个`NSDictionary`对象，这同样遵循上面提到的桥接规则。显式地将某个常量或者变量声明为`NSDictionary`类型，并分配一个字典字面量时，Swift 将会创建一个`NSDictionary`对象，而不是 Swift 字典。
 
 <a name = "errors"></a>
 ## 错误
