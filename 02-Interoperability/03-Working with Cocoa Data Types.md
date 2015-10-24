@@ -14,7 +14,7 @@ Swift 提供了高效便捷的方式来处理 Cocoa 数据类型，从而增强�
 
 Swift 会自动将一些 Objective-C 类型转换为 Swift 类型，也会将一些 Swift 类型转换为 Objective-C 类型。在 Objective-C 和 Swift 中还有一些数据类型可以互换使用。那些可转换或者可互换的数据类型被称为 *桥接* 数据类型。例如，在 Swift 中，你可以将一个`Array`类型的值传递给一个接收`NSArray`对象的方法。你也可以在一个桥接类型和它的对应类型间相互转换。你可以使用`as`操作符在桥接类型间转换，或者显式提供常量或变量的类型，由 Swift 负责桥接这些数据类型。
 
-Swift 还提供了一些简单便捷的方法与 Foundation 数据类型配合，使你在操作 Foundation 数据类型时，在语法上更加自然、统一。
+Swift 还提供了一些简单便捷的方法与 Foundation 数据类型配合，使你在操作 Foundation 数据类型时，在语法上更加自然和统一。
 
 <a name = "strings"></a>
 ## 字符串
@@ -214,79 +214,82 @@ static NSString * const CustomErrorDomain = @"Project.CustomError";
 请参阅 [*错误处理*](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02-Interoperability/04-Adopting%20Cocoa%20Design%20Patterns.md#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86) 获取更多有关 Swift 和 Objective-C API 中错误处理的信息。
 
 <a name = "foundation_data_types"></a>
-## Foundation 数据类型（Foundation Data Types）
+## Foundation 数据类型
 
-Swift 提供了一种简单便捷的覆盖方法来与 Foundation 中的数据类型配合。例如在`CGSize`和`CGPoint`中使用覆盖方法，在与原生 Swift 语言配合时语法上会显得更加自然、统一。比如，你可以使用如下语法创建一个`CGSize`类型的结构:
+Swift 提供了一些简单便捷的方法与 Foundation 数据类型配合。使用这些方法操作`CGSize`和`CGPoint`之类的类型时，在语法上会显得更加自然和统一。例如，可以使用如下语法创建一个`CGSize`结构：
 
 ```swift
 let size = CGSize(width: 20, height: 40)
 ```
 
-覆盖方法也允许你以一种更自然的方式调用函数操作 Foundation 中的结构体。
+这些方法还能以更自然的方式调用函数操作 Foundation 中的结构。
 
 ```swift
 let rect  = CGRect(x: 50, y: 50, width: 100, height: 100)
 let width = rect.width // 等价于 CGRectGetWidth(rect)
 let maxX  = rect.maxY  // 等价于 CGRectGetMaxY(rect)
 ```
-Swift 将`NSUInteger`和`NSInteger`桥接为`Int`。Foundation 的 API 中的这些类型都会变为`Int`。在 Swift 中，出于一致性考虑尽可能地使用`Int`，但当你必须使用一个无符号整数类型时，`UInt`类型也是可用的。
+
+Swift 将`NSUInteger`和`NSInteger`桥接为`Int`，Foundation API 中的这些类型都会桥接为`Int`。在 Swift，出于一致性考虑，尽可能地使用`Int`，但如果必须使用一个无符号整数类型，也可以使用`UInt`。
 
 <a name = "foundation_functions"></a>
-## Foundation 函数（Foundation Functions）
+## Foundation 函数
 
-在 Swift 中，`NSLog`可在系统控制台输出信息。其格式化语法和在 Objective-C 中一样。
+在 Swift，`NSLog`函数仍然可用于在系统控制台打印信息，其格式化语法和在 Objective-C 中一样。
 
 ```swift
 NSLog("%.7f", pi)
 // 控制台将打印 "3.1415927"
 ```
-同时，Swift 也提供了像`print(_:)`这样的打印函数。得益于 Swift 的字符插值机制，这些函数简单，强大，全面。虽然这些函数不打印日志到系统控制台,但可用于一般的打印需求。
 
-Swift 中不再有`NSAssert`函数，取而代之的是`assert`函数。
+Swift 也提供了`print(_:separator:terminator:)`这样的打印函数。得益于字符插值机制，这些函数简洁易用、功能全面，足以胜任一般的打印需求。
+
+`NSAssert`函数在 Swift 中不复存在，取而代之的是`assert`函数。
 
 <a name = "core_foundation"></a>
 ## Core Foundation
 
-Core Foundation 类型会作为一个成熟的类自动导入 Swift 中。无论是否提供了内存管理注释，Swift 都会自动地管理 Core Foundation 对象的内存，包括你自己实例化的 Core Foundation 对象。在 Swift 中，你可以将每一对可免费桥接的 Fundation 和 Core Foundation 类型交换使用。如果先将 Core Foundation 类型桥接为 Foundation 类型，就可以进一步桥接到 Swift 标准库类型。
+Core Foundation 类型会作为一个完全的 Swift 类被自动导入。无论是否提供了内存管理注释，Swift 都会自动管理 Core Foundation 对象的内存，包括你自己实例化的 Core Foundation 对象。在 Swift 中，可以将每一对可免费桥接的 Fundation 和 Core Foundation 类型互换使用。先将 Core Foundation 类型桥接为 Foundation 类型，就可以进一步桥接为 Swift 标准库类型。
 
-### 重映射类型（Remapped Types）
+### 重映射类型
 
-当 Swift 导入 Core Foundation 类型时，编译器会重映射导入的类型的名字。编译器会从每个类型名字的末端移除 *Ref*，这是因为所有的 Swift 类都属于引用类型，因此后缀是多余的。
+Swift 导入 Core Foundation 类型时，会将这些类型的名字重映射，从类型名字的末端移除 *Ref*，所有的 Swift 类都是引用类型，因此该后缀是多余的。
 
-Core Foundation 中的`CFTypeRef`类型会重映射为`Anyobject`类型。所以你以前使用`CFTypeRef`，现在该换成`AnyObject`了。
+Core Foundation 中的`CFTypeRef`类型会重映射为`Anyobject`类型。以前使用`CFTypeRef`的地方，现在该统统换成`AnyObject`了。
 
-### 可内存管理的对象（Memory Managed Objects）
+### 内存受管理的对象
 
-在 Swift 中，从**带注释的（annotated）** API 返回的 Core Foundation 对象能够自动进行内存管理--你不再需要调用`CFRetain`，`CFRelease`，或者`CFAutorelease`函数。
+Swift 会自动对从带内存管理注释的 API 返回的 Core Foundation 对象进行内存管理，不再需要调用`CFRetain`，`CFRelease`，或者`CFAutorelease`函数。
 
-如果你自己的 C 函数或 Objective-C 方法会返回 Core Foundation 对象，你需要用`CF_RETURNS_RETAINED`或者`CF_RETURNS_NOT_RETAINED`宏注释这些函数或方法，从而自动插入内存管理代码。你同样可以使用`CF_IMPLICIT_BRIDGING_ENABLED`和`CF_IMPLICIT_BRIDGING_DISABLED`宏命令来包围那些遵循 Core Foundation 的管理规定、命名规定的 C 函数声明，从而能够根据命名推导出内存管理策略。
+如果你自己的 C 函数或 Objective-C 方法会返回 Core Foundation 对象，需要用`CF_RETURNS_RETAINED`或者`CF_RETURNS_NOT_RETAINED`宏注释这些函数或方法，从而自动插入内存管理代码。还可以使用`CF_IMPLICIT_BRIDGING_ENABLED`和`CF_IMPLICIT_BRIDGING_DISABLED`宏包围那些遵循 Core Foundation 内存管理规定、命名规定的 C 函数声明，从而能够根据命名推导出内存管理策略。
 
-如果你只调用那些不会间接返回 Core Foundation 对象的带注释的 API，那么现在可以跳过本节的剩余部分了。否则，下面将继续学习**非托管的（unmanaged）** Core Foundation 对象。
+如果你只调用那些不会间接返回 Core Foundation 对象的带内存管理注释的 API，那么可以略过本节的剩余部分了。否则，需要进一步学习有关非托管 Core Foundation 对象的知识。
 
 ### 非托管对象
 
-当 Swift 导入那些未注释的 API 时，编译器将不会自动地对返回的 Core Foundation 对象进行内存管理。Swift 将这些返回的 Core Foundation 对象包装在一个`Unmanaged<Instance>`结构中。所有间接返回的 Core Foundation 对象也都是非托管的。举个例子，这里有一个未注释的 C 函数:
+Swift 导入那些没有内存管理注释的 API 时，将不会自动对返回的 Core Foundation 对象进行内存管理。Swift 将这些返回的 Core Foundation 对象包装在一个`Unmanaged<Instance>`结构中。所有被间接返回的 Core Foundation 对象也都是非托管对象。例如，这有个不带内存管理注释的 C 函数：
 
 ```objective-c
 CFStringRef StringByAddingTwoStrings(CFStringRef string1, CFStringRef string2)
 ```
 
-这里说明了 Swift 是怎么导入的:
+Swift 会将其导入为如下形式：
 
 ```swift
 func StringByAddingTwoStrings(_: CFString!, _: CFString!) -> Unmanaged<CFString>! {
     // ...
 }
 ```
-假设你从未注释的 API 接收了非托管的对象，在使用它之前，必须将它转换为能够进行内存管理的对象。这样，Swift 可以帮你进行内存管理。同时，`Unmanaged<T>`结构也提供了两个方法来把一个非托管对象转换为一个可内存管理的对象--`takeUnretainedValue()`方法和`takeRetainedValue()`方法。这两个方法会返回原始的非包装的对象类型。你可以根据实际调用的 API 返回的是 retained 对象还是 unretained 对象来选择合适的方法。
 
-比如，假设上面的 C 函数在返回前不会 retain `CFString`对象。在使用这个对象前，你使用`takeUnretainedValue()`函数。
+从没有内存管理注释的 API 接收到非托管对象后，在使用它之前，必须将它转换为能够接受内存管理的对象。这样，Swift 就可以帮你对其进行内存管理。`Unmanaged<T>`结构提供了两个方法，用于将一个非托管对象转换为一个可接受内存管理的对象，即`takeUnretainedValue()`方法和`takeRetainedValue()`方法。这两个方法均会返回解包后的对象，可以根据 API 返回的是 retained 对象还是 unretained 对象来选择合适的方法。
+
+例如，假设上面的 C 函数不会 retain `CFString`对象。在使用这个对象前，应该使用`takeUnretainedValue()`函数。
 
 ```swift
 let memoryManagedResult = StringByAddingTwoStrings(str1, str2).takeUnretainedValue()
-// memoryManagedResult 是一个可内存管理的 CFString
+// memoryManagedResult 是一个接受内存管理的 CFString
 ```
 
-当然你也可以对一个非托管的对象使用`retain()`，`release()`和`autorelease()`方法，但是这种做法并不推荐。
+当然，也可以对一个非托管对象使用`retain()`，`release()`和`autorelease()`方法，但是这种做法并不推荐。
 
-要了解更多信息，请参考 [Memory Management Programming Guide for Core Foundation](https://developer.apple.com/library/prerelease/ios/documentation/CoreFoundation/Conceptual/CFMemoryMgmt/Concepts/Ownership.html#//apple_ref/doc/uid/20001148) 中的 [Memory Management Programming Guide for Core Foundation](https://developer.apple.com/library/prerelease/ios/documentation/CoreFoundation/Conceptual/CFMemoryMgmt/CFMemoryMgmt.html#//apple_ref/doc/uid/10000127i) 一节。
+要了解更多信息，请参阅 [*Memory Management Programming Guide for Core Foundation*](https://developer.apple.com/library/prerelease/ios/documentation/CoreFoundation/Conceptual/CFMemoryMgmt/CFMemoryMgmt.html#//apple_ref/doc/uid/10000127i) 中的 [*Core Foundation Object Lifecycle Management*](https://developer.apple.com/library/prerelease/ios/documentation/CoreFoundation/Conceptual/CFMemoryMgmt/Articles/lifecycle.html#//apple_ref/doc/uid/TP40002439-SW1) 部分。
