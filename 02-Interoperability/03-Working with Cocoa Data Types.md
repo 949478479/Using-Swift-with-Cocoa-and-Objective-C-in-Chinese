@@ -249,7 +249,7 @@ Swift 也提供了`print(_:separator:terminator:)`这样的打印函数。得益
 <a name = "core_foundation"></a>
 ## Core Foundation
 
-Core Foundation 类型会作为一个完全的 Swift 类被自动导入。无论是否提供了内存管理注释，Swift 都会自动管理 Core Foundation 对象的内存，包括你自己实例化的 Core Foundation 对象。在 Swift 中，可以将每一对可免费桥接的 Fundation 和 Core Foundation 类型互换使用。先将 Core Foundation 类型桥接为 Foundation 类型，就可以进一步桥接为 Swift 标准库类型。
+Core Foundation 类型会被自动导入为完备的 Swift 类。无论是否提供了内存管理注释，Swift 都会自动管理 Core Foundation 对象的内存，包括你自己实例化的 Core Foundation 对象。在 Swift 中，可以将每一对可免费桥接的 Fundation 和 Core Foundation 类型互换使用。先将 Core Foundation 类型桥接为 Foundation 类型，就可以进一步桥接为 Swift 标准库类型。
 
 ### 重映射类型
 
