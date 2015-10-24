@@ -1,24 +1,14 @@
-> 翻译：[JaceFu](https://github.com/JaceFu) [ChildhoodAndy](https://github.com/dabing1022)
-
-> 校正：[LunaticM](https://github.com/LunaticM) [ChildhoodAndy](https://github.com/dabing1022)
-
-# 采用 Cocoa 设计模式（Adopting Cocoa Design Patterns）
+# 采用 Cocoa 设计模式
 
 本页包含内容：
 
-- [委托（Delegation）](#Delegation)
-
-- [错误处理（Error Handling）](#error_handling)
-
-- [键值观察（Key-Value Observing）](#Key-Value_Observing)
-
-- [目标-行为模式（Target-Action）](#Target_Action)
-
-- [单例（Singleton）](#Singleton)
-
-- [内省（Introspection）](#Introspection)
-
-- [API 可用性（API Availability）](#API_Availability)
+- [代理](#Delegation)
+- [错误处理](#error_handling)
+- [键值观察](#Key-Value_Observing)
+- [目标——动作](#Target_Action)
+- [单例](#Singleton)
+- [内省](#Introspection)
+- [API 可用性](#API_Availability)
 
 使用 Cocoa 现有的一些设计模式，是帮助开发者开发一款拥有合理设计思路、稳定的性能、良好的可扩展性应用的有效方法之一。这些模式都依赖于在 Objective-C 中定义的类。因为 Swift 与 Objective-C 的互用性，所以你依然可以在 Swift 代码中使用这些设计模式。在一些情况下，你甚至可以使用 Swift 语言的特性扩展或简化这些 Cocoa 设计模式，使这些设计模式更强大、更易于使用。
 
