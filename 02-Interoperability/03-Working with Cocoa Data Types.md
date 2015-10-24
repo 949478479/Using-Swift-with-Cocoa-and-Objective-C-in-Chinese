@@ -189,9 +189,9 @@ func setCacheExpirations(expirations: [NSURL : NSDate])
 <a name = "errors"></a>
 ## 错误
 
-Swift 能够自动在`ErrorType`类型和`NSError`类之间桥接，会产生错误的 Objective-C 方法以`throw`方法的形式导入 Swift 中，而 Swift 中的`throw`方法依照 Objecitive-C 中的错误约定，以会产生错误的 Objective-C 方法的形式导入 Objective-C 中。
+Swift 会在`ErrorType`类型和`NSError`类之间自动桥接。可能会产生错误的 Objective-C 方法会被导入为 Swift 的 throw 方法。反过来，Swift 的 throw 方法会依照 Objecitive-C 中的错误约定，被导入为可能会产生错误的 Objective-C 方法。
 
-遵守`ErrorType`协议，并且使用`@objc`特性声明的 Swift 枚举类型，会在生成的头文件中产生一个`NS_ENUM`声明和一个`NSString`常量，并对应相应的错误域名。比如以下 Swift 枚举声明：
+符合`ErrorType`协议，并使用`@objc`属性声明的 Swift 枚举，会在自动生成的头文件中生成一个`NS_ENUM`声明和一个表示相应错误域名的`NSString`常量。例如以下 Swift 枚举声明：
 
 ```swift
 @objc public enum CustomError: Int, ErrorType {
@@ -199,19 +199,19 @@ Swift 能够自动在`ErrorType`类型和`NSError`类之间桥接，会产生错
 }
 ```
 
-在生成的头文件中相应的 Objectivive-C 声明如下：
+在自动生成的头文件中相应的 Objectivive-C 声明如下：
 
 ```objective-c
 // Project-Swift.h
 typedef SWIFT_ENUM(NSInteger, CustomError) {
-  CustomErrorA = 0,
-  CustomErrorB = 1,
-  CustomErrorC = 2,
+    CustomErrorA = 0,
+    CustomErrorB = 1,
+    CustomErrorC = 2,
 };
 static NSString * const CustomErrorDomain = @"Project.CustomError";
 ```
 
-关于 Swift 和 Objective-C API 中错误处理的更多相关信息，请参阅 [错误处理（Error Handling）](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02Interoperability/04Adopting%20Cocoa%20Design%20Patterns.md#error_handling)。
+请参阅 [*错误处理*](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02-Interoperability/04-Adopting%20Cocoa%20Design%20Patterns.md#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86) 获取更多有关 Swift 和 Objective-C API 中错误处理的信息。
 
 <a name = "foundation_data_types"></a>
 ## Foundation 数据类型（Foundation Data Types）
