@@ -100,16 +100,18 @@ if let image = UIImage(contentsOfFile: "MyImage.png") {
 <a name="accessing_properties"></a>
 ## 访问属性
 
-在 Objective-C 中使用`@property`关键字声明的属性，导入到 Swift 时，会遵循以下规则：
+在 Objective-C 中使用`@property`语法声明的属性，导入到 Swift 时，会遵循以下规则：
 
-- 拥有为空性属性特性的属性（`nonnull`，`nullable`，`null_resettable`），作为可选类型或者非可选类型的属性导入。请参见[为空性和可选类型](#Nullability_and_Optionals)中的描述。
-- 拥有`readonly`属性特性的属性，作为只读计算属性（`{ get }`）导入。
+- 拥有为空性属性特性的属性（`nonnull`，`nullable`，`null_resettable`），作为可选类型或者非可选类型的属性导入。请参阅[为空性和可选类型](#Nullability_and_Optionals)。
+- 拥有`readonly`属性特性的属性，作为只读计算型属性（`{ get }`）导入。
 - 拥有`weak`属性特性的属性，作为标记`weak`关键字（`weak var`）的属性导入。
-- 拥有`assign`，`copy`，`strong`，`unsafe_unretained`属性特性的属性，导入后会具有相应的内存管理策略。
-- 原子属性特性（`atomic`，`nonatomic`）会被忽略，在 Swift 中所有属性都是`nonatomic`的。
-- 存取器属性特性（`getter=`，`setter=`）也会被忽略。
+- 拥有`assign`，`copy`，`strong`，`unsafe_unretained`属性特性的属性，导入后会拥有相应的内存管理策略。
+- 原子属性特性（`atomic`，`nonatomic`）在 Swift 属性声明中并无相应体现，不过 Objective-C 中具有原子性的属性在 Swift 中将保持其原子性。
+- 存取器属性特性（`getter=`，`setter=`）会被 Swift 忽略。
 
-在 Swift 中使用点语法对属性进行存取，直接使用属性名即可，不需要附加圆括号：
+在 Swift 中使用点语法对属性进行存取，直接使用属性名即可，不需要附加圆括号。
+
+例如，如下代码设置了`UITextField`对象的`textColor`和`text`属性：
 
 ```swift
 myTextField.textColor = UIColor.darkGrayColor()
@@ -119,7 +121,7 @@ myTextField.text = "Hello world"
 > 注意  
 > `darkGrayColor()`后跟一对圆括号，因为它是一个类方法，而不是一个属性。
 
-在 Objective-C 中，一个有返回值的无参数方法可以像属性那样使用点语法调用。但在 Swift 中不能再这样了，因为它们会被导入为实例方法，只有在 Objective-C 中使用`@property`关键字声明的属性才会被作为属性导入。方法的导入和调用请参见[方法](#working_with_methods)中的描述。
+在 Objective-C，一个有返回值的无参数方法可以像属性那样使用点语法调用。但它们会被导入为 Swift 中的实例方法，只有在 Objective-C 中使用`@property`声明的属性才会导入为 Swift 中的属性。方法的导入和调用请参阅[方法](#working_with_methods)。
 
 <a name="working_with_methods"></a>
 ## 方法
