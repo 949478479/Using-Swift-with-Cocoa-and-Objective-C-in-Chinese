@@ -16,42 +16,66 @@
 
 *互用性* 是能让 Swift 和 Objective-C 相接合的特性，这使你能够在一种语言编写的文件中使用另一种语言。当你准备开始把 Swift 融入到你的开发流程中时，学会如何利用互用性来重新定义，改善并增强你编写 Cocoa 应用的方式真是极好的。
 
-互用性很重要的一点就是允许你在编写 Swift 代码时使用 Objective-C API。当你导入一个 Objective-C 框架后，你可以使用原生的 Swift 语法实例化这些类并与之交互。
+互用性很重要的一点就是允许你在编写 Swift 代码时使用 Objective-C API。导入一个 Objective-C 框架后，可以使用原生的 Swift 语法实例化这些类并与之交互。
 
 <a name="initialization"></a>
 ## 初始化
 
-要在 Swift 中实例化一个 Objective-C 类，你应该使用 Swift 语法调用它的一个构造器。当 Objective-C 的`init`方法导入到 Swift 后，它们将用原生的 Swift 构造语法呈现。构造方法的“init”前缀会被截断，并作为一个关键字，用来表明该方法是构造方法。那些以“initWith”开头的`init`方法，“With”也会被去除。然后再将首字母变成小写，并作为 Swift 构造方法第一个参数的参数名。余下的每一部分方法名依次作为剩余的各个参数的参数名。所有这些方法名片段都位于构造方法的圆括号中，并且在调用构造方法时必须写上。
+要在 Swift 中实例化一个 Objective-C 类，你应该使用 Swift 语法调用它的一个构造器。
 
-举个例子，你在 Objective-C 中会这样写：
+Objective-C 构造器以`init`开头，如果它接收参数，则会以`initWith`开头。Objective-C 构造器导入到 Swift 后，`init`前缀变为`init`关键字，以此表明该方法是 Swift 构造方法。如果构造器接收参数，`With`单词会被移除，方法名的其余部分则会被分配为相应的命名参数。
+
+例如，思考如下 Objective-C 构造器声明：
+
+```objective-c
+- (instancetype)init;
+- (instancetype)initWithFrame:(CGRect)frame
+                        style:(UITableViewStyle)style;
+```
+
+Swift 中等价的构造器声明如下所示：
+
+```swift
+init() { /* ... */ }
+init(frame: CGRect, style: UITableViewStyle) { /* ... */ }
+```
+
+Objective-C 和 Swift 构造器语法的区别在实例化对象时将更为明显：
+
+在 Objective-C，像这样：
 
 ```objective-c
 UITableView *myTableView = [[UITableView alloc] initWithFrame:CGRectZero 
                                                         style:UITableViewStyleGrouped];
 ```
-在 Swift 中，你应该这样写：
+
+在 Swift，则像这样：
 
 ```swift
 let myTableView: UITableView = UITableView(frame: CGRectZero, style: .Grouped)
 ```
 
-你不需要调用`alloc`，Swift 会为你处理。注意，调用任何 Swift 构造方法时都不会出现“init”单词。
+注意，你不需要调用`alloc`，Swift 会为你处理。另外，调用任何 Swift 构造方法时都不会出现“init”单词。
 
-你可以在初始化时显式地声明对象的类型，也可以忽略它，Swift 能正确推断对象的类型。
+你可以在赋值时显式地声明类型，也可以省略类型，Swift 能从构造器自动推断出类型。
 
 ```swift
 let myTextField = UITextField(frame: CGRect(x: 0.0, y: 0.0, width: 200.0, height: 40.0))
 ```
 
-这里的`UITableView`和`UITextField`对象和你在 Objective-C 中使用的一样。你可以用同样的方式使用它们，例如访问属性或者调用各自类中的方法。
+此处的`UITableView`和`UITextField`对象和你在 Objective-C 中实例化的一样。你可以用同样的方式使用它们，例如访问属性或者调用各自类中的方法。
 
-为了统一和简洁，Objective-C 的工厂方法在 Swift 中映射为便利构造器，从而能使用同样简洁明了的构造语法。例如，在 Objective-C 中你可能会像下面这样调用一个工厂方法：
+### 类工厂方法和便利构造器
+
+为了统一和简洁，Objective-C 中的类工厂方法被导入为 Swift 中的便利构造器，从而能使用同样简洁的构造器语法。
+
+例如，在 Objective-C 中你可能会像下面这样调用一个工厂方法：
 
 ```objective-c
 UIColor *color = [UIColor colorWithRed:0.5 green:0.0 blue:0.5 alpha:1.0];
 ```
 
-在 Swift 中，你应该这样写：
+在 Swift，你应该这样写：
 
 ```swift
 let color = UIColor(red: 0.5, green: 0.0, blue: 0.5, alpha: 1.0)
