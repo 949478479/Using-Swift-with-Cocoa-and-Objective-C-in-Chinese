@@ -83,17 +83,17 @@ let color = UIColor(red: 0.5, green: 0.0, blue: 0.5, alpha: 1.0)
 
 ### 可失败初始化
 
-在 Objective-C 中，构造器会直接返回它们初始化的对象。初始化失败时，为了告知调用者，Objective-C 中的构造器会返回`nil`。在 Swift 中，这种模式被内置到语言特性中，被称为*可失败初始化*。
+在 Objective-C，构造器会直接返回它们初始化的对象。初始化失败时，为了告知调用者，Objective-C 构造器会返回`nil`。在 Swift，这种模式被内置到语言特性中，被称为*可失败初始化*。
 
-许多在 iOS 和 OS X 系统框架中的 Objective-C 构造器在导入到 Swift 时会被检查初始化是否可能会失败。你可以在你的 Objective-C 代码中，使用 *为空性注释* 来指明初始化是否可能会失败，正如[为空性和可选类型](#Nullability_and_Optionals)中所描述的那样。如果初始化不会失败，这些 Objective-C 构造器便会作为`init(...)`导入，而如果初始化可能会失败，则会作为`init?(...)`导入。在没有任何为空性注释的情况下，构造器会作为`init!(...)`导入。
+许多系统框架中的 Objective-C 构造器在导入到 Swift 时会被检查初始化是否会失败。你可以在你的 Objective-C 类中，使用 *为空性注释* 来指明初始化是否会失败，正如[为空性和可选类型](#Nullability_and_Optionals)中所描述的。如果初始化不会失败，这些 Objective-C 构造器会作为`init(...)`导入，而如果初始化会失败，则会作为`init?(...)`导入。在没有任何为空性注释的情况下，Objective-C 构造器会作为`init!(...)`导入。
 
-例如，当指定路径的图片文件不存在时，`UIImage(contentsOfFile:)`构造器初始化`UIImage`对象便会失败。而如果初始化成功，则可以用可选绑定对可选类型的返回值进行解包。
+例如，当指定路径的图片文件不存在时，`UIImage(contentsOfFile:)`构造器初始化`UIImage`对象便会失败。你可以用可选绑定语法对这种构造器的可选类型的返回值进行解包。
 
 ```swift
 if let image = UIImage(contentsOfFile: "MyImage.png") {
-    // loaded the image successfully
+    // 加载图片成功。
 } else {
-    // could not load the image
+    // 无法加载图片。
 }
 ```
 
