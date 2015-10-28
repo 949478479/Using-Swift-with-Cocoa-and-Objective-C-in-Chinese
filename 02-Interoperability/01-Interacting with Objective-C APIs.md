@@ -42,14 +42,14 @@ init(frame: CGRect, style: UITableViewStyle) { /* ... */ }
 
 Objective-C 和 Swift 构造器语法的区别在实例化对象时将更为明显：
 
-在 Objective-C，像这样：
+在 Objective-C 这样写：
 
 ```objective-c
 UITableView *myTableView = [[UITableView alloc] initWithFrame:CGRectZero 
                                                         style:UITableViewStyleGrouped];
 ```
 
-在 Swift，则像这样：
+在 Swift 则应该这样写：
 
 ```swift
 let myTableView: UITableView = UITableView(frame: CGRectZero, style: .Grouped)
@@ -69,13 +69,13 @@ let myTextField = UITextField(frame: CGRect(x: 0.0, y: 0.0, width: 200.0, height
 
 为了统一和简洁，Objective-C 中的类工厂方法被导入为 Swift 中的便利构造器，从而能使用同样简洁的构造器语法。
 
-例如，在 Objective-C 中你可能会像下面这样调用一个工厂方法：
+例如，在 Objective-C 像这样调用一个工厂方法：
 
 ```objective-c
 UIColor *color = [UIColor colorWithRed:0.5 green:0.0 blue:0.5 alpha:1.0];
 ```
 
-在 Swift，你应该这样写：
+在 Swift 应该这样写：
 
 ```swift
 let color = UIColor(red: 0.5, green: 0.0, blue: 0.5, alpha: 1.0)
@@ -128,21 +128,21 @@ myTextField.text = "Hello world"
 
 在 Swift 中使用点语法调用方法。
 
-当 Objective-C 方法导入到 Swift 时，Objective-C 选择器的第一部分将会成为方法名并出现在圆括号的前面，而第一个参数将直接在圆括号中出现，并且没有参数名，剩下的参数名与参数一一对应，并且都在方法的圆括号中。方法名的所有部分在调用时都必须写上。
+当 Objective-C 方法导入到 Swift 时，Objective-C 选择器的第一部分将会成为基本方法名并出现在圆括号的前面。第一个参数将直接在圆括号中出现，并且没有参数名。选择器的其余部分作为相应的参数名，出现在方法的圆括号内。选择器的所有部分在调用时都必须写上。
 
-举个例子，你在 Objective-C 中会这样写：
+例如，在 Objective-C 这样写：
 
 ```objective-c
 [myTableView insertSubview:mySubview atIndex:2];
 ```
 
-在 Swift 中，你应该这样写：
+在 Swift 则应该这样写：
 
 ```swift
 myTableView.insertSubview(mySubview, atIndex: 2)
 ```
 
-如果你调用一个无参数的方法，依旧必须在方法名后面跟上一对圆括号：
+如果调用一个无参数的方法，依旧必须在方法名后面跟上一对圆括号：
 
 ```swift
 myTableView.layoutIfNeeded()
