@@ -151,68 +151,81 @@ myTableView.layoutIfNeeded()
 <a name="id_compatibility"></a>
 ## id 兼容性
 
-Swift 中有一种叫做`AnyObject`的协议类型，用于表示任意类型对象，就像 Objective-C 中的`id`一样。`AnyObject`协议使你能编写类型安全的 Swift 代码，同时还维持了无类型对象的灵活性。因为`AnyObject`协议提供了安全保证，Swift 将`id`类型导入为`AnyObject`类型。
+Swift 引入了`AnyObject`类型，用以表示任意类型的对象，类似 Objective-C 的`id`类型。Swift 将`id`导入为`AnyObject`，不仅保证了类型安全，还维持了无类型对象的灵活性。
 
-举个例子，和`id`类型一样，你可以为`AnyObject`类型的常量或变量分配任意类型对象。如果是变量，你还可以再次为其重新分配任意类型对象。
+例如，如同`id`类型，可以为`AnyObject`类型的常量或变量分配任意类的对象。如果是变量，还可以为其重新分配不同类的对象。
 
 ```swift
 var myObject: AnyObject = UITableViewCell()
 myObject = NSDate()
 ```
 
-你也可以在调用 Objective-C 方法或者访问属性时不将它转换为具体的类型，包括标记`@objc`的兼容 Objective-C 的方法。
+也可以使用`AnyObject`类型的值调用任意 Objective-C 方法或者访问任意属性，而不用将其转换为具体的类型。这包括标记了`@objc`特性的兼容于 Objective-C 的方法和属性。
 
 ```swift
 let futureDate = myObject.dateByAddingTimeInterval(10)
 let timeSinceNow = myObject.timeIntervalSinceNow
 ```
 
-然而，因为直到运行时才能确定`AnyObject`类型对象的真实类型，所以有可能在不经意间写出不安全代码。和 Objective-C 一样，如果用`AnyObject`类型对象调用不存在的方法，将引发运行时错误。比如下面的代码在运行时将会引发一个选择器未识别的的错误：
+### 未识别的选择器和可选链语法
+
+因为`AnyObject`类型的值在运行时才能确定其真实类型，所以有可能在不经意间写出不安全代码。在 Swift，和在 Objective-C 一样，试图调用不存在的方法将引发未识别的选择器错误。
+
+例如，如下代码没有任何编译警告，但是会引发运行时错误：
 
 ```swift
 myObject.characterAtIndex(5)
-// crash, myObject does't respond to that method
+// 崩溃，myObject 无法响应那个方法。
 ```
 
-不过，你可以利用 Swift 中可选类型的特性来避免这个 Objective-C 中的常见错误，当你用`AnyObject`类型对象调用一个 Objective-C 方法时，你可以像调用协议中的可选方法那样，使用可选链语法在`AnyObject`类型对象上调用方法。
+Swift 使用可选来防止这种不安全的行为。当用`AnyObject`类型的值调用一个 Objective-C 方法时，方法调用在行为上类似于隐式解包可选类型。可以像调用协议中的可选方法那样，使用可选链语法在`AnyObject`上调用方法。
 
 > 注意  
-> 通过`AnyObject`类型对象访问属性将总是返回一个可选类型的值,而不会引发运行时错误。
+> 通过`AnyObject`访问属性将总是返回一个可选类型的值,而不会引发运行时错误。若属性原本就返回可选类型的值，则会返回一个双重包装的可选类型，例如`AnyObject!?`。
 
-举个例子，在下面的代码中，第一和第二行代码不会被执行，因为`count`属性和`characterAtIndex:`方法不存在于`NSDate`对象中。`myCount`常量会被推断成可选类型的`Int`并被赋值为`nil`。你也可以使用`if-let`语句来解包这种未必存在的方法的返回值，就像第三行所做的一样。
+例如，在下面的代码中，第一和第二行代码不会被执行，因为`count`属性和`characterAtIndex:`方法不存在于`NSDate`对象中。`myCount`常量会被推断成可选类型的`Int`，并被赋值为`nil`。你也可以使用`if-let`语句来有条件地解包这种可能无法响应的方法的返回值，就像第三行所做的一样。
 
 ```swift
+// myObject 为 AnyObject 类型，其真实类型为 NSDate。
+// myCount 类型为 Int?，其值为 nil。
 let myCount = myObject.count
+// myChar 类型为 unichar?，其值为 nil。
 let myChar = myObject.characterAtIndex?(5)
+// 条件分支不会被执行。
 if let fifthCharacter = myObject.characterAtIndex?(5) {
     print("Found \(fifthCharacter) at index 5")
 }
 ```
 
-在使用`AnyObject`类型对象时，如果知道其真实类型，那么将其向下转换到真实类型当然是极好的。然而，因为`AnyObject`可以表示任何类型，所以转换到具体类型时难以保证必定成功。你可以使用条件下转操作符（`as?`）来转换，这将返回下转操作目标类型的可选类型：
+> 注意  
+> 尽管在使用`AnyObject`类型的值调用方法时不需要强制解包，但强制解包可以防止一些意料之外的行为。
+
+### 将 AnyObject 向下转换
+
+如果能确定`AnyObject`对象的具体类型，将其向下转换到具体类型是很有用的。然而，由于`AnyObject`类型可以表示任意类型的对象，因此向下转换到具体类型无法确保一定成功。
+
+可以使用条件转换操作符（as?），这将返回试图转换到的具体类型的可选类型的值：
 
 ```swift
 let userDefaults = NSUserDefaults.standardUserDefaults()
 let lastRefreshDate: AnyObject? = userDefaults.objectForKey("LastRefreshDate")
 if let date = lastRefreshDate as? NSDate {
-    println("\(date.timeIntervalSinceReferenceDate)")
+    print("\(date.timeIntervalSinceReferenceDate)")
 }
 ```
 
-当然，如果你能完全确定这个对象的类型，你可以使用强制下转操作符（`as!`）来进行强制转换，这将返回下转操作目标类型的非可选类型：
+如果确信对象的类型，可以使用强制下转操作符（`as!`）：
 
 ```swift
 let myDate = lastRefreshDate as! NSDate
 let timeInterval = myDate.timeIntervalSinceReferenceDate
 ```
 
-然而，如果强制下转失败，将导致一个运行时错误：
+然而，一旦强制下转失败，将引发一个运行时错误：
 
 ```swift
-let myDate = lastRefreshDate as! NSString // Error
+let myDate = lastRefreshDate as! NSString // 错误
 ```
-
-因此，你应该只在完全确定`AnyObject`类型对象的真实类型时才使用强制下转。
 
 <a name="Nullability_and_Optionals"></a>
 ## 为空性和可选类型
