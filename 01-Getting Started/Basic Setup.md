@@ -54,11 +54,11 @@ import Foundation
 - 重映射 Objective-C 核心类型到 Swift 中的替代类型，例如`NSString`映射为`String`
 - 重映射 Objective-C 概念到 Swift 中相对应的概念，例如指针映射为可选类型
 
-请参阅[与 Objective-C API 交互](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02-Interoperability/01-Interacting%20with%20Objective-C%20APIs.md)章节了解关于这些映射的更多信息。
+想了解更多信息，请参阅[与 Objective-C API 交互](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02-Interoperability/01-Interacting%20with%20Objective-C%20APIs.md)。
 
 > 注意  
 > 你不能直接把 C++ 代码导入 Swift，必须为 C++ 代码创建一个 Objective-C 或者 C 的封装。
 
 导入 Swift 模块到 Objective-C 和上述过程非常相似。Swift 公开它的 API，例如来自系统框架的 API，作为 Swift 模块。随着这些 Swift 模块还会生成 Objective-C 头文件。这些头文件公开了那些可以映射回 Objective-C 的 API。一些 Swift API 无法映射回 Objective-C，因为它们使用了 Objective-C 中不存在的语言特性。
 
-关于在 Objective-C 中使用 Swift 的更多信息，请参阅[在同一工程中使用 Swift 和 Objective-C](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/03-Mix%20and%20Match/Swift%20and%20Objective-C%20in%20the%20Same%20Project.md)。
+想了解更多信息，请参阅[在同一工程中使用 Swift 和 Objective-C](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/03-Mix%20and%20Match/Swift%20and%20Objective-C%20in%20the%20Same%20Project.md)。
