@@ -57,7 +57,7 @@ import Foundation
 想了解更多信息，请参阅[与 Objective-C API 交互](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02-Interoperability/01-Interacting%20with%20Objective-C%20APIs.md)。
 
 > 注意  
-> 你不能直接把 C++ 代码导入 Swift，必须为 C++ 代码创建一个 Objective-C 或者 C 的封装。
+> C++ 代码无法直接导入 Swift，必须为其创建 Objective-C 或者 C 的封装。
 
 导入 Swift 模块到 Objective-C 和上述过程非常相似。Swift 公开它的 API，例如来自系统框架的 API，作为 Swift 模块。随着这些 Swift 模块还会生成 Objective-C 头文件。这些头文件公开了那些可以映射回 Objective-C 的 API。一些 Swift API 无法映射回 Objective-C，因为它们使用了 Objective-C 中不存在的语言特性。
 
