@@ -230,9 +230,9 @@ let myDate = lastRefreshDate as! NSString // 错误
 <a name="Nullability_and_Optionals"></a>
 ## 为空性和可选类型
 
-在 Objective-C 中，用于操作对象的原始指针的值可能会是`NULL`（在 Objective-C 中称为`nil`）。而在 Swift 中，所有的值，包括结构体与对象的引用，都能确保是非空值。作为替代，你可以将可能会值缺失的值包装为该类型的 *可选类型*。当你需要表示值缺失的情况时，你可以将其赋值为`nil`。更多关于可选类型的信息，请参见 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的[可选类型](http://wiki.jikexueyuan.com/project/swift/chapter2/01_The_Basics.html#optionals)小节。
+在 Objective-C，用于操作对象的原始指针的值可能会是`NULL`（在 Objective-C 中称为`nil`）。而在 Swift，所有的值，包括结构体与对象的引用，都能确保是非空值。作为替代，可以将可能会值缺失的值包装为该类型的 *可选类型* 。当你需要表示值缺失的情况时，你可以将其赋值为`nil`。请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的[可选类型](http://wiki.jikexueyuan.com/project/swift/chapter2/01_The_Basics.html#optionals)小节获取更多关于可选类型的信息。
 
-Objective-C 可以使用 *为空性注释* 来指明一个参数类型，属性类型或者返回值类型是否可以为`NULL`或者`nil`值。单个类型声明可以使用`_Nullable`和`_Nonnull`注释，单个属性声明可以使用`nullable`，`nonnull`，`null_resettable`属性特性，大范围注释可以使用`NS_ASSUME_NONNULL_BEGIN`和`NS_ASSUME_NONNULL_END`这对宏。如果一个类型没有任何为空性注释，Swift 将无法分辨出它是可选类型还是非可选类型，并将其作为隐式解包可选类型导入。
+在 Objective-C 可以使用 *为空性注释* 来指明一个参数类型，属性类型或者返回值类型是否可以为`NULL`或者`nil`值。单个类型声明可以使用`_Nullable`和`_Nonnull`注释，单个属性声明可以使用`nullable`，`nonnull`，`null_resettable`属性特性，范围注释可以使用`NS_ASSUME_NONNULL_BEGIN`和`NS_ASSUME_NONNULL_END`宏。如果一个类型没有任何为空性注释，Swift 就无法辨别它是可选类型还是非可选类型，因此将其作为隐式解包可选类型导入。
 
 - 以`_Nonnull`或者范围宏注释的类型，会作为 *非可选类型* 导入到 Swift。
 - 以`_Nullable`注释的类型，会作为 *可选类型* 导入到 Swift。
@@ -257,7 +257,7 @@ NS_ASSUME_NONNULL_END
 - (void)takesUnannotatedParameter:(id)value;
 ```
 
-当它们导入到 Swift 后：
+导入到 Swift 后将如下所示：
 
 ```Swift
 var nullableProperty: AnyObject?
@@ -274,12 +274,12 @@ func returnsUnannotatedValue() -> AnyObject!
 func takesUnannotatedParameter(value: AnyObject!)
 ```
 
-大多数 Objective-C 系统框架，包括 Foundation，都已经提供了为空性注释，使你能以符合原有习惯且更加类型安全的方式去使用它们。
+大多数 Objective-C 系统框架，包括 Foundation，都已经提供了为空性注释，这使你能以更加类型安全的方式去操作各种值。
 
 <a name="Lightweight_Generics"></a>
 ## 轻量泛型
 
-Objective-C 中的`NSArray`，`NSSet`以及`NSDictionary`类型的声明在使用轻量泛型参数化后，被导入到 Swift 时会附带容器中元素的类型信息。
+Objective-C 的`NSArray`，`NSSet`以及`NSDictionary`类型的声明在使用轻量泛型参数化后，被导入到 Swift 时会附带容器中元素的类型信息。
 
 举个例子，思考如下 Objective-C 属性声明：
 
@@ -289,7 +289,7 @@ Objective-C 中的`NSArray`，`NSSet`以及`NSDictionary`类型的声明在使�
 @property NSDictionary<NSURL *, NSData *>* cachedData;
 ```
 
-导入到 Swift 后：
+导入到 Swift 后将如下所示：
 
 ```swift
 var dates: [NSDate]
@@ -303,9 +303,9 @@ var cachedData: [NSURL: NSData]
 <a name="extensions"></a>
 ## 扩展
 
-Swift 的扩展和 Objective-C 的分类相似。扩展可以为既有类，结构和枚举扩充功能，即使它们是在 Objective-C 中定义的。通过导入相应的模块，你还可以为系统框架中的类型或者你自己的类型定义扩展。
+Swift 扩展和 Objective-C 分类相似。扩展可以为既有类，结构和枚举扩充功能，即使它们是在 Objective-C 中定义的。通过导入相应的模块，还可以为系统框架中的类型或者自定义类型定义扩展。
 
-例如，你可以扩展`UIBezierPath`类来创建一个简单的三角形路径，这个方法只需提供三角形的边长与起点。
+例如，可以扩展`UIBezierPath`类，基于三角形的边长与起点来创建一个简单的三角形路径。
 
 ```swift
 extension UIBezierPath {
@@ -321,9 +321,9 @@ extension UIBezierPath {
 }
 ```
 
-你还可以利用扩展来增加属性（包括类型属性和静态属性）。然而，这些属性必须是计算型属性，因为扩展不能为类，结构体，枚举添加存储型属性。
+还可以利用扩展来增加属性（包括类型属性和静态属性）。然而，这些属性必须是计算型属性，因为扩展不能为类，结构体，枚举添加存储型属性。
 
-下面这个例子为`CGRect`类增加了一个叫`area`的计算型属性：
+下面这个例子为`CGRect`结构增加了一个叫`area`的计算型属性：
 
 ```swift
 extension CGRect {
@@ -335,14 +335,14 @@ let rect = CGRect(x: 0.0, y: 0.0, width: 10.0, height: 50.0)
 let area = rect.area
 ```
 
-你甚至可以利用扩展为类添加协议符合性而无需子类化。如果协议是在 Swift 中定义的，你还可以为结构或是枚举添加协议符合性，即使它们是在 Objective-C 中定义的。
+甚至可以利用扩展为类添加协议符合性而无需子类化。如果协议是在 Swift 中定义的，还可以为结构或是枚举添加协议符合性，即使它们是在 Objective-C 中定义的。
 
-注意，你无法通过扩展来覆盖类型中既有的方法与属性。
+注意，无法通过扩展覆盖类型中既有的方法与属性。
 
 <a name="closures"></a>
 ## 闭包
 
-Objective-C 中的 block 会作为符合其调用约定的 Swift 闭包导入，通过`@convention(block)`属性表示。例如，下面是一个 Objective-C 中的 block 变量：
+Objective-C 的 block 会作为符合其调用约定的 Swift 闭包导入，通过`@convention(block)`特性表示。例如，下面是一个 Objective-C 的 block 变量：
 
 ```objective-c
 void (^completionBlock)(NSData *, NSError *) = ^(NSData *data, NSError *error) {
@@ -350,7 +350,7 @@ void (^completionBlock)(NSData *, NSError *) = ^(NSData *data, NSError *error) {
 }
 ```
 
-它在 Swift 中像下面这样：
+它在 Swift 中如下所示：
 
 ```swift
 let completionBlock: (NSData, NSError) -> Void = { (data, error) in 
@@ -358,15 +358,15 @@ let completionBlock: (NSData, NSError) -> Void = { (data, error) in
 }
 ```
 
-Swift 闭包与 Objective-C block 兼容，因此你可以把一个 Swift 闭包传递给一个接收 block 作为参数的 Objective-C 方法。而且因为 Swift 闭包与函数类型相同，你甚至可以直接传递一个 Swift 函数的函数名过去。
+Swift 闭包与 Objective-C block 兼容，因此可以把一个 Swift 闭包传递给一个接受 block 作为参数的 Objective-C 方法。而且因为 Swift 闭包与函数类型相同，甚至可以直接传递一个 Swift 函数的函数名过去。
 
-闭包与 block 有相似的捕获语义，但有个关键的不同：被捕获的变量是可以直接修改的，而 block 在默认情况下捕获的只是变量的值拷贝。换句话说，Swift 闭包在默认情况下捕获的变量就等效于 Objective-C 中的`__block`变量。
+闭包与 block 有相似的捕获语义，但有个关键的不同：被捕获的变量可以直接修改，而 block 在默认情况下捕获的只是变量的值拷贝。换言之，Swift 闭包在默认情况下捕获的变量等效于 Objective-C 的`__block`变量。
 
 ### 避免强引用循环
 
-在 Objective-C 中，如果 block 捕获了`self`，一定要慎重考虑内存管理问题。
+在 Objective-C，如果 block 捕获了`self`，一定要慎重考虑内存管理问题。
 
-block 会维持对被捕获对象的强引用，包括`self`。一旦`self`也持有对 block 的强引用，例如一个 copy 语义的 block 属性，就将导致强引用循环。你可以让 block 捕获`self`的弱引用来避免此问题：
+block 会维持对被捕获对象的强引用，包括`self`。一旦`self`也持有对 block 的强引用，例如一个 copy 语义的 block 属性，就将导致强引用循环。可以让 block 捕获`self`的弱引用来避免此问题：
 
 ```objective-c
 __weak typeof(self) weakSelf = self;
@@ -376,7 +376,7 @@ self.block = ^{
 };
 ```
 
-和 Objective-C block 类似，Swift 闭包也会维持对被捕获对象的强引用，包括`self`。为了避免强引用循环，你可以在闭包的捕获列表中指定`self`为`unowned`:
+和 Objective-C block 类似，Swift 闭包也会维持对被捕获对象的强引用，包括`self`。为了避免强引用循环，可以在闭包的捕获列表中指定`self`为`unowned`：
 
 ```swift
 self.closure = { [unowned self] in
@@ -384,42 +384,42 @@ self.closure = { [unowned self] in
 }
 ```
 
-请参见 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的[解决闭包引起的循环强引用](http://wiki.jikexueyuan.com/project/swift/chapter2/16_Automatic_Reference_Counting.html#resolving_strong_reference_cycles_for_closures)小节来获取更多信息。
+请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的[解决闭包引起的循环强引用](http://wiki.jikexueyuan.com/project/swift/chapter2/16_Automatic_Reference_Counting.html#resolving_strong_reference_cycles_for_closures)小节获取更多信息。
 
 <a name="object_comparison"></a>
 ## 对象比较
 
-在 Swift 中，比较两个对象可以使用两种方式。第一种，使用 ==，比较两个对象内容是否相同。第二种，使用 === ，判断常量或者变量是否引用同一个对象。
+在 Swift，比较两个对象可以使用两种方式。第一种，使用 ==，比较两个对象内容是否相同。第二种，使用 === ，判断常量或者变量是否引用同一对象。
 
-Swift 的 == 操作符为继承自`NSObject`类的对象提供了默认实现。在 == 操作符的实现中，Swift 调用`NSObject`类中定义的`isEqual:`方法。`NSObject`类的实现仅仅比较两个对象地址是否相同，所以你需要在你自己的类中重新实现`isEqual:`方法。因为你可以直接传递 Swift 对象（包括那些不继承自`NSObject`的）给 Objective-C API，所以如果你希望比较两个对象的内容而不仅仅是比较其地址的话，你应该为这些对象实现`isEqual:`方法。
+Swift 的 == 操作符为继承自`NSObject`类的对象提供了默认实现。在 == 操作符的实现中，Swift 调用`NSObject`类中定义的`isEqual:`方法。`NSObject`类的实现仅仅是比较两个对象地址是否相同，所以需要在自定义类中重新实现`isEqual:`方法。因为可以直接传递 Swift 对象（包括那些不继承自`NSObject`的）给 Objective-C API，所以如果希望比较两个对象的内容而不仅仅是比较其地址的话，则应该为这些对象实现`isEqual:`方法。
 
-作为实现比较的一部分，确保根据 [Object comparison](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/DevPedia-CocoaCore/ObjectComparison.html#//apple_ref/doc/uid/TP40008195-CH37) 中的规则实现对象的`hash`属性。如果你希望你的类的实例能够作为字典中的键，还需要符合`Hashable`协议并实现`hashValues`属性。
+作为实现对象比较的另一部分内容，确保根据 [Object comparison](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/DevPedia-CocoaCore/ObjectComparison.html#//apple_ref/doc/uid/TP40008195-CH37) 中的规则实现对象的`hash`属性。如果希望类的实例能够作为字典中的键，还需要符合`Hashable`协议并实现`hashValues`属性。
 
 <a name="swift_type_compatibility"></a>
 ## Swift 类型兼容性
 
-当你在 Swift 中创建一个继承自 Objective-C 类的子类时，该类以及该类的成员：属性，方法，下标和构造器，都将兼容 Objective-C，即它们在 Objective-C 中可直接使用。在某些情况下，你需要更细粒度地控制如何将 Swift API 暴露给 Objective-C。如果你的 Swift 类没有继承自 Objective-C 类，又或者你想更改当前 Swift 接口暴露给 Objective-C 代码后的符号名称，可以使用`@objc`属性。如果你需要使用诸如键值观察（KVO）这种需要动态替换方法实现的 API，则可使用`dynamic`修饰符标记成员变量，从而通过 Objective-C 运行时的动态派发来访问成员变量。
+在 Swift 中子类化 Objective-C 类时，该 Swift 子类及其成员，即属性，方法，下标和构造器，都将兼容于 Objective-C，即它们在 Objective-C 中可直接使用。在某些情况下，需要更精确地控制如何将 Swift API 暴露给 Objective-C。如果 Swift 类不是 Objective-C 类的子类，又或者希望更改当前 Swift 接口暴露给 Objective-C 后的名称，可以使用`@objc`特性。如果需要使用诸如键值观察（KVO）这种需要动态替换方法实现的 API，则可使用`dynamic`修饰符标记成员变量，从而通过 Objective-C 运行时的动态派发来访问成员变量。
 
 ### 暴露 Swift 接口给 Objective-C
 
-当你定义一个继承自`NSObject`类或者其他 Objective-C 类的 Swift 子类时，该类便会自动兼容 Objective-C。如果你的 Swift 类并不继承于 Objective-C 类，而你又希望能在 Objective-C 代码中使用它，你可以使用下面描述的`@objc`属性。
+在 Swift 中子类化 Objective-C 类时，该 Swift 子类便会自动兼容于 Objective-C。如果 Swift 类不是 Objective-C 类的子类，同时希望能在 Objective-C 代码中使用该类的 API，则可以使用下面描述的`@objc`特性。
 
-`@objc`属性可以让你的 Swift API 在 Objective-C 以及 Objective-C 运行时中可用。换句话说，你可以在任意 Swift 方法，属性，下标，构造器，类，协议，枚举前标记`@objc`，从而可以在 Objective-C 代码中使用它们。
-
-> 注意  
-> 嵌套类型声明不能标记`@objc`属性。  
-> 另外，只有原始值为整形的 Swift 枚举，例如`Int`，才能使用`@objc`属性。
-
-如果你的类继承自 Objective-C 类，编译器会自动为你插入`@objc`属性。如果一个类标记了`@objc`属性，编译器就会在类中所有成员前添加`@objc`属性。当你使用`@IBOutlet`，`@IBAction`，或者是`@NSManaged`属性时，`@objc`属性也会被自动添加。
-
-只有源自`NSObject`的类才可以在类声明前标记`@objc`属性，当然，编译器会自动为你标记。另外，你也可以在不源自`NSObject`的类中的某个 API 前标记`@objc`属性。当你使用类似`NSTimer`或者`UIButton`中的一些使用 Objective-C 选择器的 API 时，你就需要为你的 Swift 类中的相关方法标记`@objc`属性。
+`@objc`特性可以将 Swift API 暴露给 Objective-C 以及 Objective-C 运行时。换言之，可以在任意 Swift 方法，属性，下标，构造器，类，协议，枚举前标记`@objc`，从而可以在 Objective-C 代码中使用它们。
 
 > 注意  
-> 如果声明前标记了`private`访问级别修饰符，编译器将不会为声明自动插入`@objc`属性。
+> 嵌套类型声明不能标记`@objc`特性。  
+> 只有原始值为整形的 Swift 枚举，例如`Int`，才能使用`@objc`特性。
 
-当你在 Objective-C 中使用 Swift API 时，编译器通常会对语句做直接翻译。例如，Swift API `func playSong(name: String)`在 Objective-C 中会被导入为`- (void)playSong:(NSString *)name`。然而，有一个例外：当在 Objective-C 中使用 Swift 构造器时，编译器会在方法前添加“initWith”并将原构造器第一个参数名的首字母大写。例如，这个 Swift 构造器`init(songName: String, artist: String)`在 Objective-C 中将被导入为`- (instancetype)initWithSongName:(NSString *)songName artist:(NSString *)artist`。
+如果 Swift 类继承自 Objective-C 类，编译器会自动标记`@objc`特性。如果一个类标记了`@objc`特性，编译器就会在类中所有成员前标记`@objc`特性。使用`@IBOutlet`，`@IBAction`，或是`@NSManaged`特性时，`@objc`特性也会被自动标记。
 
-Swift 同时也提供了一个`@objc`属性的变体，通过它你可以指定导入到 Objective-C 后的符号名。例如，如果你的 Swift 类的类名包含 Objective-C 中不支持的字符，你就可以为其提供一个在 Objective-C 中的别名。如果你要为 Swift 函数提供一个 Objective-C 选择器风格的别名，记得在参数名后添加冒号：
+只有源自`NSObject`的类才可以在类声明前标记`@objc`特性，当然，编译器会自动标记。另外，也可以在不源自`NSObject`的类中的某个 API 前单独标记`@objc`特性。使用类似`NSTimer`或者`UIButton`中的一些使用 Objective-C 选择器的 API 时，就需要为 Swift 类中的相关方法标记`@objc`特性。
+
+> 注意  
+> 如果声明前标记了`private`访问级别修饰符，编译器将不会为声明自动标记`@objc`特性。
+
+在 Objective-C 中使用 Swift API 时，编译器通常会对语句做直接转化。例如，Swift API `func playSong(name: String)`在 Objective-C 中会被导入为`- (void)playSong:(NSString *)name`。然而，有一个例外：在 Objective-C 中使用 Swift 构造器时，编译器会在方法前添加“initWith”并将构造器第一个参数名的首字母大写。例如，Swift 构造器`init(songName: String, artist: String)`在 Objective-C 中将被转化为`- (instancetype)initWithSongName:(NSString *)songName artist:(NSString *)artist`。
+
+Swift 也提供了一个`@objc`特性的变体，通过它可以指定导入到 Objective-C 后的符号名。例如，如果 Swift 类的类名包含 Objective-C 中不支持的字符，就可以为其提供一个在 Objective-C 中的别名。如果要为 Swift 函数提供一个 Objective-C 选择器风格的别名，记得在参数名后添加冒号：
 
 ```swift
 @objc(Squirrel)
@@ -437,21 +437,21 @@ class Белка: NSObject {
 }
 ```
 
-这个属性在你迁徙被归档的 Objecive-C 类到 Swift 时会非常有用。由于被归档的对象存储了类名，如果你的 Swift 新类改了类名，你应该使用`@objc(name)`属性来声明被归档的 Objective-C 类的类名，这样才能正确地将该 Objective-C 类解档为新的 Swift 类。
+这个属性在迁徙被归档的 Objecive-C 类到 Swift 时会非常有用。由于被归档的对象存储了类名，如果 Swift 新类改了类名，则应该使用`@objc(name)`特性来声明被归档的 Objective-C 类的类名，这样才能正确地将该 Objective-C 类解档为新的 Swift 类。
 
 > 注意  
-> 相反，Swift 还提供了`@nonobjc`属性，从而使一个 Swift 声明在 Objective-C 中不可用。你可以利用它来解决桥接方法循环，以及允许重载被标记`@objc`属性的类中的方法。如果一个 Objective-C 方法在 Swift 中被重载后，无法再以 Objective-C 的语言特性表示，例如将参数变为了可变参数，那么这个方法必须标记为`@nonobjc`。
+> 相反，Swift 还提供了`@nonobjc`特性，从而使一个 Swift 声明在 Objective-C 中不可用。可以利用它来解决桥接方法循环，以及允许重载被标记`@objc`特性的类中的方法。如果一个 Objective-C 方法在 Swift 中被重载后，无法再以 Objective-C 的语言特性表示，例如将参数变为了可变参数，那么这个方法必须标记为`@nonobjc`。
 
 ### 要求动态派发
 
-`@objc`属性能将你的 Swift API 暴露给 Objective-C 运行时，但它并不能保证属性，方法，下标，或构造器的动态派发。Swift 编译器依旧可能绕过 Objective-C 运行时，通过消虚拟化或内联成员访问来优化代码的性能。当一个成员声明用`dynamic`修饰符标记时，对该成员的访问将始终是动态派发的。由于将声明标记`dynamic`修饰符后会用 Objective-C 运行时来动态派发，因此声明也会被隐式地标记`@objc`属性。
+`@objc`特性能将 Swift API 暴露给 Objective-C 运行时，但它并不能保证属性，方法，下标，或构造器的动态派发。Swift 编译器依旧可能绕过 Objective-C 运行时，通过消虚拟化或内联成员访问来优化代码的性能。当一个成员声明用`dynamic`修饰符标记时，对该成员的访问将始终是动态派发的。由于将声明标记`dynamic`修饰符后会用 Objective-C 运行时来动态派发，因此声明也会被隐式地标记`@objc`特性。
 
-一般很少需要动态派发，但是，如果你要在运行时替换一个 API 的实现，你就必须使用`dynamic`修饰符。例如，你可以使用 Objective-C 运行时的`method_exchangeImplementations`函数在应用程序运行过程中替换某个方法的实现。如果 Swift 编译器内联了方法的实现或者消虚拟化对它的访问，新的实现将不会被使用。
+一般很少需要动态派发，但是，如果要在运行时替换一个 API 的实现，就必须使用`dynamic`修饰符。例如，可以使用 Objective-C 运行时的`method_exchangeImplementations`函数在应用程序运行过程中替换某个方法的实现。如果 Swift 编译器内联了方法的实现或者消虚拟化对它的访问，新的实现就不会被使用了。
 
 <a name="objective_c_selectors"></a>
 ## Objective-C 选择器
 
-Objective-C 选择器是一种用于引用 Objective-C 方法名的类型。在 Swift 中，Objective-C 选择器用`Selector`结构体表示。你可以通过字符串字面量创建一个选择器，例如`let mySelector: Selector = "tappedButton:"`。因为字符串字面量能够自动转换为选择器，你可以将其直接传递给任何接受选择器的方法。
+Objective-C 选择器是一种用于引用 Objective-C 方法名的类型。在 Swift，Objective-C 选择器用`Selector`结构体表示。可以通过字符串字面量创建一个选择器，例如`let mySelector: Selector = "tappedButton:"`。因为字符串字面量能够自动转换为选择器，可以将其直接传递给任何接受选择器的方法。
 
 ```swift
 import UIKit
@@ -474,13 +474,13 @@ class MyViewController: UIViewController {
 }
 ```
 
-如果你的 Swift 类继承自 Objective-C 类，那么所有方法和属性都可以用于 Objective-C 选择器。反之，你需要在要用于选择器的方法前面添加`@objc`属性，详情请参见 [Swift 类型兼容性](#swift_type_compatibility)。
+如果 Swift 类继承自 Objective-C 类，那么所有方法和属性都可以用于 Objective-C 选择器。反之，则需要在用于选择器的方法前面标记`@objc`特性，详情请参阅 [Swift 类型兼容性](#swift_type_compatibility)。
 
 ### 使用 performSelector 发送消息
 
-你可以使用`performSelector(_:)`方法以及它的变体向兼容 Objective-C 的对象发送消息。
+可以使用`performSelector(_:)`方法以及它的变体向兼容于 Objective-C 的对象发送消息。
 
-`performSelector`系列 API 可以向指定线程发送消息，或者延迟发送没有返回值的消息。该系列 API 同步执行，并返回隐式解包可选类型的非托管对象（`Unmanaged<AnyObject>!`），这是因为返回值的类型和所有权无法在编译期决定。请参见[非托管对象](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02-Interoperability/03-Working%20with%20Cocoa%20Data%20Types.md#%E9%9D%9E%E6%89%98%E7%AE%A1%E5%AF%B9%E8%B1%A1)来获取更多信息。
+`performSelector`系列 API 可以向指定线程发送消息，或者延迟发送没有返回值的消息。该系列 API 同步执行，并返回隐式解包可选类型的非托管对象（`Unmanaged<AnyObject>!`），这是因为返回值的类型和所有权无法在编译期决定。请参阅[非托管对象](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02-Interoperability/03-Working%20with%20Cocoa%20Data%20Types.md#%E9%9D%9E%E6%89%98%E7%AE%A1%E5%AF%B9%E8%B1%A1)获取更多信息。
 
 ```swift
 let string: NSString = "Hello, Cocoa!"
@@ -499,4 +499,4 @@ let invalidSelector: Selector = "invalid"
 array.performSelector(invalidSelector) // raises an exception
 ```
 
-在 Objective-C 运行时中直接向对象发送消息并非内在安全的，因为编译器无法保证消息发送的结果，或是消息是否能在第一时间被处理。同样不鼓励使用`performSelector`系列 API，除非你的代码确实依赖于 Objective-C 运行时提供的动态方法决议。否则，正如 [id 兼容性](#id_compatibility)中所描述的，将对象转换为`AnyObject`类型，再使用可选链语法调用方法会更为安全方便。
+在 Objective-C 运行时中直接向对象发送消息并非内在安全的，因为编译器无法保证消息发送的结果，或是消息是否能在第一时间被处理。同样不鼓励使用`performSelector`系列 API，除非代码确实依赖于 Objective-C 运行时提供的动态方法决议。否则，正如 [id 兼容性](#id_compatibility)中所描述的，将对象转换为`AnyObject`类型，再使用可选链语法调用方法会更为安全方便。
