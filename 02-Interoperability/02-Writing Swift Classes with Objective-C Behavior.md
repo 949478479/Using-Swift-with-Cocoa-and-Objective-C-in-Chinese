@@ -1,6 +1,6 @@
 # 使用 Objective-C 特性编写 Swift 类
 
-本节内容包括：
+本页包含内容：
 
 - [继承 Objective-C 类](#inheriting_from_objective-c_classes)
 - [采纳协议](#adopting_protocols)
