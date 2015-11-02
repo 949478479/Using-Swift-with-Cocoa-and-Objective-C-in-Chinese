@@ -12,16 +12,16 @@
 
 Swift 提供了高效便捷的方式来处理 Cocoa 数据类型，从而增强与 Objective-C 之间的互用性。
 
-Swift 会自动将一些 Objective-C 类型转换为 Swift 类型，也会将一些 Swift 类型转换为 Objective-C 类型。在 Objective-C 和 Swift 中还有一些数据类型可以互换使用。那些可转换或者可互换的数据类型被称为 *桥接* 数据类型。例如，在 Swift 中，你可以将一个`Array`类型的值传递给一个接收`NSArray`对象的方法。你也可以在一个桥接类型和它的对应类型间相互转换。你可以使用`as`操作符在桥接类型间转换，或者显式提供常量或变量的类型，由 Swift 负责桥接这些数据类型。
+Swift 会自动将一些 Objective-C 类型转换为 Swift 类型，也会将一些 Swift 类型转换为 Objective-C 类型。在 Objective-C 和 Swift 中还有一些数据类型可以互换使用。那些可转换或者可互换的数据类型被称为 *桥接* 数据类型。例如，在 Swift，可以将一个`Array`类型的值传递给一个接收`NSArray`对象的方法。也可以在一个桥接类型和它的对应类型间相互转换。可以使用`as`操作符在桥接类型间转换，或者显式提供常量或变量的类型，由 Swift 负责桥接这些数据类型。
 
-Swift 还提供了一些简单便捷的方法与 Foundation 数据类型配合，使你在操作 Foundation 数据类型时，在语法上更加自然和统一。
+Swift 还提供了一些简单便捷的方法与 Foundation 数据类型配合，在操作 Foundation 数据类型时，语法上更加自然和统一。
 
 <a name = "strings"></a>
 ## 字符串
 
-Swift 会在`String`类型和`NSString`类型间自动桥接。这意味着你可以将一个 Swift 的`String`类型的值用在任何使用`NSString`对象的地方，并且可以得益于它们各自的特性，例如`String`类型的字符串插值，以及一些基于 Swift 设计的 API，乃至`NSString`类的广泛功能。因此，你几乎不必再直接使用`NSString`类。事实上，当 Objective-C API 导入到 Swift 时，所有`NSString`类型会被替换为`String`类型。当 Swift API 导入到 Objective-C 时，所有`String`类型又会被替换成`NSString`类型。
+Swift 会在`String`类型和`NSString`类型间自动桥接。这意味着可以将一个 Swift 的`String`类型的值用在任何使用`NSString`对象的地方，并且可以得益于它们各自的特性，例如`String`类型的字符串插值，以及一些基于 Swift 设计的 API，乃至`NSString`类的广泛功能。因此，几乎不必再直接使用`NSString`类。事实上，当 Objective-C API 导入到 Swift 时，所有`NSString`类型会被替换为`String`类型。当 Swift API 导入到 Objective-C 时，所有`String`类型又会被替换为`NSString`类型。
 
-要对字符串进行桥接，只需导入 Foundation 框架。例如，你可以用 Swift 字符串访问`capitalizedString`属性，这是`NSString`类中的一个属性，Swift 会自动将`String`类型的值桥接为`NSString`对象来访问该属性。这个属性甚至会返回一个`String`类型的值，因为它在被导入的时候就被转换了。
+要对字符串进行桥接，只需导入 Foundation 框架。例如，可以用 Swift 字符串访问`capitalizedString`属性，这是`NSString`类中的一个属性，Swift 会自动将`String`类型的值桥接为`NSString`对象来访问该属性。这个属性甚至会返回一个`String`类型的值，因为相应的类型在被导入的时候就被转换了。
 
 ```swift
 import Foundation
@@ -38,7 +38,7 @@ let myString: NSString = "123"
 if let integerValue = Int(myString as String) {
     print("\(myString) is the integer \(integerValue)")
 }
-// prints "123 is the integer 123"
+// 打印 "123 is the integer 123"
 ```
 
 > 注意  
@@ -46,19 +46,19 @@ if let integerValue = Int(myString as String) {
 
 ### 本地化
 
-在 Objective-C 中，你通常用`NSLocalizedString`系列的宏来本地化一个字符串。这套宏包括`NSLocalizedString`，`NSLocalizedStringFromTable`，`NSLocalizedStringFromTableInBundle`，以及`NSLocalizedStringWithDefaultValue`。而在 Swift 中，只用一个函数就可以实现跟整套`NSLocalizedString`宏一样的功能，即`NSLocalizedString(key:tableName:bundle:value:comment:)`函数。该函数为`tableName`，`bundle`和`value`参数提供了默认值。你可以用该函数取代以前的宏。
+在 Objective-C，通常用`NSLocalizedString`系列的宏来本地化字符串。这套宏包括`NSLocalizedString`，`NSLocalizedStringFromTable`，`NSLocalizedStringFromTableInBundle`，以及`NSLocalizedStringWithDefaultValue`。而在 Swift，只用一个函数就可以实现跟整套`NSLocalizedString`宏一样的功能，即`NSLocalizedString(key:tableName:bundle:value:comment:)`函数。该函数为`tableName`，`bundle`和`value`参数提供了默认值。可以用该函数取代以前的宏。
 
 <a name = "numbers"></a>
 ## 数值
 
-Swift 会自动将某些原生数值类型桥接为`NSNumber`，例如`Int`和`Float`。这样的桥接使你可以基于其中某种类型创建一个`NSNumber`：
+Swift 会自动将某些原生数值类型桥接为`NSNumber`，例如`Int`和`Float`。通过这样的桥接，可以基于其中某种类型创建一个`NSNumber`：
 
 ```swift
 let n = 42
 let m: NSNumber = n
 ```
 
-你还可以传递一个`Int`类型的值给一个接收`NSNumber`类型的参数。需要注意的是，`NSNumber`可以包含多种不同的类型，因此反向传递并不成立，例如你不能把`NSNumber`类型传递给一个接收`Int`类型的参数。
+还可以传递一个`Int`类型的值给一个接收`NSNumber`类型的参数。需要注意的是，`NSNumber`可以包含多种不同的类型，因此反向传递并不成立，例如不能把`NSNumber`类型传递给一个接收`Int`类型的参数。
 
 下面所列出的类型都会自动桥接为`NSNumber`：
 
@@ -74,11 +74,11 @@ let m: NSNumber = n
 <a name = "collection_classes"></a>
 ## 集合类
 
-Swift 会分别将`NSArray`、`NSSet`和`NSDictionary`桥接为`Array`、`Set`和`Dictionary`。这意味着在处理集合时，不但可以得益于 Swift 强大的算法和自然的语法，还可将 Foundation 和 Swift 集合类型互相转换。
+Swift 会分别将`NSArray`、`NSSet`和`NSDictionary`桥接为`Array`、`Set`和`Dictionary`。这意味着在处理集合时，不但可以得益于 Swift 强大的算法和自然的语法，还可将 Foundation 和 Swift 集合类型互换使用。
 
 ### 数组
 
-Swift 会在`Array`类型和`NSArray`类型间自动桥接。从一个使用了轻量泛型的`NSArray`对象桥接到一个 Swift 数组的结果会是一个`[ObjectType]`类型的数组。如果`NSArray`对象没有使用轻量泛型，那么它会被桥接为`[AnyObject]`类型的数组。
+Swift 会在`Array`类型和`NSArray`类之间自动桥接。从一个使用了轻量泛型的`NSArray`对象桥接到一个 Swift 数组的结果会是一个`[ObjectType]`类型的数组。如果`NSArray`对象没有使用轻量泛型，那么它会被桥接为`[AnyObject]`类型的数组。
 
 例如，思考以下 Objective-C 声明：
 
@@ -96,14 +96,14 @@ func datesBeforeDate(date: NSDate) -> [NSDate]
 func addDatesParsedFromTimestamps(timestamps: [String])
 ```
 
-如果某个实例是 Objective-C 或 Swift 类的对象，或者能够桥接过去，那么这个实例就兼容`AnyObject`。可以将任意`NSArray`对象桥接成一个 Swift 数组，因为所有 Objective-C 对象都兼容`AnyObject`。正因如此，Swift 编译器会在导入 Objective-C API 的时候将`NSArray`替换成`[AnyObject]`。
+如果某个实例是 Objective-C 或 Swift 类的实例，或者能够桥接过去，那么这个实例就兼容`AnyObject`。可以将任意`NSArray`对象桥接成一个 Swift 数组，因为所有 Objective-C 对象都兼容`AnyObject`。因此，Swift 编译器会在导入 Objective-C API 时将`NSArray`替换成`[AnyObject]`。
 
-将一个`NSArray`对象桥接为一个 Swift 数组后，还可以将数组向下转换成更明确的类型。与从`NSArray`桥接到`[AnyObject]`不同，从`AnyObject`类型向下转换成具体类型不能确保一定成功。由于直到运行时编译器才能知道数组中的元素能否被向下转换为你所指定的类型，因此，可以使用可选类型版本的类型转换操作符`as?`，将`[AnyObject]`转换为`[SomeType]`。如果能确定转换一定会成功，则可以使用强制类型转换操作符`as!`。例如，如果能确定一个 Swift 数组只包含`NSView`类的实例(或者`NSView`类的子类的实例)，就可以将`AnyObject`类型的数组向下转换为`NSView`类型的数组。如果数组中的元素实际上不是`NSView`对象，那么转换会返回`nil`。
+将一个`NSArray`对象桥接为一个 Swift 数组后，还可以将数组向下转换成特定的类型。与从`NSArray`桥接到`[AnyObject]`不同，从`AnyObject`类型向下转换成具体类型无法确保一定成功。由于直到运行时编译器才能确定数组中的元素能否向下转换为所指定的类型，因此，可以使用可选类型版本的类型转换操作符`as?`，将`[AnyObject]`转换为`[SomeType]`。如果确信转换一定会成功，则可以使用强制类型转换操作符`as!`。例如，如果能确定一个 Swift 数组只包含`NSView`类的实例(或者`NSView`类的子类的实例)，就可以将`AnyObject`类型的数组向下转换为`NSView`类型的数组。如果数组中的元素实际上不是`NSView`对象，那么转换会返回`nil`。
 
 ```swift
 let swiftyArray = foundationArray as [AnyObject]
 if let downcastedSwiftArray = swiftArray as? [NSView] {
-    // downcastedSwiftArray contains only NSView objects
+    // downcastedSwiftArray 只包含 NSView 对象
 }
 ```
 
@@ -111,26 +111,26 @@ if let downcastedSwiftArray = swiftArray as? [NSView] {
 
 ```swift
 for view in foundationArray as! [NSView] {
-    // aView is of type NSView
+    // view 的类型为 NSView
 }
 ```
 
 从 Swift 数组桥接为`NSArray`对象时，Swift 数组里的元素必须兼容`AnyObject`。例如，一个`[Int]`类型的 Swift 数组包含`Int`类型的元素。`Int`类型并不是 class 类型，但由于`Int`类型可桥接成`NSNumber`类，因此`Int`类型兼容`AnyObject`。综上所述，可以将一个`[Int]`类型的 Swift 数组桥接为`NSArray`对象。如果 Swift 数组里的某个元素不兼容`AnyObject`，那么桥接到`NSArray`对象时就会发生运行时错误。
 
 > 注意  
-> 为了优化性能，将一个集合强制向下转换为特定类型的集合时，例如`NSArray as! [String]`，针对集合中每个元素的类型检查可能会被推迟到它们被单独访问时。因此，将集合强制转换为不兼容类型的集合可能会成功，直到元素被访问时才会因为类型转换失败而引发运行时错误。  
+> 为了优化性能，将一个集合强制向下转换为特定类型的集合时，例如`NSArray as! [String]`，针对集合中每个元素的类型检查可能会被推迟到它们被单独访问时。因此，强制转换为不兼容的类型可能会成功，直到元素被访问时才会因为类型转换失败而引发运行时错误。  
 > 使用可选类型版本的向下转换操作符进行转换时，例如`NSArray as? [String]`，将立即针对每个元素进行类型检查，如果任意元素类型转换失败就会返回`nil`。
 
 还可以直接利用 Swift 数组字面量创建一个`NSArray`对象，这同样遵循上面提到的桥接规则。将一个常量或变量声明为一个`NSArray`类型并分配一个数组字面量时，Swift 将会创建`NSArray`对象，而不是 Swift 数组。
 
 ```swift
 let schoolSupplies: NSArray = ["Pencil", "Eraser", "Notebkko"]
-// schoolSupplies is an NSArray object containing NSString objects
+// schoolSupplies 是一个包含 NSString 对象的 NSArray 对象
 ```
 
 在上面的例子中，Swift 数组字面量包含三个`String`字面量。因为`String`会桥接为`NSString`，因此数组字面量被桥接成一个`NSArray`对象，并成功分配给`schoolSupplies`常量。
 
-在 Objective-C 代码中使用 Swift 类或者协议时，导入器会将被导入的 API 中所有任意类型的 Swift 数组替换为`NSArray`。如果传递一个`NSArray`对象给接收数组的 Swift API，但是元素类型不兼容，就会发生运行时错误。如果 Swift API 返回一个 Swift 数组，但却不能被桥接为`NSArray`，也会发生运行时错误。
+在 Objective-C 代码中使用 Swift 类或者协议时，导入器会将被导入的 API 中所有 Swift 数组替换为`NSArray`对象。如果传递一个`NSArray`对象给接收数组的 Swift API，但是元素类型不兼容，就会发生运行时错误。如果 Swift API 返回一个 Swift 数组，但却不能被桥接为`NSArray`对象，也会发生运行时错误。
 
 ### 集合
 
@@ -152,7 +152,7 @@ func wordsMatchingPredicate(predicate: NSPredicate) -> Set<String>
 func removeWords(words: Set<String>)
 ```
 
-可以将所有`NSSet`对象桥接为 Swift 集合，因为所有 Objective-C 对象都可以被桥接为`AnyObject`。正因如此，Swift 编译器会在导入 Objective-C API 的时候，将所有的`NSSet`类替换为`Set<AnyObject>`。同理，在 Objective-C 中使用 Swift 类或者协议的时候，导入器会将 Swift 集合重新映射为兼容 Objective-C 的`NSSet`对象。
+可以将所有`NSSet`对象桥接为 Swift 集合，因为所有 Objective-C 对象都可以被桥接为`AnyObject`。因此，Swift 编译器会在导入 Objective-C API 时，将所有`NSSet`类替换为`Set<AnyObject>`。同理，在 Objective-C 中使用 Swift 类或者协议的时候，导入器会将 Swift 集合重新映射为兼容于 Objective-C 的`NSSet`对象。
 
 将`NSSet`对象桥接为 Swift 集合后，还可以将集合向下转换为特定类型。就如同 Swift 数组的向下转换一样，Swift 集合的向下转换也无法确保一定成功。对`Set<AnyObject>`使用`as?`操作符向下转换为特定类型的结果将是一个可选类型的值。
 
@@ -178,11 +178,11 @@ func fileSizesForURLsWithSuffix(suffix: String) -> [NSURL : NSNumber]
 func setCacheExpirations(expirations: [NSURL : NSDate])
 ```
 
-可以将所有`NSDictionary`对象转换为 Swift 字典，因为所有 Objective-C 对象都兼容`AnyObject`。重申一下，某个实例能兼容`AnyObject`，指的是它是 Objective-C 或 Swift 类的一个对象，或者能够桥接过去。正因如此，Swift 编译器会在导入 Objective-C API 的时候，将所有的`NSDictionary`类替换成`[NSObject : AnyObject]`。同理，在 Objective-C 中使用 Swift 类或者协议的时候，导入器会将 Swift 字典重新映射为兼容 Objective-C 的`NSDictionary`对象。
+可以将所有`NSDictionary`对象桥接为 Swift 字典，因为所有 Objective-C 对象都兼容`AnyObject`。回想一下，某个实例能兼容`AnyObject`，指的是它是 Objective-C 或 Swift 类的实例，或者能够桥接过去。因此，Swift 编译器会在导入 Objective-C API 的时候，将所有`NSDictionary`类替换成`[NSObject : AnyObject]`。同理，在 Objective-C 中使用 Swift 类或者协议的时候，导入器会将 Swift 字典重新映射为兼容于 Objective-C 的`NSDictionary`对象。
 
-将`NSDictionary`对象转换为 Swift 字典后，还可以将字典向下转换为特定类型。就如同 Swift 数组的向下转换一样，Swift 字典的向下转换不确保一定成功。对`[NSObject : AnyObject]`使用`as?`操作符向下转换为特定类型的结果将是一个可选类型的值。
+将`NSDictionary`对象转换为 Swift 字典后，还可以将字典向下转换为特定类型。就如同 Swift 数组的向下转换一样，Swift 字典的向下转换也无法确保一定成功。对`[NSObject : AnyObject]`使用`as?`操作符向下转换为特定类型的结果将是一个可选类型的值。
 
-在进行反向转换，也就是将 Swift 字典转换为`NSDictionary`对象的过程中，其键值都必须是某个类的对象，或者能够被桥接为某个类的对象。
+在进行反向转换，也就是将 Swift 字典转换为`NSDictionary`对象的过程中，其键值都必须是某个类的实例，或者能够桥接为某个类的实例。
 
 还可以直接利用 Swift 字典字面量创建一个`NSDictionary`对象，这同样遵循上面提到的桥接规则。显式地将某个常量或者变量声明为`NSDictionary`类型，并分配一个字典字面量时，Swift 将会创建一个`NSDictionary`对象，而不是 Swift 字典。
 
@@ -191,7 +191,7 @@ func setCacheExpirations(expirations: [NSURL : NSDate])
 
 Swift 会在`ErrorType`类型和`NSError`类之间自动桥接。可能会产生错误的 Objective-C 方法会被导入为 Swift 的 throw 方法。反过来，Swift 的 throw 方法会依照 Objecitive-C 中的错误约定，被导入为可能会产生错误的 Objective-C 方法。
 
-符合`ErrorType`协议，并使用`@objc`属性声明的 Swift 枚举，会在自动生成的头文件中生成一个`NS_ENUM`声明和一个表示相应错误域名的`NSString`常量。例如以下 Swift 枚举声明：
+符合`ErrorType`协议，并使用`@objc`特性声明的 Swift 枚举，会在自动生成的头文件中生成一个`NS_ENUM`声明和一个表示相应错误域名的`NSString`常量。例如以下 Swift 枚举声明：
 
 ```swift
 @objc public enum CustomError: Int, ErrorType {
@@ -199,7 +199,7 @@ Swift 会在`ErrorType`类型和`NSError`类之间自动桥接。可能会产生
 }
 ```
 
-在自动生成的头文件中相应的 Objectivive-C 声明如下：
+在自动生成的头文件中相应的 Objective-C 声明如下：
 
 ```objective-c
 // Project-Swift.h
@@ -235,11 +235,11 @@ Swift 将`NSUInteger`和`NSInteger`桥接为`Int`，Foundation API 中的这些�
 <a name = "foundation_functions"></a>
 ## Foundation 函数
 
-在 Swift，`NSLog`函数仍然可用于在系统控制台打印信息，其格式化语法和在 Objective-C 中一样。
+在 Swift，`NSLog`函数仍然可以在系统控制台打印信息，其格式化语法和在 Objective-C 中一样。
 
 ```swift
 NSLog("%.7f", pi)
-// 控制台将打印 "3.1415927"
+// 输出 "3.1415927" 到控制台
 ```
 
 Swift 也提供了`print(_:separator:terminator:)`这样的打印函数。得益于字符插值机制，这些函数简洁易用、功能全面，足以胜任一般的打印需求。
@@ -249,21 +249,21 @@ Swift 也提供了`print(_:separator:terminator:)`这样的打印函数。得益
 <a name = "core_foundation"></a>
 ## Core Foundation
 
-Core Foundation 类型会被自动导入为完备的 Swift 类。无论是否提供了内存管理注释，Swift 都会自动管理 Core Foundation 对象的内存，包括你自己实例化的 Core Foundation 对象。在 Swift 中，可以将每一对可免费桥接的 Fundation 和 Core Foundation 类型互换使用。先将 Core Foundation 类型桥接为 Foundation 类型，就可以进一步桥接为 Swift 标准库类型。
+Core Foundation 类型会被自动导入为完备的 Swift 类。无论是否提供了内存管理注释，Swift 都会自动管理 Core Foundation 对象的内存，包括自己实例化的 Core Foundation 对象。在 Swift，可以将每一对可免费桥接的 Fundation 和 Core Foundation 类型互换使用。先将 Core Foundation 类型桥接为 Foundation 类型，就可以进一步桥接为 Swift 标准库类型。
 
 ### 重映射类型
 
 Swift 导入 Core Foundation 类型时，会将这些类型的名字重映射，从类型名字的末端移除 *Ref*，所有的 Swift 类都是引用类型，因此该后缀是多余的。
 
-Core Foundation 中的`CFTypeRef`类型会重映射为`Anyobject`类型。以前使用`CFTypeRef`的地方，现在该统统换成`AnyObject`了。
+Core Foundation 的`CFTypeRef`类型会重映射为`Anyobject`类型。以前使用`CFTypeRef`的地方，现在该换成`AnyObject`了。
 
 ### 内存受管理的对象
 
-Swift 会自动对从带内存管理注释的 API 返回的 Core Foundation 对象进行内存管理，不再需要调用`CFRetain`，`CFRelease`，或者`CFAutorelease`函数。
+对于从带内存管理注释的 API 返回的 Core Foundation 对象，Swift 会自动对其进行内存管理，不再需要调用`CFRetain`，`CFRelease`，或者`CFAutorelease`函数。
 
-如果你自己的 C 函数或 Objective-C 方法会返回 Core Foundation 对象，需要用`CF_RETURNS_RETAINED`或者`CF_RETURNS_NOT_RETAINED`宏注释这些函数或方法，从而自动插入内存管理代码。还可以使用`CF_IMPLICIT_BRIDGING_ENABLED`和`CF_IMPLICIT_BRIDGING_DISABLED`宏包围那些遵循 Core Foundation 内存管理规定、命名规定的 C 函数声明，从而能够根据命名推导出内存管理策略。
+如果自定义的 C 函数或 Objective-C 方法返回 Core Foundation 对象，需要用`CF_RETURNS_RETAINED`或者`CF_RETURNS_NOT_RETAINED`宏注释这些函数或方法，从而自动插入内存管理代码。还可以使用`CF_IMPLICIT_BRIDGING_ENABLED`和`CF_IMPLICIT_BRIDGING_DISABLED`宏包围那些遵循 Core Foundation 内存管理规定、命名规定的 C 函数声明，从而能够根据命名推导出内存管理策略。
 
-如果你只调用那些不会间接返回 Core Foundation 对象的带内存管理注释的 API，那么可以略过本节的剩余部分了。否则，需要进一步学习有关非托管 Core Foundation 对象的知识。
+如果只调用那些不会间接返回 Core Foundation 对象的带内存管理注释的 API，那么可以略过本节的剩余部分了。否则，需要进一步学习有关非托管 Core Foundation 对象的知识。
 
 ### 非托管对象
 
@@ -281,7 +281,7 @@ func StringByAddingTwoStrings(_: CFString!, _: CFString!) -> Unmanaged<CFString>
 }
 ```
 
-从没有内存管理注释的 API 接收到非托管对象后，在使用它之前，必须将它转换为能够接受内存管理的对象。这样，Swift 就可以帮你对其进行内存管理。`Unmanaged<T>`结构提供了两个方法，用于将一个非托管对象转换为一个可接受内存管理的对象，即`takeUnretainedValue()`方法和`takeRetainedValue()`方法。这两个方法均会返回解包后的对象，可以根据 API 返回的是 retained 对象还是 unretained 对象来选择合适的方法。
+从没有内存管理注释的 API 接收到非托管对象后，在使用它之前，必须将它转换为能够接受内存管理的对象。这样，Swift 就可以对其进行内存管理。`Unmanaged<T>`结构提供了两个方法，用于将一个非托管对象转换为一个可接受内存管理的对象，即`takeUnretainedValue()`方法和`takeRetainedValue()`方法。这两个方法均会返回解包后的对象，可以根据 API 返回的是 unretained 对象还是 retained 对象来选择合适的方法。
 
 例如，假设上面的 C 函数不会 retain `CFString`对象。在使用这个对象前，应该使用`takeUnretainedValue()`函数。
 
