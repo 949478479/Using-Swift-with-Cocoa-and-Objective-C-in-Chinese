@@ -3,6 +3,7 @@
 本页包含内容：
 
 - [代理](#Delegation)
+- [惰性初始化](#Lazy Initialization)
 - [错误处理](#error_handling)
 - [键值观察](#Key-Value_Observing)
 - [目标——动作](#Target_Action)
@@ -10,19 +11,19 @@
 - [内省](#Introspection)
 - [API 可用性](#API_Availability)
 
-使用 Cocoa 现有的一些设计模式，是帮助开发者开发一款拥有合理设计思路、稳定的性能、良好的可扩展性应用的有效方法之一。这些模式都依赖于在 Objective-C 中定义的类。因为 Swift 与 Objective-C 的互用性，所以你依然可以在 Swift 代码中使用这些设计模式。在一些情况下，你甚至可以使用 Swift 语言的特性扩展或简化这些 Cocoa 设计模式，使这些设计模式更强大、更易于使用。
+使用 Cocoa 既有的设计模式，能帮助开发者开发出设计巧妙、扩展性强的应用程序。这些模式很多都依赖于在 Objective-C 中定义的类。由于 Swift 与 Objective-C 的互用性，依然可以在 Swift 中使用这些设计模式。在某些情况下，甚至可以使用 Swift 的语言特性扩展或简化这些 Cocoa 设计模式，使这些设计模式更加强大易用。
 
 <a name="Delegation"></a>
-## 委托
+## 代理
 
-在 Swift 和 Objective-C 中，委托通常由一个定义交互方法的协议和遵循协议的委托属性表示。就像在 Objective-C 中，在你向委托发送可能无法响应的消息之前，你会去询问委托是否能响应消息。在 Swift 中，你可以使用可选链接在一个可能为`nil`的对象上调用可选的代理方法，并使用`if-let`语法展开可能存在的返回值。
+在 Swift 和 Objective-C，代理通常由一个定义交互方法的协议和遵循协议的代理属性表示。就像在 Objective-C，在向代理发送可能无法响应的消息之前，应询问代理能否响应消息。在 Swift，可以使用可选链语法在一个可能为`nil`的对象上调用可选的代理方法，并使用`if-let`语法解包未必有值的返回值。
 
-下面列出的代码可以说明这个过程：
+下面的代码阐明了这个过程：
 
 1. 检查`myDelegate`不为`nil`。
 2. 检查`myDelegate`是否实现了`window:willUseFullScreenContentSize:`方法。
-3. 如果步骤1和2检查结果成立，那么调用该方法，将该方法的返回值分配给名为`fullScreenSize`的常量。
-4. 将该方法的返回值输出在控制台。
+3. 如果步骤1和步骤2顺利通过，那么调用该方法，将返回值赋值给名为`fullScreenSize`的常量。
+4. 在控制台打印方法的返回值。
 
 ```swift
 class MyDelegate: NSObject, NSWindowDelegate {
@@ -37,13 +38,15 @@ if let fullScreenSize = myDelegate?.window?(myWindow, willUseFullScreenContentSi
 }
 ```
 
+<a name="Lazy Initialization"></a>
+## 惰性初始化
+
 <a name="error_handling"></a>
 ## 错误处理
 
 在 Cocoa 中，产生错误的方法将`NSError`指针参数作为最后一个参数，当错误产生时，该参数会被`NSError`对象填充。Swift 会自动将 Objective-C 中产生错误的方法转换为根据 Swift 原生错误处理功能抛出错误的方法。
 
-> 注意
-
+> 注意  
 > 某些产生错误的方法，例如代理方法或者参数是拥有`NSError`对象参数的 block 的方法，不会被 Swift 处理为`throw`方法。
 
 例如，考虑下面的来自于`NSFileManager`的 Objective-C 方法：
