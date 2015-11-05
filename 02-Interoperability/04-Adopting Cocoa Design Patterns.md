@@ -41,44 +41,89 @@ if let fullScreenSize = myDelegate?.window?(myWindow, willUseFullScreenContentSi
 <a name="Lazy Initialization"></a>
 ## 惰性初始化
 
+惰性属性的值只会在被初次访问时才被初始化。当属性的初始化过程十分复杂或者代价昂贵，或者属性的初始值无法在实例的构造过程完成前确定时，惰性属性会十分有用。
+
+在 Objective-C，一个属性可能会覆写其自动合成的 getter 方法，只在实例变量为`nil`时才初始化实例变量：
+
+```objective-c
+@property NSXMLDocument *XMLDocument;
+     
+- (NSXMLDocument *)XMLDocument {
+    if (_XMLDocument == nil) {
+        _XMLDocument = [[NSXMLDocument alloc] initWithContentsOfURL:[[NSBundle mainBundle]     
+            URLForResource:@"/path/to/resource" withExtension:@"xml"] options:0 error:nil];
+    }
+    return _XMLDocument;
+}
+```
+
+在 Swift，可以使用`lazy`修饰符声明一个存储属性，这将使计算初始值的表达式只在属性被初次访问时才进行求值：
+
+```swift
+lazy var XMLDocument: NSXMLDocument = try! NSXMLDocument(contentsOfURL: 
+    NSBundle.mainBundle().URLForResource("document", withExtension: "xml")!, options: 0)
+```
+
+由于惰性属性只在被初次访问时才进行初始化，此时实例本身已被完全初始化，因此在初始化表达式中可以使用`self`：
+
+```swift
+var pattern: String
+lazy var regex: NSRegularExpression = try! NSRegularExpression(pattern: self.pattern, options: [])
+```
+
+如果还需在初始化的基础上进行额外的设置，则可以将一个自求值的闭包赋值给属性：
+
+```swift
+lazy var ISO8601DateFormatter: NSDateFormatter = {
+    let formatter = NSDateFormatter()
+    formatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+    formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
+    return formatter
+}()
+```
+
+> 注意  
+> 如果一个惰性属性还未被初始化就被多个线程同时访问，此时无法保证此惰性属性只被初始化一次。
+
+请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的 [延迟存储属性](http://wiki.jikexueyuan.com/project/swift/chapter2/10_Properties.html#stored_properties) 小节。
+
 <a name="error_handling"></a>
 ## 错误处理
 
 在 Cocoa 中，产生错误的方法将`NSError`指针参数作为最后一个参数，当错误产生时，该参数会被`NSError`对象填充。Swift 会自动将 Objective-C 中产生错误的方法转换为根据 Swift 原生错误处理功能抛出错误的方法。
 
 > 注意  
-> 某些产生错误的方法，例如代理方法或者参数是拥有`NSError`对象参数的 block 的方法，不会被 Swift 处理为`throw`方法。
+> 某些产生错误的方法，例如代理方法，或者方法接受 block 参数，而 block 接受`NSError`对象参数，不会被 Swift 导入为`throws`方法。
 
-例如，考虑下面的来自于`NSFileManager`的 Objective-C 方法：
+例如，思考下面的来自于`NSFileManager`的 Objective-C 方法：
 
 ```objective-c
 - (BOOL)removeItemAtURL:(NSURL *)URL
                   error:(NSError **)error;
 ```
 
-在 Swift 中，它会被这样导入：
+在 Swift，它会被这样导入：
 
 ```swift
 func removeItemAtURL(URL: NSURL) throws
 ```
 
-注意到`removeItemAtURL(_:)`方法被 Swift 导入时，返回值类型为`Void`，没有`error`参数，而有一个`throws`声明。
+注意`removeItemAtURL(_:)`方法被 Swift 导入时，返回值类型为`Void`，没有`error`参数，而有一个`throws`声明。
 
-如果 Objective-C 方法的最后一个非闭包参数是`NSError **`类型，Swift 则会将之替换为`throws`关键字，以表明该方法可以抛出一个错误。如果 Objective-C 方法的错误参数也是它的第一个参数，Swift 则会尝试通过删除选择器的第一部分中的"WithError"或"AndReturnError" 后缀来进一步简化方法名。如果简化后的方法名会和另一方法的方法名冲突，则不会简化该方法名。
+如果 Objective-C 方法的最后一个非 block 参数是`NSError **`类型，Swift 会将之替换为`throws`关键字，以表明该方法可以抛出一个错误。如果 Objective-C 方法的错误参数是它的第一个参数，Swift 会尝试删除选择器第一部分中的“WithError”或“AndReturnError”后缀来进一步简化方法名。如果简化后的方法名会和其他方法名冲突，则不会进行简化。
 
-如果产生错误的 Objective-C 的方法返回一个用来表示方法调用成功或失败的`BOOL`值，Swift 会把函数的返回值转换为`Void`。同样的，如果产生错误的 Objective-C 方法返回一个`nil`值来表明方法调用的失败，Swift 会把函数的返回值转换为非可选类型。
+如果产生错误的 Objective-C 方法返回一个用来表示方法调用成功或失败的`BOOL`值，Swift 会把返回值转换为`Void`。同样的，如果产生错误的 Objective-C 方法返回一个`nil`值来表明方法调用失败，Swift 会把返回值转换为非可选类型。
 
 否则，如果没有约定可供推断，则该方法保持不变。
 
-> 注意
-
-> 使用`NS_SWIFT_NOTHROW `宏声明一个产生错误的 Objective-C 方法可以防止该方法作为`throw`方法导入 Swift 中。
+> 注意  
+> 使用`NS_SWIFT_NOTHROW`宏声明一个产生错误的 Objective-C 方法可以防止该方法作为`throws`方法导入到 Swift。
 
 ### 捕获和处理错误
 
-在 Objective-C 中，错误处理是可选的，意味着方法产生的错误会被忽略除非你提供了一个错误指针。在 Swift 中，调用一个会抛出错误的方法要求显式地进行错误处理。
+在 Objective-C，错误处理是可选的，这意味着方法产生的错误会被忽略，除非提供了一个错误指针。在 Swift，调用一个会抛出错误的方法时必须显式地进行错误处理。
 
-下面是如何在 Objective-C 中处理调用方法时产生的错误：
+下面演示了如何在 Objective-C 中处理调用方法时产生的错误：
 
 ```objective-c
 NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -104,7 +149,7 @@ do {
 }
 ```
 
-此外，你可以使用`catch`从句来匹配特定的错误代码来区分不同的失败条件：
+此外，还可以使用`catch`子句来匹配特定的错误代码从而区分不同的失败条件：
 
 ```swift
 do {
@@ -118,9 +163,9 @@ do {
 
 ### 转换错误为可选值
 
-在 Objective-C 中，你可以向错误参数传递`NULL`来忽略潜在的错误。在 Swift 中，你使用`try?`关键字将一个抛出异常的方法转换为一个返回可选值的方法，然后检查返回值是否为`nil`。
+在 Objective-C，可以向错误参数传递`NULL`来忽略错误。在 Swift，可以使用`try?`关键字将`throws`方法转换为返回可选类型的方法，然后检查返回值是否为`nil`。
 
-例如，`NSFileManager`的实例方法`URLForDirectory(_:inDomain:appropriateForURL:create:)`返回一个表示搜索路径和域的 URL，如果对应的 URL 不存在并且无法创建，将会产生一个错误。在 Objective-C 中，可以通过检查返回的 URL 是否有值来判断此方法成功或是失败。
+例如，`NSFileManager`的实例方法`URLForDirectory(_:inDomain:appropriateForURL:create:)`会根据指定搜索路径和域返回一个 URL，如果 URL 不存在也无法被创建，将会产生一个错误。在 Objective-C，可以检查返回的 URL 是否有值来判断此方法成功或是失败。
 
 ```objective-c
 NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -135,7 +180,7 @@ if (tmpURL != nil) {
 }
 ```
 
-在 Swfit 中你可以这样做：
+在 Swfit 应该这样：
 
 ```swift
 let fileManager = NSFileManager.defaultManager()
@@ -149,7 +194,7 @@ if let tmpURL = try? fileManager.URLForDirectory(.CachesDirectory,
 
 ### 抛出错误
 
-如果一个错误发生在 Objective-C 方法中，那么该错误被用来填充方法的错误指针参数：
+如果一个错误发生在 Objective-C 方法中，那么错误对象会填充方法的错误指针参数：
 
 ```objective-c
 // 发生一个错误
@@ -160,16 +205,16 @@ if (errorPtr) {
 }
 ```
 
-如果一个错误发生在 Swift 方法中，那么该错误便会被抛出，并且会自动传递给调用者：
+如果一个错误发生在 Swift 方法中，那么错误会被抛出，并且自动传递给调用者：
 
 ```swift
 // 发生一个错误
 throw NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotOpenFile, userInfo: nil)
 ```
 
-如果 Objective-C 代码调用抛出错误的 Swift 方法，那么发生错误时该错误会被自动传递给桥接过来的 Objective-C 方法的错误指针参数。
+如果 Objective-C 代码调用会抛出错误的 Swift 方法，那么发生错误时，该错误会自动传递给桥接而来的 Objective-C 方法的错误指针参数。
 
-例如，思考`NSDocument`中的`readFromFileWrapper(_:ofType:)`方法。在 Objective-C 中，这个方法的最后一个参数是`NSError **`。当在 Swift 的`NSDocument`的子类中重写该方法时，该方法会以抛出异常的方式替代错误指针参数。
+例如，思考`NSDocument`中的`readFromFileWrapper(_:ofType:)`方法。在 Objective-C，这个方法的最后一个参数是`NSError **`。在 Swift 的`NSDocument`子类中重写该方法时，该方法会以抛出错误的方式替代错误指针参数。
 
 ```swift
 class SerializedDocument: NSDocument {
@@ -192,13 +237,10 @@ class SerializedDocument: NSDocument {
 }
 ```
 
-如果方法不能够使用正规的文件的内容来创建一个对象，则会抛出一个`NSError`对象。如果方法是从 Swift 代码中调用的，那么该错误会被传递到它的调用域。如果该方法是在 Objective-C 代码中被调用，错误将会填充到错误指针参数里。
+如果方法无法使用正规的文件内容来创建一个对象，则会抛出一个`NSError`对象。如果该方法在 Swift 中调用，那么该错误会被传递到它的调用域。如果该方法在 Objective-C 中调用，错误会填充到错误指针参数。
 
-在 Objective-C 中，错误处理是可选的，意味着方法产生的错误会被忽略除非你提供了一个错误指针。在 Swift 中，调用一个会抛出错误的方法要求显式地进行错误处理。
-
-> 注意
-
-> 尽管 Swift 的错误处理类似 Objective-C 的异常处理，但它是完全不同的功能。如果一个 Objective-C 方法运行时抛出了一个异常，Swift 则会触发一个运行时错误。没有办法直接在 Swift 中重新获得来自 Objective-C 的异常。任何异常处理行为必须在 Objective-C 代码中实现。
+> 注意  
+> 尽管 Swift 的错误处理类似 Objective-C 的异常处理，但它是完全不同的功能。如果一个 Objective-C 方法在运行时抛出了一个异常，对于 Swift 来说，则会触发一个运行时错误。无法直接在 Swift 中重新获得来自 Objective-C 的异常。任何异常处理行为必须在 Objective-C 代码中实现。
 
 <a name="Key-Value_Observing"></a>
 ## 键值观察
