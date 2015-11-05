@@ -189,7 +189,7 @@ func setCacheExpirations(expirations: [NSURL : NSDate])
 <a name = "errors"></a>
 ## 错误
 
-Swift 会在`ErrorType`类型和`NSError`类之间自动桥接。可能会产生错误的 Objective-C 方法会被导入为 Swift 的`throws`方法。反过来，Swift 的`throws`方法会依照 Objecitive-C 中的错误约定，被导入为可能会产生错误的 Objective-C 方法。
+Swift 会在`ErrorType`类型和`NSError`类之间自动桥接。会产生错误的 Objective-C 方法会被导入为 Swift 的`throws`方法。反过来，Swift 的`throws`方法会依照 Objecitive-C 中的错误约定，被导入为会产生错误的 Objective-C 方法。
 
 符合`ErrorType`协议，并使用`@objc`特性声明的 Swift 枚举，会在自动生成的头文件中生成一个`NS_ENUM`声明和一个表示相应错误域名的`NSString`常量。例如以下 Swift 枚举声明：
 
