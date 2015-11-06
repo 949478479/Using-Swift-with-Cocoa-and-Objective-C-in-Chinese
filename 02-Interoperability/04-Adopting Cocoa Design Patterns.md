@@ -302,9 +302,9 @@ class MyObserver: NSObject {
 
 在 Cocoa 中，可以使用`NSUndoManager`注册一个操作，从而允许用户撤销该操作。在 Swift，可以像在 Objective-C 一样利用 Cocoa 的撤销功能。
 
-对于应用程序响应链上的对象，也就是 OS X 的`NSResponder`和 iOS 的`UIResponder`，以及它们的子类，都有一个只读的`undoManager`属性。该属性返回一个可选类型的`NSUndoManager`对象，该对象管理着应用程序的撤销栈。每当用户进行一个操作时，例如编辑文本内容，或是删除表视图的选中行，会有一个撤销操作被`NSUndoManager`注册，从而允许用户恢复到操作之前的状态。一个撤销操作会记录必要的步骤来恢复到操作之前的状态，例如将文本内容设置为修改前的原始内容，或是重新添加被删除的选中行。
+对于应用程序响应链上的对象，也就是 OS X 的`NSResponder`和 iOS 的`UIResponder`，以及它们的子类，都有一个只读的`undoManager`属性。该属性返回一个可选类型的`NSUndoManager`对象，该对象管理着应用程序的撤销栈。每当用户进行一个操作时，例如编辑文本内容，或是删除表视图的选中行，可以用`NSUndoManager`注册一个撤销操作，从而允许用户恢复到操作之前的状态。一个撤销操作会记录必要的步骤来恢复到操作之前的状态，例如将文本内容设置为修改前的原始内容，或是重新添加被删除的选中行。
 
-`NSUndoManager`支持两种方式注册撤销操作：一个是“简单撤销”，即执行一个具有单一对象参数的选择器，并...
+`NSUndoManager`支持两种方式注册撤销操作：一种是“简单撤销”，它会执行一个选择器，最多只能接收一个对象类型的参数；另一种则使用`NSInvocation`对象，从而可以支持多个参数以及多种参数类型。
 
 例如，思考下面的`Task`模型，它使用`ToDoListController`来展示一个完成的任务列表：
 
@@ -326,7 +326,46 @@ class ToDoListController: NSViewController, NSTableViewDataSource, NSTableViewDe
 }
 ```
 
-对于 Swift 中的属性，可以在属性观察器`willSet`中创建一个撤销操作，使用`self`作为`target`，相应的 Objective-C setter 方法作为`selector`
+对于 Swift 中的属性，可以在属性观察器`willSet`中创建一个撤销操作，使用`self`作为`target`，相应的 Objective-C setter 方法作为`selector`，属性的当前值作为`object`：
+
+```swift
+@IBOutlet var notesLabel: NSTextView!
+     
+var notes: String? {
+    willSet {
+        undoManager?.registerUndoWithTarget(self, selector: "setNotes:", object: self.title)
+        undoManager?.setActionName(NSLocalizedString("todo.notes.update", comment: "Update Notes"))
+    }
+     
+    didSet {
+        notesLabel.string = notes
+    }
+}
+```
+
+如果方法接受多个参数，可以使用`NSInvocation`创建撤销操作：
+
+```swift
+@IBOutlet var remainingLabel: NSTextView!
+     
+func markTask(task: Task, asCompleted completed: Bool) {
+    if let target = undoManager?.prepareWithInvocationTarget(self) as? ToDoListController {
+        target.markTask(task, asCompleted: !completed)
+        undoManager?.setActionName(NSLocalizedString("todo.task.mark", comment: "Mark As Completed"))
+    }
+        
+    task.completed = completed
+    tableView.reloadData()
+        
+    let numberRemaining = tasks.filter{ $0.completed }.count
+    remainingLabel.string = String(format: NSLocalizedString("todo.task.remaining", 
+        comment: "Tasks Remaining: %d"), numberRemaining)
+}
+```
+
+`prepareWithInvocationTarget(_:)`方法会返回`target`的代理。通过转换为`ToDoListController`，就可以直接对`markTask(_:asCompleted:)`发起调用。
+
+更多信息请参阅 [The Undo Architecture Programming GuideTarget-Action](https://developer.apple.com/library/prerelease/ios/documentation/Cocoa/Conceptual/UndoArchitecture/UndoArchitecture.html#//apple_ref/doc/uid/10000010-SW1)。
 
 <a name="Target_Action"></a>
 ## 目标-动作
