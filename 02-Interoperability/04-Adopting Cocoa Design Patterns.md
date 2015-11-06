@@ -6,7 +6,8 @@
 - [惰性初始化](#Lazy Initialization)
 - [错误处理](#error_handling)
 - [键值观察](#Key-Value_Observing)
-- [目标——动作](#Target_Action)
+- [撤销](#Undo)
+- [目标-动作](#Target_Action)
 - [单例](#Singleton)
 - [内省](#Introspection)
 - [API 可用性](#API_Availability)
@@ -245,9 +246,9 @@ class SerializedDocument: NSDocument {
 <a name="Key-Value_Observing"></a>
 ## 键值观察
 
-键值观察是一种机制，该机制允许对象获得其他对象的特定属性的变化的通知。只要你的 Swift 类继承自 NSObject 类，你就可以在 Swift 中通过下面三步来实现键值观察：
+键值观察能让对象获得其他对象特定属性的变化通知。只要 Swift 类继承自 NSObject 类，就可以在 Swift 中通过下面三步来实现键值观察：
 
-1. 为你想要观察的属性添加`dynamic`修改符。关于`dynamic`的更多信息，请见 [要求动态派发（Requiring Dynamic Dispatch）](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02Interoperability/01Interacting%20with%20Objective-C%20APIs.md#%E8%A6%81%E6%B1%82%E5%8A%A8%E6%80%81%E6%B4%BE%E5%8F%91requiring-dynamic-dispatch)。
+1. 为想要观察的属性添加`dynamic`修改符。关于`dynamic`的更多信息，请参阅 [要求动态派发](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02Interoperability/01Interacting%20with%20Objective-C%20APIs.md#%E8%A6%81%E6%B1%82%E5%8A%A8%E6%80%81%E6%B4%BE%E5%8F%91requiring-dynamic-dispatch)。
 
 ```swift
 class MyObjectToObserve: NSObject {
@@ -265,7 +266,8 @@ class MyObjectToObserve: NSObject {
 ```swift
 private var myContext = 0
 ```
-3. 为 key-path 增加一个观察者，重写`observeValueForKeyPath:ofObject:change:context:`方法，并且在`deinit`中移除观察者。
+
+3. 为 key-path 添加一个观察者，重写`observeValueForKeyPath:ofObject:change:context:`方法，并在`deinit`中移除观察者。
 
 ```swift
 class MyObserver: NSObject {
@@ -277,7 +279,8 @@ class MyObserver: NSObject {
         objectToObserve.addObserver(self, forKeyPath: "myDate", options: .New, context: &myContext)
     }    
     
-    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [NSObject : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+    override func observeValueForKeyPath(keyPath: String?, 
+        ofObject object: AnyObject?, change: [NSObject : AnyObject]?, context: UnsafeMutablePointer<Void>) {
     
         if context == &myContext {
             if let newValue = change?[NSKeyValueChangeNewKey] {
@@ -294,8 +297,39 @@ class MyObserver: NSObject {
 }
 ```
 
+<a name="Undo"></a>
+## 撤销
+
+在 Cocoa 中，可以使用`NSUndoManager`注册一个操作，从而允许用户撤销该操作。在 Swift，可以像在 Objective-C 一样利用 Cocoa 的撤销功能。
+
+对于应用程序响应链上的对象，也就是 OS X 的`NSResponder`和 iOS 的`UIResponder`，以及它们的子类，都有一个只读的`undoManager`属性。该属性返回一个可选类型的`NSUndoManager`对象，该对象管理着应用程序的撤销栈。每当用户进行一个操作时，例如编辑文本内容，或是删除表视图的选中行，会有一个撤销操作被`NSUndoManager`注册，从而允许用户恢复到操作之前的状态。一个撤销操作会记录必要的步骤来恢复到操作之前的状态，例如将文本内容设置为修改前的原始内容，或是重新添加被删除的选中行。
+
+`NSUndoManager`支持两种方式注册撤销操作：一个是“简单撤销”，即执行一个具有单一对象参数的选择器，并...
+
+例如，思考下面的`Task`模型，它使用`ToDoListController`来展示一个完成的任务列表：
+
+```swift
+class Task {
+    var text: String
+    var completed: Bool = false
+        
+    init(text: String) {
+        self.text = text
+    }
+}
+     
+class ToDoListController: NSViewController, NSTableViewDataSource, NSTableViewDelegate {
+    @IBOutlet var tableView: NSTableView!
+    var tasks: [Task] = []
+        
+    // ...
+}
+```
+
+对于 Swift 中的属性，可以在属性观察器`willSet`中创建一个撤销操作，使用`self`作为`target`，相应的 Objective-C setter 方法作为`selector`
+
 <a name="Target_Action"></a>
-## 目标-行为模式（Target-Action）
+## 目标-动作
 
 当有特定事件发生，需要一个对象向另一个对象发送消息时，通常采用 Cocoa 的 Target-Action 设计模式。Swift 和 Objective-C 中的 Target-Action 模式基本类似。在 Swift 中，你可以使用`Selector`类型引用 Objective-C 中的选择器。请在 [Objective-C 选择器（Objective-C Selectors）](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02Interoperability/01Interacting%20with%20Objective-C%20APIs.md#objective-c-%E9%80%89%E6%8B%A9%E5%99%A8objective-c-selectors)中查看在 Swift 中使用 Target-Action 设计模式的示例。
 
