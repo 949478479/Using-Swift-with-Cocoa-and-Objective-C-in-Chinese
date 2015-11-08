@@ -10,7 +10,9 @@
 - [目标-动作](#Target_Action)
 - [单例](#Singleton)
 - [内省](#Introspection)
+- [序列化](#Serializing)
 - [API 可用性](#API_Availability)
+- [处理命令行参数](#Processing Command-Line Arguments)
 
 使用 Cocoa 既有的设计模式，能帮助开发者开发出设计巧妙、扩展性强的应用程序。这些模式很多都依赖于在 Objective-C 中定义的类。由于 Swift 与 Objective-C 的互用性，依然可以在 Swift 中使用这些设计模式。在某些情况下，甚至可以使用 Swift 的语言特性扩展或简化这些 Cocoa 设计模式，使这些设计模式更加强大易用。
 
@@ -86,7 +88,7 @@ lazy var ISO8601DateFormatter: NSDateFormatter = {
 > 注意  
 > 如果一个惰性属性还未被初始化就被多个线程同时访问，此时无法保证此惰性属性只被初始化一次。
 
-请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的 [延迟存储属性](http://wiki.jikexueyuan.com/project/swift/chapter2/10_Properties.html#stored_properties) 小节。
+请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 的 [延迟存储属性](http://wiki.jikexueyuan.com/project/swift/chapter2/10_Properties.html#stored_properties) 小节。
 
 <a name="error_handling"></a>
 ## 错误处理
@@ -370,18 +372,17 @@ func markTask(task: Task, asCompleted completed: Bool) {
 <a name="Target_Action"></a>
 ## 目标-动作
 
-当有特定事件发生，需要一个对象向另一个对象发送消息时，通常采用 Cocoa 的 Target-Action 设计模式。Swift 和 Objective-C 中的 Target-Action 模式基本类似。在 Swift 中，你可以使用`Selector`类型引用 Objective-C 中的选择器。请在 [Objective-C 选择器（Objective-C Selectors）](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02Interoperability/01Interacting%20with%20Objective-C%20APIs.md#objective-c-%E9%80%89%E6%8B%A9%E5%99%A8objective-c-selectors)中查看在 Swift 中使用 Target-Action 设计模式的示例。
+目标-动作是一种常见的 Cocoa 设计模式，用于当特定事件发生，需要一个对象向另一个对象发送消息时。Swift 和 Objective-C 的目标-动作模式基本类似。在 Swift，可以使用`Selector`类型引用 Objective-C 的选择器。请参阅 [Objective-C 选择器](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02Interoperability/01Interacting%20with%20Objective-C%20APIs.md#objective-c-%E9%80%89%E6%8B%A9%E5%99%A8objective-c-selectors) 查看在 Swift 使用目标-动作模式的示例。
 
 <a name="Singleton"></a>
-## 单例（Singleton）
+## 单例
 
-单例对象提供了一个共享的可全局访问的对象。你可以创建自己的单例对象在应用程序内共享，从而提供一个统一的资源或服务的访问入口,比如一个播放音效的音频通道或发起 HTTP 请求的网络管理器。
+单例对象提供了一个共享的可全局访问的对象。可以创建自己的单例对象在应用程序内共享，从而提供一个统一的资源或服务的访问入口,比如一个播放音效的音频通道或发起 HTTP 请求的网络管理器。
 
-在 Objective-C 中，你可以用在 app 生命周期内保证 block 内代码只执行一次的`dispatch_once`函数包裹初始化代码来确保只有唯一的实例被创建。
+在 Objective-C，可以用`dispatch_once`函数包裹初始化代码，从而保证在应用程序的生命周期内，block 内的代码只会执行一次，这样就确保了只有唯一的实例会被创建。
 
 ```objective-c
 + (instancetype)sharedInstance {
-
     static id _sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -392,7 +393,7 @@ func markTask(task: Task, asCompleted completed: Bool) {
 }
 ```
 
-在 Swift 中，你可以简单地使用保证延迟初始化只执行一次的静态类型属性来实现单例，甚至在多个线程同时访问的情况下也没有问题：
+在 Swift，可以简单地使用静态类型属性来实现单例，它能保证延迟初始化只执行一次，即使在多个线程同时访问的情况下：
 
 ```swift
 class Singleton {
@@ -400,7 +401,7 @@ class Singleton {
 }
 ```
 
-如果你需要进行额外的设置，则可以使用闭包来初始化：
+如果需要进行额外的设置，则可以使用闭包来初始化：
 
 ```swift
 class Singleton {
@@ -412,14 +413,14 @@ class Singleton {
 }
 ```
 
-可以在[《The Swift Programming Language 中文版》](http://wiki.jikexueyuan.com/project/swift/)中的 [类型属性（Type Properties）](http://wiki.jikexueyuan.com/project/swift/chapter2/10_Properties.html#type_properties) 一节查看更多信息。
+请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 的 [类型属性](http://wiki.jikexueyuan.com/project/swift/chapter2/10_Properties.html#type_properties) 小节获取更多信息。
 
 <a name="Introspection"></a>
-## 内省（Introspection）
+## 内省
 
-在 Objective-C 中，你使用`isKindOfClass:`方法检查某个对象是否是特定类型的实例，以及使用`conformsToProtocol:`方法检查某个对象是否符合特定协议。在 Swift 中，你可以使用`is`操作符实现上述功能，也可以使用`as?`操作符向下转换到指定类型。
+在 Objective-C，使用`isKindOfClass:`方法检查某个对象是否是特定类型的实例，以及使用`conformsToProtocol:`方法检查某个对象是否符合特定协议。在 Swift，可以使用`is`操作符实现上述功能，也可以使用`as?`操作符向下转换到指定类型。
 
-你可以使用`is`操作符检查一个实例是否是指定类的子类。如果该实例是指定类的子类，那么`is`返回结果为`true`，反之为`false`。
+可以使用`is`操作符检查一个实例是否是指定类或其子类的实例。若是，那么`is`返回结果为`true`，反之为`false`。
 
 ```swift
 if object is UIButton {
@@ -429,7 +430,7 @@ if object is UIButton {
 }
 ```
 
-你也可以使用`as?`操作符尝试向下转换到子类型，`as?`操作符返回可选值，可结合`if-let`语句使用。
+也可以使用`as?`操作符尝试向下转换到子类型。`as?`操作符返回可选类型的值，可结合`if-let`语句使用。
 
 ```swift
 if let button = object as? UIButton {
@@ -438,9 +439,9 @@ if let button = object as? UIButton {
     // object 无法转换为 UIButton
 }
 ```
-可以在[《The Swift Programming Language 中文版》](http://wiki.jikexueyuan.com/project/swift/)中的 [类型转换（Type Casting）](http://wiki.jikexueyuan.com/project/swift/chapter2/19_Type_Casting.html) 一节查看更多信息。
+请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 的 [类型转换](http://wiki.jikexueyuan.com/project/swift/chapter2/19_Type_Casting.html) 章节获取更多信息。
 
-检查是否符合协议以及转换到符合协议类型的语法是完全一样的，下面是使用`as?`检查符合协议的示例：
+检查协议符合性以及转换到符合协议类型的语法和上述语法是完全一样的。下面是使用`as?`检查协议符合性的示例：
 
 ```swift
 if let dataSource = object as? UITableViewDataSource {
@@ -450,9 +451,14 @@ if let dataSource = object as? UITableViewDataSource {
 }
 ```
 
-注意，当转换之后，`dataSource`常量即是`UITableViewDataSource`类型，所以你只能访问和调用`UITableViewDataSource`协议定义的属性和方法。当你想进行其他操作时，必须将其转换为其他的类型。
+注意，经过转换之后，`dataSource`常量即是`UITableViewDataSource`类型，所以只能访问和调用`UITableViewDataSource`协议定义的属性和方法。想进行其他操作时，必须将其转换为其他类型。
 
-可以在[《The Swift Programming Language 中文版》](http://wiki.jikexueyuan.com/project/swift/) 中的 [协议（Protocols）](http://wiki.jikexueyuan.com/project/swift/chapter2/22_Protocols.html) 一节查看更多相关信息。
+请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 的 [协议](http://wiki.jikexueyuan.com/project/swift/chapter2/22_Protocols.html) 章节获取更多信息。
+
+<a name="Serializing"></a>
+## 序列化
+
+通过序列化，可以在应用程序中编码和解码对象，将其转换为独立于体系结构的表示形式，例如 JSON 或属性列表，或者从这种形式转换回对象。
 
 <a name="API_Availability"></a>
 ## API 可用性
@@ -523,6 +529,8 @@ func useShinyNewFeature() {
 }
 ```
 
-> 注意
-
+> 注意  
 > 使用`@available`属性标记的方法可以安全地使用满足特定平台需求的可用 API 而不用显式地做可用性检查。
+
+<a name="Processing Command-Line Arguments"></a>
+## 处理命令行参数
