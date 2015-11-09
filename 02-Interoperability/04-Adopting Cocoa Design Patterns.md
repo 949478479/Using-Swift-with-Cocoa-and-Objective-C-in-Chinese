@@ -458,7 +458,7 @@ if let dataSource = object as? UITableViewDataSource {
 <a name="Serializing"></a>
 ## 序列化
 
-通过序列化，可以在应用程序中编码和解码对象，将其转换为独立于体系结构的表示形式，例如 JSON 或属性列表，或者从这类表示形式转换回对象。这类表示形式可以写入文件，或者传递到其他本地或网络进程。
+通过序列化，可以在应用程序中编码和解码对象，将其转换为独立于体系结构的数据形式，例如 JSON 或属性列表，或者从这类数据形式转换回对象。这类数据形式可以写入文件，或者传递到其他本地或网络进程。
 
 在 Objective-C，可以使用 Foundation 框架的`NSJSONSerialiation`类和`NSPropertyListSerialization`类，利用 JSON 或者属性列表来实例化对象，通常这种对象会是`NSDictionary<NSString *, id>`类型。Swift 也支持此功能，但由于 Swift 是类型安全的，因此需要一些额外的类型转换。
 
@@ -518,7 +518,8 @@ init?(attributes: [String : AnyObject]) {
 
 `guard`语句包含多个可选绑定表达式，从而确保`attributes`参数提供的所有值都符合预期的类型。如果任意一个可选绑定表达式在赋值给常量时失败，`guard`语句会立即停止评估剩余的条件，并执行`else`分支返回`nil`。
 
-可以使用`NSJSONSerialization`利用 JSON 数据创建一个字典，然后将该字典传给`Venue`的构造器，从而创建一个`Venue`实例：
+可以使用`NSJSONSerialization`利用 JSON 数据创建一个字典，然后将该字典传给`Venue`的构造器，从而创建一个
+`Venue`实例：
 
 ```swift
 let JSON = "{\"name\": \"Caffe Macs\",\"coordinates\": {\"lat\": 37.330576,\"lng\": -122.029739},\"category\": \"Food\"}"
@@ -530,11 +531,101 @@ print(venue.name)
 // 打印 Caffe Macs
 ```
 
-### 
+### 验证序列化数据
 
-在先前的例子中，`Venue`的构造器只会在所有必要信息齐备的情况下返回一个`Venue`实例，否则只会简单地返回`nil`。
+在先前的例子中，`Venue`的构造器只会在所有必要信息齐备的情况下返回一个`Venue`实例，否则只会简单地返回
+`nil`。
 
-利用一个给定集合中的值初始化一个实例失败时，如果能够判断出并传递失败的原因会非常有用。为了实现这一点，可以重构可失败构造器为一个抛出错误的构造器：
+利用一个给定集合中的值构造实例失败时，如果能判断出失败原因并传递出去会非常有用。为了实现这一点，可以重构可失败构造器为一个抛出错误的构造器：
+
+```swift
+enum ValidationError: ErrorType {
+    case Missing(String)
+    case Invalid(String)
+}
+
+init(attributes: [String: AnyObject]) throws {
+
+    guard let name = attributes["name"] as? String else {
+        throw ValidationError.Missing("name")
+    }
+
+    guard let coordinates = attributes["coordinates"] as? [String: Double] else {
+        throw ValidationError.Missing("coordinates")
+    }
+
+    guard let latitude = coordinates["lat"],
+        let longitude = coordinates["lng"]
+        else{
+            throw ValidationError.Invalid("coordinates")
+    }
+
+    guard let categoryName = attributes["category"] as? String else {
+        throw ValidationError.Missing("category")
+    }
+
+    guard let category = Category(rawValue: categoryName) else {
+        throw ValidationError.Invalid("category")
+    }
+
+    self.name = name
+    self.coordinates = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    self.category = category
+}
+```
+
+之前的构造器使用一个`guard`语句一次性检查`attributes`中的所有值，而新的构造器单独检查每个值，如果某个值不存在或者无效，则抛出一个错误。
+
+例如，如果 JSON 数据未提供“name”字段及其对应的值，构造器会抛出枚举值`ValidationError.Missing`，并将“name”字段作为其关联值：
+
+```
+{
+    "coordinates": {
+        "lat": 37.77492,
+        "lng": -122.419
+    },
+    "category": "Shopping"
+}
+```
+
+```swift
+let JSON = "{\"coordinates\": {\"lat\": 37.7842, \"lng\": -122.4016}, \"category\": \"Convention Center\"}"
+let data = JSON.dataUsingEncoding(NSUTF8StringEncoding)!
+let attributes = try! NSJSONSerialization.JSONObjectWithData(data, options: []) as! [String: AnyObject]
+
+do {
+    let venue = try Venue(attributes: attributes)
+} catch ValidationError.Missing(let field) {
+    print("Missing Field: \(field)")
+}
+// 打印 Missing Field: name
+```
+
+或者，如果 JSON 数据提供了所有值，但是“category”字段对应的值不匹配`Category`枚举中的任何值，构造器会抛出枚举值`ValidationError.Invalid`，并将“category”字段作为其关联值：
+
+```
+{
+    "name": "Moscone West",
+    "coordinates": {
+        "lat": 37.7842,
+        "lng": -122.4016
+    },
+    "category": "Convention Center"
+}
+```
+
+```swift
+let JSON = "{\"name\": \"Moscone West\", \"coordinates\": {\"lat\": 37.7842, \"lng\": -122.4016}, \"category\": \"Convention Center\"}"
+let data = JSON.dataUsingEncoding(NSUTF8StringEncoding)!
+let attributes = try! NSJSONSerialization.JSONObjectWithData(data, options: []) as! [String: AnyObject]
+
+do {
+    let venue = try Venue(attributes: attributes)
+} catch ValidationError.Invalid(let field) {
+    print("Invalid Field: \(field)")
+}
+// 打印 Invalid Field: category
+```
 
 <a name="API_Availability"></a>
 ## API 可用性
