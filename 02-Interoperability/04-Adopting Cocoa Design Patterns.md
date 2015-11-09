@@ -458,7 +458,83 @@ if let dataSource = object as? UITableViewDataSource {
 <a name="Serializing"></a>
 ## 序列化
 
-通过序列化，可以在应用程序中编码和解码对象，将其转换为独立于体系结构的表示形式，例如 JSON 或属性列表，或者从这种形式转换回对象。
+通过序列化，可以在应用程序中编码和解码对象，将其转换为独立于体系结构的表示形式，例如 JSON 或属性列表，或者从这类表示形式转换回对象。这类表示形式可以写入文件，或者传递到其他本地或网络进程。
+
+在 Objective-C，可以使用 Foundation 框架的`NSJSONSerialiation`类和`NSPropertyListSerialization`类，利用 JSON 或者属性列表来实例化对象，通常这种对象会是`NSDictionary<NSString *, id>`类型。Swift 也支持此功能，但由于 Swift 是类型安全的，因此需要一些额外的类型转换。
+
+例如，思考下面的`Venue`结构，它有一个名为`name`的`String`类型的属性，一个名为`coordinates`的
+`CLLocationCoordinate2D`类型的属性，以及一个名为`category`的`Category`枚举类型的属性，该枚举类型是嵌套类型：
+
+```swift
+import Foundation
+import CoreLocation
+     
+struct Venue {
+    enum Category: String {
+        case Entertainment
+        case Food
+        case Nightlife
+        case Shopping
+    }
+        
+    var name: String
+    var coordinates: CLLocationCoordinate2D
+    var category: Category
+}
+```
+
+使用`Venue`结构的应用程序可能会从一个网络服务器接收到下面这些 JSON 数据：
+
+```
+{
+    "name": "Caffe Macs",
+    "coordinates": {
+        "lat": 37.330576,
+        "lng": -122.029739
+    },
+    "category": "Food"
+}
+```
+
+可以提供一个可失败的`Venue`构造器，接受一个`[String : AnyObject]`类型的`attributes`参数，也就是
+`NSJSONSerialiation`或`NSPropertyListSerialization`的返回值类型：
+
+```swift
+init?(attributes: [String : AnyObject]) {
+    guard let name = attributes["name"] as? String,
+        let coordinates = attributes["coordinates"] as? [String: Double],
+        let latitude = coordinates["lat"],
+        let longitude = coordinates["lng"],
+        let category = Category(rawValue: attributes["category"] as? String ?? "Invalid")
+        else {
+            return nil
+    }
+
+    self.name = name
+    self.coordinates = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    self.category = category
+}
+```
+
+`guard`语句包含多个可选绑定表达式，从而确保`attributes`参数提供的所有值都符合预期的类型。如果任意一个可选绑定表达式在赋值给常量时失败，`guard`语句会立即停止评估剩余的条件，并执行`else`分支返回`nil`。
+
+可以使用`NSJSONSerialization`利用 JSON 数据创建一个字典，然后将该字典传给`Venue`的构造器，从而创建一个`Venue`实例：
+
+```swift
+let JSON = "{\"name\": \"Caffe Macs\",\"coordinates\": {\"lat\": 37.330576,\"lng\": -122.029739},\"category\": \"Food\"}"
+let data = JSON.dataUsingEncoding(NSUTF8StringEncoding)!
+let attributes = try! NSJSONSerialization.JSONObjectWithData(data, options: []) as! [String: AnyObject]
+
+let venue = Venue(attributes: attributes)!
+print(venue.name)
+// 打印 Caffe Macs
+```
+
+### 
+
+在先前的例子中，`Venue`的构造器只会在所有必要信息齐备的情况下返回一个`Venue`实例，否则只会简单地返回`nil`。
+
+利用一个给定集合中的值初始化一个实例失败时，如果能够判断出并传递失败的原因会非常有用。为了实现这一点，可以重构可失败构造器为一个抛出错误的构造器：
 
 <a name="API_Availability"></a>
 ## API 可用性
