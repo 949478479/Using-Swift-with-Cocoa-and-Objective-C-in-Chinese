@@ -630,9 +630,9 @@ do {
 <a name="API_Availability"></a>
 ## API 可用性
 
-一些类和方法并不是在你的应用的所有平台的所有版本中都可用。为了确保你的应用能够适应任何功能上的差异，你需要检查这些 API 的可用性。
+一些 API 并非在所有平台的所有版本中都可用。为了确保应用程序能够适应这种差异，需要检查这些 API 的可用性。
 
-在 Objective-C 中，你使用`respondsToSelector:`和`instancesRespondToSelector:`方法来检查一个类或者实例的方法是否可用。如果没有检查，调用方法则可能会抛出`NSInvalidArgumentException`"unrecognized selector sent to instance"异常。例如，`requestWhenInUseAuthorization`方法只从 iOS 8.0 和 OS X 10.10 开始对`CLLocationManager`实例可用。
+在 Objective-C，使用`respondsToSelector:`和`instancesRespondToSelector:`方法检查一个类或者实例的方法是否可用。否则，调用方法可能会抛出`NSInvalidArgumentException`异常，即“unrecognized selector sent to instance”。例如，`CLLocationManager`实例的`requestWhenInUseAuthorization`方法从 iOS 8.0 和 OS X 10.10 开始才可用。
 
 ```objective-c
 if ([CLLocationManager instancesRespondToSelector:@selector(requestWhenInUseAuthorization)]) {
@@ -642,9 +642,9 @@ if ([CLLocationManager instancesRespondToSelector:@selector(requestWhenInUseAuth
 }
 ```
 
-在 Swift 中，尝试着调用一个目标平台版本不支持的方法将会报出编译时错误。
+在 Swift，试图调用项目部署目标的平台版本不支持的方法将会引发编译时错误。
 
-下面是上一个例子，采用 Swift 编写：
+下面将上一个例子用 Swift 重写：
 
 ```swift
 let locationManager = CLLocationManager()
@@ -652,11 +652,11 @@ locationManager.requestWhenInUseAuthorization()
 // error: only available on iOS 8.0 or newer
 ```
 
-如果应用的目标版本低于 iOS 8.0 或者 OS X 10.10，`requestWhenInUseAuthorization()`方法则不可用，所以编译器会报告错误。
+如果应用程序在版本低于 iOS 8.0 或者 OS X 10.10 的平台上运行，那么`requestWhenInUseAuthorization()`方法将不可用，因此编译器会报告错误。
 
-Swift 代码可以使用 API 可用性来作为运行时的条件判断。可用性检查可以使用在一个控制流语句的条件中，例如`if`,`guard`或者`while`语句。
+Swift 代码可以使用 API 可用性作为运行时的条件判断。可用性检查可以使用在一个控制流语句的条件中，例如`if`,`guard`或者`while`语句。
 
-拿前面的例子举例，你可以使用`if`语句来检查可用性，只有当方法在运行时可用时方可调用`requestWhenInUseAuthorization()`。
+针对之前的例子，可以使用`if`语句检查可用性，当`requestWhenInUseAuthorization()`方法在运行时可用时方可调用：
 
 ```swift
 let locationManager = CLLocationManager()
@@ -665,7 +665,7 @@ if #available(iOS 8.0, OSX 10.10, *) {
 }
 ```
 
-或者，你可以使用`guard`语句来检查可用性，除非当前的目标符合规定要求，否则将会退出作用域。这种方法简化了处理不同平台功能的逻辑。
+或者，可以使用`guard`语句检查可用性，除非当前的平台版本符合指定要求，否则将退出作用域。这种方式简化了处理不同平台时的逻辑。
 
 ```swift
 let locationManager = CLLocationManager()
@@ -673,7 +673,7 @@ guard #available(iOS 8.0, OSX 10.10, *) else { return }
 locationManager.requestWhenInUseAuthorization()
 ```
 
-每个平台参数由下面列出的平台名称组成，后面跟着相应的版本号。最后一个参数是一个星号（*），是用来处理未来潜在的平台。
+每个平台参数由下面列出的平台名称组成，后面跟着相应的版本号。最后一个参数是一个星号（`*`），用来处理未来潜在的平台。
 
 平台名称：
 
@@ -682,10 +682,13 @@ locationManager.requestWhenInUseAuthorization()
 - OSX
 - OSXApplicationExtension
 - watchOS
+- watchOSApplicationExtension
+- tvOS
+- tvOSApplicationExtension
 
-所有的 Cocoa API 都提供有可用性信息，所以你可以很有把握地编写应用所针对的平台的代码。
+所有的 Cocoa API 都提供了可用性信息，因此可以准确地针对不同平台编写代码。
 
-你可以用`@available`属性标注你的 API 声明来表明其可用性。`@available`属性使用和`#available`同样的语法来做运行时检查，平台版本要求参数都以逗号隔开。
+可以用`@available`特性标注自己的 API 声明来指明其可用性。`@available`特性的语法和`#available`一样，平台版本参数都以逗号隔开。
 
 例如：
 
@@ -697,7 +700,28 @@ func useShinyNewFeature() {
 ```
 
 > 注意  
-> 使用`@available`属性标记的方法可以安全地使用满足特定平台需求的可用 API 而不用显式地做可用性检查。
+> 使用`@available`特性标记的方法可以安全地使用满足指定平台要求的 API 而不用进行显式地可用性检查。
 
 <a name="Processing Command-Line Arguments"></a>
 ## 处理命令行参数
+
+在 OS X，通常通过点击 Dock 或者 Launchpad 上的应用程序图标启动应用程序，当然也可以双击 Finder 中的应用程序图标。然而，也可以使用终端通过编程的方式打开应用程序，还可以为其传递一些命令行参数。
+
+可以访问类型属性`Process.arguments`获取应用程序启动时指定的一系列命令行参数。这等同于访问
+`NSProcessInfo.processInfo()`的`arguments`属性。
+
+```
+$ /path/to/app --argumentName value
+```
+
+```swift
+for argument in Process.arguments {
+    print(argument)
+}
+// 打印 /path/to/app
+// 打印 --argumentName
+// 打印 value
+```
+
+> 注意  
+> `Process.arguments`的第一个元素总是可执行文件的路径。从`Process.arguments[1]`开始才是启动时指定的命令行参数。
