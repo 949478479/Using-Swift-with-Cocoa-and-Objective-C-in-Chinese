@@ -1,31 +1,23 @@
-> 翻译：[shockinglee](https://github.com/shockinglee)
+# 与 C 语言 API 交互
 
-> 校对：[shanyimin](https://github.com/shanyimin) [ChildhoodAndy](https://github.com/dabing1022) [Phenmod](https://github.com/Phenmod)
+本页包含内容：
 
-# 与 C 的 API 交互
+- [基本类型](#primitive_types)
+- [枚举](#enumerations)
+- [选项集合](#Option Sets)
+- [联合体](#Unions)
+- [位字段](#Bit Fields) 
+- [指针](#pointer)
+- [计算数据类型大小](#Data Type Size Calculation)
+- [全局常量](#global_constants)
+- [预处理指令](#preprocessor_directives)
 
-本节包含内容：
-
-- [基本数据类型（Primitive Types）](#primitive_types)
-  
-- [枚举（Enumerations）](#enumerations)
-
-- [选项集（Option Sets）](#Option Sets)
-
-- [联合体（Unions）](#Unions)
- 
-- [指针（Pointer）](#pointer)
-
-- [全局常量（Global Constants）](#global_constants)
-
-- [预处理指令（Preprocessor Directives）](#preprocessor_directives)
-
-作为与 Objective-C 语言的互用性的一部分，Swift 对一些 C 语言的类型和特性保持了兼容性。如果你的代码有需要，Swift 也提供了一些方式让你和常见的 C 语言设计以及模式协同工作。
+为了更好地支持与 Objective-C 语言的互用性，Swift 对一些 C 语言的类型和特性保持了兼容性，提供了一些方式来配合常见的 C 语言设计和模式。
 
 <a name="primitive_types"></a>
-## 基本数据类型（Primitive Types）
+## 基本类型
 
-Swift 提供了一些与 C 语言基本类型，例如`char`,`int`,`float`和`double`等类型的对应类型。然而，这些类型和 Swift 核心基本类型之间不能进行隐式转换，例如`Int`。因此，你的代码只有在必要时才应使用这些类型，其它任何可能的情况下都应该使用`Int`。
+Swift 提供了一些与 C 语言基本类型（例如`char`，`int`，`float`和`double`等）对应的类型。然而，这些类型和 Swift 基本类型（例如`Int`）之间不能进行隐式转换。因此，只有在必要时才应使用这些类型，否则尽可能地使用`Int`这种原生 Swift 类型。
 
 | C 类型 | Swift 类型 |
 | ------ | ------ |
@@ -47,11 +39,11 @@ Swift 提供了一些与 C 语言基本类型，例如`char`,`int`,`float`和`do
 | double | CDouble |
 
 <a name="enumerations"></a>
-## 枚举（Enumerations）
+## 枚举
 
-任何用宏`NS_ENUM`来声明的 C 风格枚举，都会被 Swift 导入为一个 Swift 枚举。无论枚举是在系统框架还是在自己的代码中定义的，当它们导入到 Swift 时，它们的前缀名将被截去。
+用`NS_ENUM`宏声明的 C 语言枚举，会被导入为原始值类型为`Int`的 Swift 枚举。无论枚举是在系统框架还是在自己的代码中定义的，导入到 Swift 后，它们的前缀名将被移除。
 
-例如，看这个 Objective-C 枚举的声明：
+例如，下面是一个 Objective-C 枚举的声明：
 
 ```Objective-C
 typedef NS_ENUM(NSInteger, UITableViewCellStyle) {
@@ -62,7 +54,7 @@ typedef NS_ENUM(NSInteger, UITableViewCellStyle) {
 };
 ```
 
-在 Swift 中，它被导入后会像这样：
+在 Swift，它被导入后会像这样：
 
 ```Swift
 enum UITableViewCellStyle: Int {
@@ -73,18 +65,42 @@ enum UITableViewCellStyle: Int {
 }
 ```
 
-当你需要使用一个枚举值时，使用以点（.）开头的枚举变量名：
+需要使用一个枚举值时，使用以点（`.`）开头的枚举变量名：
 
 ```Swift
 let cellStyle: UITableViewCellStyle = .Default
 ```
 
+Swift 会将未使用`ENUM`或`NS_OPTIONS`宏声明的 C 语言枚举导入为结构体。每个枚举成员会被导入为该结构体类型的全局只读计算型属性，而并非结构体的属性。
+
+例如，下面是个未使用`ENUM`宏声明的 C 语言枚举：
+
+```objective-c
+typedef enum Error {
+    ErrorNone = 0,
+    ErrorFileNotFound = -1,
+    ErrorInvalidFormat = -2,
+};
+```
+
+在 Swift，它被导入后会像这样：
+
+```swift
+struct Error: RawRepresentable, Equatable { }
+
+var ErrorNone: Error { get }
+var ErrorFileNotFound: Error { get }
+var ErrorInvalidFormat: Error { get }
+```
+
+被导入到 Swift 的 C 语言枚举会自动符合`Equatable`协议。
+
 <a name="Option Sets"></a>
-## 选项集（Option Sets）
+## 选项集合
 
-对于使用宏`NS_OPTIONS`声明的 C 风格枚举，Swift 会把它导入为一个 Swfit 选项集。选项集像枚举一样，会把前缀截掉，只剩下选项值名称。
+使用`NS_OPTIONS`宏声明的 C 语言枚举，会被导入为 Swfit 选项集合。选项集合会像枚举一样把前缀移除，只剩下选项值名称。
 
-例如，看这个 Objective-C 选项集的声明：
+例如，下面是一个 Objective-C 选项集合的声明：
 
 ```Objective-C
 typedef NS_OPTIONS(NSUInteger, NSJSONReadingOptions) {
@@ -94,10 +110,10 @@ typedef NS_OPTIONS(NSUInteger, NSJSONReadingOptions) {
 };
 ```
 
-在 Swift 中，它被导入后会像这样：
+在 Swift，它被导入后会像这样：
 
 ```Swift
-struct NSJSONReadingOptions : OptionSetType {
+struct NSJSONReadingOptions: OptionSetType {
 	init(rawValue: UInt)
     
     static var MutableContainers: NSJSONReadingOptions { get }
@@ -106,9 +122,9 @@ struct NSJSONReadingOptions : OptionSetType {
 }
 ```
 
-在 Objective-C 中，一个选项集是一些整数值的位掩码。你可以使用按位或操作符`|`来组合选项值，使用按位与操作符`&`来检测选项值。创建一个选项集，可以使用常量值或者表达式。一个空的选项集使用常数`0`来表示。
+在 Objective-C，一个选项集合是一些整数值的位掩码。可以使用按位或操作符（`|`）组合选项值，使用按位与操作符（`&`）检测选项值。可以使用常量值或者表达式创建一个选项集合。一个空的选项集合使用常数`0`表示。
 
-在 Swift 中，选项集使用一个遵守`OptionSetType`协议的结构体来表示，其中每个选项值都是一个静态变量。选项集类似于 Swift 的集合类型`Set`，你可以用`insert(_:)`或者`unionInPlace(_:)`方法来添加选项值，用`remove(_:)`或者`subtractInPlace(_:)`方法来删除选项值，用`contains(_:)`方法来检测选项值。创建一个选项集的值可以使用一个数组字面量，访问选项值像枚举一样也用点（`.`）开头。创建一个空的选项集可以使用一个空的数组字面量，也可以调用默认初始化函数。
+在 Swift，选项集合用一个符合`OptionSetType`协议的结构体表示，每个选项值都是结构体的一个静态变量。选项集合类似于 Swift 的集合类型`Set`，可以用`insert(_:)`或者`unionInPlace(_:)`方法添加选项值，用`remove(_:)`或者`subtractInPlace(_:)`方法删除选项值，用`contains(_:)`方法检查选项值。可以使用一个数组字面量创建一个选项集合，访问选项值像枚举一样也用点（`.`）开头。可以使用一个空数组字面量创建一个空选项集合，也可以调用默认构造器。
 
 ```Swift
 let options: NSDataBase64EncodingOptions = [
@@ -119,12 +135,49 @@ let string = data.base64EncodedStringWithOptions(options)
 ```
 
 <a name="Unions"></a>
-## 联合体（Unions）
+## 联合体
 
-Swift 仅部分支持 C 的`union`类型。在导入混有 C 的联合体或者位段（bitfields）的类型时，例如 Foundation 的`NSDecimal`类型，Swift 不能使用不支持的字段。但是，参数和/或返回值为这些类型的 C 和 Objective-C 的 API 是能够在 Swift 中使用的。
+Swift 仅部分支持 C 语言的`union`类型。在导入混有 C 语言的联合体或者位字段的类型时，Swift 无法访问不支持的字段。但是，参数或者返回值包含这些类型的 C 和 Objective-C 的 API 是可以在 Swift 中使用的。
+
+<a name="Bit Fields"></a>
+## 位字段
+
+Swift 会将结构体中的位字段导入为结构体的计算型属性，例如 Foundation 中的`NSDecimal`类型：
+
+```objective-c
+// Objective-C 声明
+typedef struct {
+    signed   int _exponent:8;
+    unsigned int _length:4;     
+    unsigned int _isNegative:1;
+    unsigned int _isCompact:1;
+    unsigned int _reserved:18;
+    unsigned short _mantissa[NSDecimalMaxSize];
+} NSDecimal;
+```
+
+```swift
+// Swift 声明
+public struct NSDecimal {
+    public var _exponent: Int32
+    public var _length: UInt32 
+    public var _isNegative: UInt32
+    public var _isCompact: UInt32
+    public var _reserved: UInt32
+    public var _mantissa: (UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16)
+    public init()
+    public init(
+    _exponent: Int32,
+    _length: UInt32, 
+    _isNegative: UInt32, 
+    _isCompact: UInt32, 
+    _reserved: UInt32,
+    _mantissa: (UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16))
+}
+```
 
 <a name="pointer"></a>
-## 指针（pointer）
+## 指针
 
 Swift 尽可能避免让你直接使用指针。然而，当你需要直接操作内存的时候，Swift 也为你提供了多种指针类型。下面的表使用`Type`作为类型名称的占位符。
 
@@ -307,25 +360,28 @@ var mutableArray = CFArrayCreateMutable(nil, 0, &callbacks)
 
 在上面的例子中，在`CFArrayCallBacks`初始化时，传给`retain`和`release`作参数的是`nil`，传给`copyDescription`作参数的是函数`customCopyDescription`，传给`equal`作参数的是一个闭包字面量。
 
+<a name="Data Type Size Calculation"></a>
+## 计算数据类型大小
+
 <a name="global_constants"></a>
-## 全局常量（Global Constants）
+## 全局常量
 
 在 C 和 Objective-C 语言源文件中定义的全局常量会自动地被 Swift 编译器导入为 Swift 全局常量。
 
 <a name="preprocessor_directives"></a>
-## 预处理指令（Preprocessor Directives）
+## 预处理指令
 
 Swift 编译器不包含预处理器。取而代之的是，它利用编译时属性，编译配置，以及语言特性来完成相同的功能。因此，Swift 没有引进预处理指令。
 
-### 简单宏（Simple Macros）
+### 简单宏
 
 在 C 和 Objective-C 中，通常使用`#define`指令来定义一个简单的常数，在 Swift，你可以使用全局常量来代替。例如，常量定义`#define FADE_ANIMATION_DURATION 0.35`，在 Swift 可以用`let FADE_ANIMATION_DURATION = 0.35`来更好地表述。由于用于定义常量的简单宏会被直接映射成 Swift 全局常量，Swift 编译器会自动导入在 C 或 Objective-C 源文件中定义的简单宏。
 
-### 复杂宏（Complex Macros）
+### 复杂宏
 
 在 C 和 Objective-C 中使用的复杂宏在 Swift 中没有相对应的东西。复杂宏是那些不用来定义常量的宏，包括加括号的函数式宏。你在 C 和 Objective-C 使用复杂的宏以避免类型检查的限制或避免重复键入大量的样板代码。然而，宏也会让调试和重构更加困难。在 Swift 中你可以使用函数和泛型来达到同样的效果，这没有任何妥协。因此，在 C 和 Objective-C 源文件中定义的复杂宏在 Swift 是不能使用的。
 
-### 编译配置（Build Configurations）
+### 编译配置
 
 Swift 代码使用和 C 以及 Objective-C 代码不同的方式进行条件编译。Swift 代码可以根据编译配置的组合进行条件编译。编译配置包括`true`和`false`字面值，命令行标志，和下表中的平台测试函数。你可以使用`-D <＃Flag＃>`指定命令行标志。
 
@@ -334,8 +390,7 @@ Swift 代码使用和 C 以及 Objective-C 代码不同的方式进行条件编�
 | os() | OSX，iOS，watchOS |
 | arch() | x86_64，arm，arm64，i386 |
 
-> 注意
-
+> 注意  
 > 编译配置`arch(arm)`在`ARM 64`设备上不会返回`true`。编译配置`arch(i386)`在`32–bit`模拟器上会返回`true`。
 
 一个简单的条件编译语句如同下面这段代码：
