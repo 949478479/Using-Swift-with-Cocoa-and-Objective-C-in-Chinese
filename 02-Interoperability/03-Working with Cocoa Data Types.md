@@ -211,7 +211,7 @@ typedef SWIFT_ENUM(NSInteger, CustomError) {
 static NSString * const CustomErrorDomain = @"Project.CustomError";
 ```
 
-请参阅 [*错误处理*](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02-Interoperability/04-Adopting%20Cocoa%20Design%20Patterns.md#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86) 获取更多有关 Swift 和 Objective-C API 中错误处理的信息。
+请参阅[错误处理](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02-Interoperability/04-Adopting%20Cocoa%20Design%20Patterns.md#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86)获取更多有关 Swift 和 Objective-C API 中错误处理的信息。
 
 <a name = "foundation_data_types"></a>
 ## Foundation 数据类型
