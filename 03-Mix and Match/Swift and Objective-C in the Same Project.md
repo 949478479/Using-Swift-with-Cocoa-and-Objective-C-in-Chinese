@@ -13,37 +13,37 @@
 - [命名产品模块](#naming_your_product_module)
 - [故障排除贴士](#troubleshooting_tips_and_reminders)
 
-由于 Swift 与 Objective-C 的兼容性，可以在同一工程中同时使用两种语言，开发基于混合语言的应用。利用这种特性，可以用 Swift 的最新语言特性实现应用的部分功能，并无缝并入现有的 Objective-C 代码中。
+由于 Swift 与 Objective-C 的兼容性，可以在同一工程中同时使用两种语言，开发基于混合语言的应用程序。利用这种特性，可以用 Swift 的最新语言特性实现应用程序的部分功能，并无缝并入现有的 Objective-C 代码中。
 
 <a name="mix_and_match_overview"></a>
 ## 混合搭配概述
 
 Objective-C 和 Swift 文件可以在同一工程中并存，无论这个工程原本是基于 Objective-C 还是 Swift。还可以直接往现有工程中添加另一种语言的源文件。这种自然的工作流使得创建混合语言的应用程序或框架和单独使用一种语言时一样简单。
 
-基于混合语言编写应用程序或框架时，二者稍微有些区别。下图展示了同时使用两种语言时，在同一 target 中导入代码的基本原理，后续小节会有更多细节。
+基于混合语言编写应用程序或框架时，二者稍微有些区别。下图展示了同时使用两种语言时，在同一 target 中导入代码的基本原理，后续小节会介绍更多细节。
 
 ![](DAG_2x.png)
 
 <a name="importing_code_from_within_the_same_app_target"></a>
-## 在同一应用的 target 中导入代码（Importing Code from Within the Same App Target）
+## 在 App 的 target 内部导入代码
 
-如果你在写混合语言的应用，可能需要用 Swift 代码访问 Objective-C 代码，或者反之。下面描述的流程适用于非框架的 target 。
+在编写基于混合语言的应用程序时，可能需要用 Swift 代码访问 Objective-C 代码，或者反过来。下面描述的流程适用于非 Framework 的 target 。
 
-### 将 Objective-C 导入 Swift（Importing Objective-C into Swift）
+### 将 Objective-C 代码导入到 Swift
 
-在同一应用的 target 中导入一系列 Objective-C 文件供 Swift 代码使用时，你需要依靠 Objective-C 桥接头文件（*Objective-C bridging header*）暴露这些文件给 Swift。当你添加 Swift 文件到现有的 Objective-C 应用（或反之）时，Xcode 会自动创建这些头文件。
+在应用程序的 target 内部导入一系列 Objective-C 文件供 Swift 代码使用时，需要依靠 Objective-C 桥接头文件将这些文件暴露给 Swift。添加 Swift 文件到现有的 Objective-C 应用程序时（或者反过来），Xcode 会自动创建 Objective-C 桥接头文件。
 
 ![](bridgingheader_2x.png)
 
-如果你同意，Xcode 会随着源文件的创建生成头文件，并用产品模块名加上`-Bridging-Header.h`命名。关于产品模块名，详见 [命名你的产品模块（Naming Your Product Module）](#naming_your_product_module)。
+如果接受，Xcode 会随着源文件的创建生成 Objective-C 桥接头文件，并用产品模块名跟上`“-Bridging-Header.h”`作为 Objective-C 桥接头文件的文件名。关于产品模块名的具体介绍，请参阅 [命名产品模块](#naming_your_product_module) 小节。
 
-或者，你可以选择`File > New > File > (iOS or OS X) > Source > Header File`手动创建桥接头文件。
+或者，可以选择`File > New > File > （iOS，watchOS，tvOS，OS X） > Source > Header File`来手动创建 Objective-C 桥接头文件。
 
-你可以编辑这个头文件来对 Swift 暴露出 Objective-C 代码。
+可以通过编辑这个 Objective-C 桥接头文件将 Objective-C API 暴露给 Swift。
 
-##### 在同一 target 中将 Objective-C 代码导入到 Swift 中
+##### 在 target 内部将 Objective-C 代码导入到 Swift
 
-1. 在 Objective-C 桥接头文件中，导入任何你想暴露给 Swift 的头文件，例如：
+1. 在 Objective-C 桥接头文件中，导入希望暴露给 Swift 的 Objective-C 头文件。例如：
 
     ```objective-c
     #import "XYZCustomCell.h"
@@ -51,42 +51,39 @@ Objective-C 和 Swift 文件可以在同一工程中并存，无论这个工程�
     #import "XYZCustomViewController.h"
     ```
 
-2. 确保在`Build Settings > Swfit Compiler - Code Generation > Objective-C Bridging Header`中设置了 Objective-C 桥接头文件相对工程的路径，而不是它所在的目录。
+2. 确保在`Build Settings > Swfit Compiler - Code Generation > Objective-C Bridging Header`中设置了 Objective-C 桥接头文件的路径。该路径形式类似`Info.plist`在`Build Settings`中指定的路径，相对于工程，而不是相对于其所在目录。Xcode 自动生成 Objective-C 桥接头文件时会自动设置该路径，不需要额外修改。
 
-路径形式类似`Info.plist`在`Build Settings`中指定的路径。在大多数情况下，你不需要修改这个默认设置。
-
-在这个桥接头文件中列出的所有 public 的 Objective-C 头文件都会对 Swift 可见。之后当前 target 的所有 Swift 文件都可以使用这些头文件中的方法，不需要任何 import 语句。而且你能用 Swift 语法使用这些 Objective-C 代码，就像使用系统自带的 Swift 类一样。
+在 Objective-C 桥接头文件中导入的所有 Objective-C 头文件都会暴露给 Swift。target 内部的所有 Swift 文件都可以使用这些 Objective-C 头文件中的 API，不需要任何导入语句。而且能用 Swift 语法使用这些自定义的 Objective-C API，就像使用系统的 Swift 类一样。
 
 ```swift
 let myCell = XYZCustomCell()
 myCell.subtitle = "A custom cell"
 ```
 
-### 将 Swift 导入 Objective-C（Importing Swift into Objective-C）
+### 将 Swift 代码导入到 Objective-C
 
-当你将 Swift 代码导入到 Objective-C 中时，你依靠 Xcode 生成的头文件来将这些文件暴漏给 Objective-C。这个自动生成的文件是一个声明了 target 中的 Swift 接口的 Objective-C 头文件。可以把这个 Objective-C 头文件看作 Swift 代码的 `umbrella header`。头文件名称以产品模块名加`-Swift.h`来命名。（关于产品模块名，详见 [命名你的产品模块（Naming Your Product Module）](#naming_your_product_module)。）
+将 Swift 代码导入到 Objective-C 时，需要依靠 Xcode 生成的头文件将这些文件暴漏给 Objective-C（此头文件不是上小节描述的 Objective-C 桥接头文件，该头文件在工程目录下不可见，但是可以跳转进去查看）。这个自动生成的头文件是一个 Objective-C 头文件，声明了 target 内部的一些 Swift API。可以将这个 Objective-C 头文件看作 Swift 代码的保护伞头文件。该头文件以产品模块名跟上`“-Swift.h”`来命名。关于产品模块名的具体介绍，请参阅 [命名产品模块](#naming_your_product_module) 小节。
 
-默认情况下，生成的头文件包含标记有`public`修饰符的 Swift 声明。如果你的应用程序的 target 有一个 Objective-C 的桥接头文件的话，它还包含那些标记有`internal`修饰符的声明。标有`private`修饰符的声明不会出现在所生成的头文件。私有声明不会暴露给 Objective-C，除非它们被明确标有`@IBAction`，`@IBOutlet`，或`@objc`。如果你的应用程序的 target 启用了单元测试，单元测试的 target 可以访问任何标有`internal`修饰符的声明，只需在导入产品模块时标记`@testable`属性。
+默认情况下，这个头文件包含标记`public`修饰符的 Swift API。如果应用程序的 target 内有一个 Objective-C 桥接头文件的话，它还会包含标记`internal`修饰符的 Swift API。标记`private`修饰符的 Swift API 不会出现在这个头文件中，因为私有声明不会暴露给 Objective-C，除非它们被明确标记`@IBAction`，`@IBOutlet`，或`@objc`。如果应用程序的 target 启用了单元测试，单元测试的 target 在导入应用程序的 target 时，编译器会在导入语句前加上`@testable`特性，从而可以在单元测试的 target 内访问应用程序的 target 内任何标记`internal`修饰符的 API，犹如它们标记了`public`修饰符一般。
 
-关于访问级别的更多信息，参看[《The Swift Programming Language 中文版》](http://wiki.jikexueyuan.com/project/swift/)中的 [访问控制（Access Control）](http://wiki.jikexueyuan.com/project/swift/chapter2/24_Access_Control.html)。
+关于访问级别的更多信息，请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的 [访问控制](http://wiki.jikexueyuan.com/project/swift/chapter2/24_Access_Control.html) 章节。
 
-你不需要做任何特别的事情来生成这个头文件，只需要将它导入到你的 Objective-C 代码来使用它。注意这个头文件中的 Swift 接口包含了它所使用到的所有 Objective-C 类型。如果你在 Swift 代码中使用你自己的 Objective-C 类型，确保先将对应的 Objective-C 头文件导入到你的 Swift 代码中，然后才将 Swift 自动生成的头文件导入到 Objective-C `.m`文件中来访问 Swift 代码。
+这个头文件会由 Xcode 自动生成，可直接导入到 Objective-C 代码中使用。注意，如果这个头文件中的 Swift API 使用了自定义的 Objective-C 类型，确保在导入这个自动生成的头文件前，先将这些自定义的 Objective-C 类型对应的 Objective-C 头文件导入。
 
-##### 在同一 target 中将 Swift 代码导入到 Objective-C 中
+##### 在 target 内部将 Swift 代码导入到 Objective-C
 
-- 在同一 target 的 Objective-C `.m`文件中，用下面的语法来导入 Swift 代码：
+- 在 target 内部的 Objective-C `.m`文件中，用如下语法导入 Swift 代码：
 
 ```objective-c
-#import "ProductModuleName-Swift.h"
+#import "ProductModuleName-Swift.h" // 将 ProductModuleName 替换为具体的产品模块名
 ```
 
-target 中的 Swift 文件将会对包含这个导入语句的 Objective-C `.m`文件可见。关于在 Objective-C 代码中使用 Swift 代码，详见 [在 Objective-C 中使用 Swift（Using Swift from Objective-C）](#using_swift_from_objective-c)。
+target 内部的一些 Swift API 会暴露给包含这个导入语句的 Objective-C `.m`文件。关于如何在 Objective-C 中使用 Swift，请参阅 [在 Objective-C 中使用 Swift](#using_swift_from_objective-c) 小节。
 
 |              | 导入到 Swift | 导入到 Objective-C  |
 | :-------------:|:-----------:|:------------:|
 | Swift 代码    | 不需要导入语句  | #import "ProductModuleName-Swift.h”  |
 | Objective-C 代码     | 不需要导入语句；需要 Objective-C 桥接头文件| #import "Header.h"     |
-
 
 <a name="importing_code_from_within_the_same_framework_target"></a>
 ## 在同一 Framework 的 target 中导入代码（Importing Code from Within the Same Framework Target）
