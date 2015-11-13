@@ -28,7 +28,7 @@ Swift 被设计用来无缝兼容 Cocoa 和 Objective-C。在 Swift，可以使�
 
 ![](newproject_2x.png)
 
-Swift 项目的结构几乎和 Objective-C 项目一模一样，只有一个重要的区别：Swift 没有头文件。在接口和实现之间没有显式地划分，一个类中的所有信息都在一个单独的`.swift`文件中。关于这一点更详细的说明，请参阅 [在同一工程中使用 Swift 和 Objective-C](./03-Mix%20and%20Match/Swift%20and%20Objective-C%20in%20the%20Same%20Project.md)。
+Swift 项目的结构几乎和 Objective-C 项目一模一样，只有一个重要的区别：Swift 没有头文件。在接口和实现之间没有显式地划分，一个类中的所有信息都在一个单独的`.swift`文件中。关于这一点更详细的说明，请参阅 [在同一工程中使用 Swift 和 Objective-C](../03-Mix%20and%20Match/Swift%20and%20Objective-C%20in%20the%20Same%20Project.md)。
 
 现在开始，你可以开始体验在`AppDelegate`中编写 Swift 代码，或者你可以通过选择`File > New > File > (iOS, watchOS, tvOS, or OS X) > Source > Swift`来创建一个新的 Swift 类。
 
@@ -54,11 +54,11 @@ import Foundation
 - 重映射 Objective-C 核心类型到 Swift 中的替代类型，例如`NSString`映射为`String`
 - 重映射 Objective-C 概念到 Swift 中相对应的概念，例如指针映射为可选类型
 
-想了解更多信息，请参阅 [与 Objective-C API 交互](./02-Interoperability/01-Interacting%20with%20Objective-C%20APIs.md)。
+想了解更多信息，请参阅 [与 Objective-C API 交互](../02-Interoperability/01-Interacting%20with%20Objective-C%20APIs.md)。
 
 > 注意  
 > C++ 代码无法直接导入 Swift，必须为其创建 Objective-C 或者 C 的封装。
 
 导入 Swift 模块到 Objective-C 和上述过程非常相似。Swift 公开它的 API，例如来自系统框架的 API，作为 Swift 模块。随着这些 Swift 模块还会生成 Objective-C 头文件。这些头文件公开了那些可以映射回 Objective-C 的 API。一些 Swift API 无法映射回 Objective-C，因为它们使用了 Objective-C 中不存在的语言特性。
 
-想了解更多信息，请参阅 [在同一工程中使用 Swift 和 Objective-C](./03-Mix%20and%20Match/Swift%20and%20Objective-C%20in%20the%20Same%20Project.md)。
+想了解更多信息，请参阅 [在同一工程中使用 Swift 和 Objective-C](../03-Mix%20and%20Match/Swift%20and%20Objective-C%20in%20the%20Same%20Project.md)。
