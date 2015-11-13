@@ -117,7 +117,39 @@ myOtherCell.subtitle = "Another custom cell"
 
 若要将 Swift 文件导入到 target 内部的 Objective-C 代码中，不需要导入任何东西到保护伞头文件，而是将 Xcode 为 Swift 代码自动生成的头文件导入到要访问 Swift 代码的 Objective-C `.m`文件。
 
-由于这个自动生成的头文件是 Framework 公共接口的一部分，因此只有标记`public`修饰符的 API 才会出现在这个自动生成的头文件中。不过，在 target 内部的 Objective-C 代码部分，依旧可以使用标记`internal`的 Swift API，只要它们所在的类继承自 Objective-C 类。关于访问级别修饰符的更多信息，请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的 [访问控制](http://wiki.jikexueyuan.com/project/swift/chapter2/24_Access_Control.html) 章节。
+由于这个自动生成的头文件是 Framework 公共接口的一部分，因此只有标记`public`修饰符的 API 才会出现在这个自动生成的头文件中。不过，在 target 内部的 Objective-C 代码部分，依旧可以使用标记`internal`的 Swift API，只要它们所在的类继承自 Objective-C 类。然而，使用这些标记`internal`的 Swift API 时，却发现编译器会报错提示符号未定义，研究了一下发现可以采取如下办法解决：
+
+```swift
+// Swift 代码部分
+@objc(Foo) 
+class Foo: NSObject {
+    func foo() { print("我是 foo") }
+}
+```
+
+```objective-c
+// Objective-c 代码部分
+// 为了解决符号未定义的错误，手动写个接口声明，Swift 代码中需要写 @objc(Foo)，否则类名不匹配
+@interface Foo : NSObject
+- (void)foo;
+@end
+
+[[Foo new] foo]; // 然后就可以正常调用了
+```
+
+实际上，在 Xcode 为 Swift 代码自动生成的头文件中，一个 public 访问级别的 API 会类似下面这样：
+
+```objective-c
+SWIFT_CLASS("_TtC15ProductModuleName3Foo")
+@interface Foo : NSObject
+- (void)foo;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+```
+
+因此导入这个头文件也就获得了对应的 API 声明，而 internal 访问级别的 API 不会出现在此头文件中，因此需要手动声明一下，否则就会编译报错。
+
+关于访问级别修饰符的更多信息，请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的 [访问控制](http://wiki.jikexueyuan.com/project/swift/chapter2/24_Access_Control.html) 章节。
 
 ##### 在 target 内部将 Swift 代码导入到 Objective-C
 
@@ -140,15 +172,15 @@ target 内部的一些 Swift API 会暴露给包含这个导入语句的 Objecti
 <a name="importing_external_frameworks"></a>
 ## 导入外部 Framework
 
-你可以导入外部框架，无论这个框架是基于纯 Objective-C，纯 Swift，还是混合语言的，而且导入流程都是一样的。当你导入外部框架时，确保`Build Setting > Pakaging > Defines Module`设置为`Yes`。
+可以导入外部的 Framework，无论它是基于 Objective-C，Swift，还是混合语言的，而且导入流程都是一样的，只需确保`Build Setting > Pakaging > Defines Module`设置为`Yes`。
 
-用下面的语法将框架导入到不同 target 的 Swift 文件中：
+用如下语法将外部 Framework 导入到 Swift 文件：
 
 ```swift
 import FrameworkName
 ```
 
-用下面的语法将框架导入到不同 target 的 Objective-C `.m`文件中：
+用如下语法将外部 Framework 导入到 Objective-C `.m`文件：
 
 ```objective-c
 @import FrameworkName;
