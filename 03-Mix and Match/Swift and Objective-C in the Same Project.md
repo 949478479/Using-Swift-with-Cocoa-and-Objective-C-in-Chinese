@@ -1,41 +1,26 @@
-> 翻译：[haolloyin](https://github.com/haolloyin)
+# 在同一工程中使用 Swift 和 Objective-C
 
-> 校对：[ChildhoodAndy](https://github.com/dabing1022)
+本页包含内容：
 
-# 在同一工程中使用 Swift 和 Objective-C（Swift and Objective-C in the Same Project）
+- [混合搭配概述](#mix_and_match_overview)
+- [在 App 的 target 内部导入代码](#importing_code_from_within_the_same_app_target)
+- [在 Framework 的 target 内部导入代码](#importing_code_from_within_the_same_framework_target)
+- [导入外部 Framework](#importing_external_frameworks)
+- [在 Objective-C 中使用 Swift](#using_swift_from_objective-c)
+- [为 Objective-C 接口重写 Swift 符号名](#overriding_swift_names_for_Objective-C_interfaces)
+- [令 Objective-C 接口在 Swift 中不可用](#Making Objective-C Interfaces Unavailable in Swift)
+- [精炼 Objective-C 声明](#Refining Objective-C Declarations)
+- [命名产品模块](#naming_your_product_module)
+- [故障排除贴士](#troubleshooting_tips_and_reminders)
 
-本节包含内容：
-
-- [混合搭配概述（Mix and Match Overview）](#mix_and_match_overview)
-
-- [在同一应用的 target 中导入代码（Importing Code from Within the Same App Target）]
-  (#importing_code_from_within_the_same_app_target)
-
-- [在同一 Framework 的 target 中导入代码（Importing Code from Within the Same Framework Target）]
-  (#importing_code_from_within_the_same_framework_target)
-
-- [导入外部 framework（Importing External Frameworks）](#importing_external_frameworks)
-
-- [在 Objective-C 中使用 Swift（Using Swift from Objective-C）](#using_swift_from_objective-c)
-
-- [为 Objective-C 接口重写 Swift 名称（Overriding Swift Names for Objective-C Interfaces）](#overriding_swift_names_for_Objective-C_interfaces)
-
-- [让 Objective-C 接口在 Swift 中不可用（Making Objective-C Interfaces Unavailable in Swift）](#Making Objective-C Interfaces Unavailable in Swift)
-
-- [精练 Objective-C 声明（Refining Objective-C Declarations）](#Refining Objective-C Declarations)
-
-- [命名你的产品模块（Naming Your Product Module）](#naming_your_product_module)
-
-- [故障排除贴士（Troubleshooting Tips and Reminders）](#troubleshooting_tips_and_reminders)
-
-Swift 与 Objective-C 的兼容能力使你可以在同一工程中同时使用两种语言。你可以用这种叫做 `mix and match` 的特性来开发基于混合语言的应用，可以用 Swift 的最新特性实现应用的一部分功能，并无缝地并入已有的 Objective-C 代码中。
+由于 Swift 与 Objective-C 的兼容性，可以在同一工程中同时使用两种语言，开发基于混合语言的应用。利用这种特性，可以用 Swift 的最新语言特性实现应用的部分功能，并无缝并入现有的 Objective-C 代码中。
 
 <a name="mix_and_match_overview"></a>
-## 混合搭配概述（Mix and Match Overview）
+## 混合搭配概述
 
-Objective-C 和 Swift 文件可以在同一工程中并存，无论这个工程原本是基于 Objective-C 还是 Swift。你可以直接往现有工程中添加另一种语言的源文件。这种自然的工作流使得创建混合语言的应用或框架 target 与用单独一种语言时一样简单。
+Objective-C 和 Swift 文件可以在同一工程中并存，无论这个工程原本是基于 Objective-C 还是 Swift。还可以直接往现有工程中添加另一种语言的源文件。这种自然的工作流使得创建混合语言的应用程序或框架和单独使用一种语言时一样简单。
 
-这些混合语言的 target 的工作流程只有些许区别，这取决于你是在写应用还是写框架。下面描述了用两种语言在同一 target 中导入模型的常规情况，后续章节会有更多细节。
+取决于是在写应用程序还是在写框架，基于混合语言编写时，二者稍微有些区别。下面描述了使用两种语言时，在同一 target 中导入模型的一般情况，后续小节会有更多细节。
 
 ![DAG_2x.png](https://raw.githubusercontent.com/haolloyin/Welcome-to-Swift/translate/Using%20Swift%20with%20Cocoa%20and%20Objective-C/03Mix%20and%20Match/DAG_2x.png?raw=true)
 
