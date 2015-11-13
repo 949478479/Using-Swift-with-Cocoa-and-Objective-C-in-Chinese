@@ -119,8 +119,8 @@ class MyCustomView: UIView {
 }
 ```
 
-![](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02-Interoperability/Attributes%20Inspector%402x.png)
-![](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02-Interoperability/Identity%20Inspector%402x.png)
+![](Attributes%20Inspector%402x.png)
+![](Identity%20Inspector%402x.png)
 
 <a name="specifying_property_attributes"></a>
 ## 指定属性特性
@@ -146,7 +146,7 @@ Core Data 提供了底层存储以及`NSManagedObject`子类的属性实现，�
 
 在`NSManagedObject`子类中，为每一个和 Core Data 实体模型文件中相对应的属性或者方法声明标记`@NSManaged`特性。例如，思考下面这个叫做“Person”的 Core Data 实体，它有个叫做“name”的 String 类型的属性，以及一个叫做“friends”的对多关系。
 
-![](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02-Interoperability/coredataeditor_2x.png)
+![](coredataeditor_2x.png)
 
 相对应的`NSManagedObject`子类`Person`中的代码如下：
 
@@ -167,4 +167,4 @@ class Person: NSManagedObject {
 
 为了在 Swift 中配置一个`NSManagedObject`的子类供 Core Data 模型实体使用，在 Xcode 中打开 Data Model Inspector，在 Class 输入框中输入类名，并在 Module 输入框的下拉列表中选择“Current Product Module”。
 
-![](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02-Interoperability/coredatanamespace_2x.png)
+![](coredatanamespace_2x.png)
