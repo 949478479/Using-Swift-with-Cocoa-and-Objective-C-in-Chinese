@@ -13,25 +13,25 @@
 - [命名产品模块](#naming_your_product_module)
 - [故障排除贴士](#troubleshooting_tips_and_reminders)
 
-由于 Swift 与 Objective-C 的兼容性，可以在同一工程中同时使用两种语言，开发基于混合语言的应用程序。利用这种特性，可以用 Swift 的最新语言特性实现应用程序的部分功能，并无缝并入现有的 Objective-C 代码中。
+由于 Swift 与 Objective-C 的兼容性，可以在同一工程中同时使用两种语言，开发基于混合语言的 App。利用这种特性，可以用 Swift 的最新语言特性实现 App 的部分功能，并无缝并入现有的 Objective-C 代码中。
 
 <a name="mix_and_match_overview"></a>
 ## 混合搭配概述
 
-Objective-C 和 Swift 文件可以在同一工程中并存，无论这个工程原本是基于 Objective-C 还是 Swift。还可以直接往现有工程中添加另一种语言的源文件。这种自然的工作流使得创建混合语言的应用程序或框架和单独使用一种语言时一样简单。
+Objective-C 和 Swift 文件可以在同一工程中并存，无论这个工程原本是基于 Objective-C 还是 Swift。还可以直接往现有工程中添加另一种语言的源文件。这种自然的工作流使得创建混合语言的 App 或 Framework 和单独使用一种语言时一样简单。
 
-基于混合语言编写应用程序或框架时，二者稍微有些区别。下图展示了同时使用两种语言时，在同一 target 中导入代码的基本原理，后续小节会介绍更多细节。
+基于混合语言编写 App 或 Framework 时，二者稍微有些区别。下图展示了同时使用两种语言时，在 target 内部导入代码的基本原理，后续小节会介绍更多细节。
 
 ![](DAG_2x.png)
 
 <a name="importing_code_from_within_the_same_app_target"></a>
 ## 在 App 的 target 内部导入代码
 
-在编写基于混合语言的应用程序时，可能需要用 Swift 代码访问 Objective-C 代码，或者反过来。下面描述的流程适用于非 Framework 的 target 。
+在编写基于混合语言的 App 时，可能需要用 Swift 代码访问 Objective-C 代码，或者反过来。下面描述的流程适用于非 Framework 的 target 。
 
 ### 将 Objective-C 代码导入到 Swift
 
-在应用程序的 target 内部导入一系列 Objective-C 文件供 Swift 代码使用时，需要依靠 Objective-C 桥接头文件将这些文件暴露给 Swift。添加 Swift 文件到现有的 Objective-C 应用程序时（或者反过来），Xcode 会自动创建 Objective-C 桥接头文件。
+在 App 的 target 内部导入一系列 Objective-C 文件供 Swift 代码使用时，需要依靠 Objective-C 桥接头文件将这些文件暴露给 Swift。添加 Swift 文件到现有的 Objective-C App 时（或者反过来），Xcode 会自动创建 Objective-C 桥接头文件。
 
 ![](bridgingheader_2x.png)
 
@@ -53,7 +53,7 @@ Objective-C 和 Swift 文件可以在同一工程中并存，无论这个工程�
 
 2. 确保在`Build Settings > Swfit Compiler - Code Generation > Objective-C Bridging Header`中设置了 Objective-C 桥接头文件的路径。该路径形式类似`Info.plist`在`Build Settings`中指定的路径，相对于工程，而不是相对于其所在目录。Xcode 自动生成 Objective-C 桥接头文件时会自动设置该路径，不需要额外修改。
 
-在 Objective-C 桥接头文件中导入的所有 Objective-C 头文件都会暴露给 Swift。target 内部的所有 Swift 文件都可以使用这些 Objective-C 头文件中的 API，不需要任何导入语句。而且能用 Swift 语法使用这些自定义的 Objective-C API，就像使用系统的 Swift 类一样。
+在 Objective-C 桥接头文件中导入的所有 Objective-C 头文件都会暴露给 Swift。target 内部的所有 Swift 文件都可以使用这些 Objective-C 头文件中的 API，不需要任何导入语句，而且还能用 Swift 语法使用这些自定义的 Objective-C API，就像使用系统的 Swift 类一样。
 
 ```swift
 let myCell = XYZCustomCell()
@@ -64,9 +64,9 @@ myCell.subtitle = "A custom cell"
 
 将 Swift 代码导入到 Objective-C 时，需要依靠 Xcode 生成的头文件将这些文件暴漏给 Objective-C（此头文件不是上小节描述的 Objective-C 桥接头文件，该头文件在工程目录下不可见，但是可以跳转进去查看）。这个自动生成的头文件是一个 Objective-C 头文件，声明了 target 内部的一些 Swift API。可以将这个 Objective-C 头文件看作 Swift 代码的保护伞头文件。该头文件以产品模块名跟上`“-Swift.h”`来命名。关于产品模块名的具体介绍，请参阅 [命名产品模块](#naming_your_product_module) 小节。
 
-默认情况下，这个头文件包含标记`public`修饰符的 Swift API。如果应用程序的 target 内有一个 Objective-C 桥接头文件的话，它还会包含标记`internal`修饰符的 Swift API。标记`private`修饰符的 Swift API 不会出现在这个头文件中，因为私有声明不会暴露给 Objective-C，除非它们被明确标记`@IBAction`，`@IBOutlet`，或`@objc`。如果应用程序的 target 启用了单元测试，单元测试的 target 在导入应用程序的 target 时，编译器会在导入语句前加上`@testable`特性，从而可以在单元测试的 target 内访问应用程序的 target 内任何标记`internal`修饰符的 API，犹如它们标记了`public`修饰符一般。
+默认情况下，这个头文件包含标记`public`修饰符的 Swift API。如果 target 内有一个 Objective-C 桥接头文件的话，它还会包含标记`internal`修饰符的 Swift API。标记`private`修饰符的 Swift API 不会出现在这个头文件中，因为私有声明不会暴露给 Objective-C，除非它们被明确标记`@IBAction`，`@IBOutlet`，或`@objc`。如果 App 的 target 启用了单元测试，单元测试的 target 在导入 App 的 target 时，编译器会在导入语句前加上`@testable`特性，从而可以在单元测试的 target 内访问 App 的 target 内任何标记`internal`修饰符的 API，犹如它们标记了`public`修饰符一般。
 
-关于访问级别的更多信息，请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的 [访问控制](http://wiki.jikexueyuan.com/project/swift/chapter2/24_Access_Control.html) 章节。
+关于访问级别修饰符的更多信息，请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的 [访问控制](http://wiki.jikexueyuan.com/project/swift/chapter2/24_Access_Control.html) 章节。
 
 这个头文件会由 Xcode 自动生成，可直接导入到 Objective-C 代码中使用。注意，如果这个头文件中的 Swift API 使用了自定义的 Objective-C 类型，确保在导入这个自动生成的头文件前，先将这些自定义的 Objective-C 类型对应的 Objective-C 头文件导入。
 
@@ -86,17 +86,19 @@ target 内部的一些 Swift API 会暴露给包含这个导入语句的 Objecti
 | Objective-C 代码     | 不需要导入语句；需要 Objective-C 桥接头文件| #import "Header.h"     |
 
 <a name="importing_code_from_within_the_same_framework_target"></a>
-## 在同一 Framework 的 target 中导入代码（Importing Code from Within the Same Framework Target）
+## 在 Framework 的 target 内部导入代码
 
-如果你在写一个混合语言的框架，可能会从 Swift 代码访问 Objective-C 代码，或者反之。
+在编写基于混合语言的 Framework 时，可能需要在 Swift 代码中访问 Objective-C 代码，或者反过来。
 
-### 将 Objective-C 导入 Swift（Importing Objective-C into Swift）
+### 将 Objective-C 代码导入到 Swift
 
-要将一些 Objective-C 文件导入到同一框架 target 的 Swift 代码中去，你需要将这些文件导入到 Objective-C 的`umbrella header`来供框架使用。
+若要将 Objective-C 文件导入到 target 内部的 Swift 代码中，需要将这些 Objective-C 文件导入到 Objective-C 的保护伞头文件中。
 
-##### 在同一 framework 中将 Objective-C 代码导入到 Swift 中
+##### 在 target 内部将 Objective-C 代码导入到 Swift
 
-确保将框架 target 的`Build Settings > Packaging > Defines Module`设置为`Yes`。然后在你的`umbrella header`头文件中导入你想暴露给 Swift 访问的 Objective-C 头文件，例如：
+1. 确保将 target 的`Build Settings > Packaging > Defines Module`设置为`Yes`。
+
+2. 在保护伞头文件中导入希望暴露给 Swift 的 Objective-C 头文件。例如：
 
 ```objective-c
 #import <XYZ/XYZCustomCell.h>
@@ -104,28 +106,30 @@ target 内部的一些 Swift API 会暴露给包含这个导入语句的 Objecti
 #import <XYZ/XYZCustomViewController.h>
 ```
 
-Swift 将会看到所有你在`umbrella header`中公开暴露出来的头文件，框架 target 中的所有 Swift 文件都可以访问你的 Objective-C 文件的内容，不需要任何导入语句。同时你可以用 Swift 语法使用你自定义的 Objective-C 代码。
+保护伞头文件中导入的 Objective-C 头文件都会暴露给 Swift。target 内部的所有 Swift 文件都可以使用这些 Objective-C 头文件中的 API，不需要任何导入语句，而且还能用 Swift 语法使用这些自定义的 Objective-C API，就像使用系统的 Swift 类一样。
 
 ```swift
 let myOtherCell = XYZCustomCell()
 myOtherCell.subtitle = "Another custom cell"
 ```
 
-### 将 Swift 导入 Objective-C（Importing Swift into Objective-C）
+### 将 Swift 代码导入到 Objective-C
 
-要将一些 Swift 文件导入到同一框架的 target 的 Objective-C 代码中，你不需要导入任何东西到`umbrella header`文件，而是将 Xcode 为你的 Swift 代码自动生成的头文件导入到要访问 Swift 代码的 Objective-C `.m`文件。
+若要将 Swift 文件导入到 target 内部的 Objective-C 代码中，不需要导入任何东西到保护伞头文件，而是将 Xcode 为 Swift 代码自动生成的头文件导入到要访问 Swift 代码的 Objective-C `.m`文件。
 
-由于为框架的 target 生成的头文件是框架的 public 接口部分，因此只有标记`public`修饰符的声明才会出现在生成的头文件中。在框架内部的 Objective-C 部分，你可以使用标记`internal`的 Swift 方法和属性，只要它们声明在继承自 Objective-C 的类中。
+由于这个自动生成的头文件是 Framework 公共接口的一部分，因此只有标记`public`修饰符的 API 才会出现在这个自动生成的头文件中。不过，在 target 内部的 Objective-C 代码部分，依旧可以使用标记`internal`的 Swift API，只要它们所在的类继承自 Objective-C 类。关于访问级别修饰符的更多信息，请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的 [访问控制](http://wiki.jikexueyuan.com/project/swift/chapter2/24_Access_Control.html) 章节。
 
-##### 在同一 framework 中将 Swift 代码导入到 Objective-C 中
+##### 在 target 内部将 Swift 代码导入到 Objective-C
 
-确保将框架 target 的`Build Settings > Packaging > Defines Module`设置为`Yes`。用下面的语法将 Swift 代码导入到同一框架 target 下的 Objective-C `.m`文件。
+1. 确保将 target 的`Build Settings > Packaging > Defines Module`设置为`Yes`。
+
+2. 使用如下语法将 Swift 代码导入到 target 内部的 Objective-C `.m`文件：
 
 ```objective-c
 #import <ProductName/ProductModuleName-Swift.h>
 ```
 
-框架 target 下的 Swift 文件都会对包含这个导入语句的 Objective-C `.m`文件可见。关于在 Objective-C 代码中使用 Swift 代码，详见 [在 Objective-C 中使用 Swift（Using Swift from Objective-C）](#using_swift_from_objective-c)。
+target 内部的一些 Swift API 会暴露给包含这个导入语句的 Objective-C `.m`文件。关于如何在 Objective-C 中使用 Swift，请参阅 [在 Objective-C 中使用 Swift](#using_swift_from_objective-c) 小节。
 
 |              | 导入到 Swift | 导入到 Objective-C  |
 | :-------------:|:-----------:|:------------:| 
@@ -134,7 +138,7 @@ myOtherCell.subtitle = "Another custom cell"
 
 
 <a name="importing_external_frameworks"></a>
-## 导入外部 Framework（Importing External Frameworks）
+## 导入外部 Framework
 
 你可以导入外部框架，无论这个框架是基于纯 Objective-C，纯 Swift，还是混合语言的，而且导入流程都是一样的。当你导入外部框架时，确保`Build Setting > Pakaging > Defines Module`设置为`Yes`。
 
@@ -149,7 +153,6 @@ import FrameworkName
 ```objective-c
 @import FrameworkName;
 ```
-
 
 |           | 导入到 Swift | 导入到 Objective-C  |
 | :-------------:|:-----------:|:------------:| 
@@ -328,6 +331,6 @@ Xcode 为 Swift 代码生成的头文件的名称，以及 Xcode 创建的 Objec
 
 - 用`private`修饰符标记的 Swift 声明不会出现在自动生成的头文件中。私有声明不会暴露给 Objective-C，除非它们被明确标记有`@IBAction`，`@IBOutlet`或者`@objc`。
 
-- 对于应用的 targets 而言，当存在 Objective-C 桥接头文件时，被`internal`修饰符标记的声明也会出现在自动生成的头文件中。
+- 对于 App 的 targets 而言，当存在 Objective-C 桥接头文件时，被`internal`修饰符标记的声明也会出现在自动生成的头文件中。
 
 - 对于框架的 targets 而言，只有被`public`修饰符标记的声明才会出现在自动生成的头文件中。你仍然可以在框架中的 Objective-C 部分使用被`internal`修饰符标记的 Swift 方法和属性，只要它们所在的类继承自 Objective-C 类。关于访问级别修饰符的更多信息，请查看[《The Swift Programming Language 中文版》](http://wiki.jikexueyuan.com/project/swift/)中的 [访问控制（Access Control）](http://wiki.jikexueyuan.com/project/swift/chapter2/24_Access_Control.html)。
