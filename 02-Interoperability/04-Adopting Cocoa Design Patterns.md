@@ -88,7 +88,7 @@ lazy var ISO8601DateFormatter: NSDateFormatter = {
 > 注意  
 > 如果一个惰性属性还未被初始化就被多个线程同时访问，此时无法保证此惰性属性只被初始化一次。
 
-请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 的 [延迟存储属性](http://wiki.jikexueyuan.com/project/swift/chapter2/10_Properties.html#stored_properties) 小节。
+请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的 [延迟存储属性](http://wiki.jikexueyuan.com/project/swift/chapter2/10_Properties.html#stored_properties) 小节。
 
 <a name="error_handling"></a>
 ## 错误处理
@@ -250,7 +250,7 @@ class SerializedDocument: NSDocument {
 
 键值观察能让对象获得其他对象特定属性的变化通知。只要 Swift 类继承自 NSObject 类，就可以在 Swift 中通过下面三步来实现键值观察：
 
-1. 为想要观察的属性添加`dynamic`修改符。关于`dynamic`的更多信息，请参阅 [要求动态派发](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02-Interoperability/01-Interacting%20with%20Objective-C%20APIs.md#%E8%A6%81%E6%B1%82%E5%8A%A8%E6%80%81%E6%B4%BE%E5%8F%91)。
+1. 为想要观察的属性添加`dynamic`修改符。关于`dynamic`的更多信息，请参阅 [要求动态派发](01-Interacting%20with%20Objective-C%20APIs.md#%E8%A6%81%E6%B1%82%E5%8A%A8%E6%80%81%E6%B4%BE%E5%8F%91) 小节。
 
 ```swift
 class MyObjectToObserve: NSObject {
@@ -372,7 +372,7 @@ func markTask(task: Task, asCompleted completed: Bool) {
 <a name="Target_Action"></a>
 ## 目标-动作
 
-目标-动作是一种常见的 Cocoa 设计模式，用于当特定事件发生，需要一个对象向另一个对象发送消息时。Swift 和 Objective-C 的目标-动作模式基本类似。在 Swift，可以使用`Selector`类型引用 Objective-C 的选择器。请参阅 [Objective-C 选择器](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02-Interoperability/01-Interacting%20with%20Objective-C%20APIs.md#objective-c-%E9%80%89%E6%8B%A9%E5%99%A8) 查看在 Swift 使用目标-动作模式的示例。
+目标-动作是一种常见的 Cocoa 设计模式，用于当特定事件发生，需要一个对象向另一个对象发送消息时。Swift 和 Objective-C 的目标-动作模式基本类似。在 Swift，可以使用`Selector`类型引用 Objective-C 的选择器。请参阅 [Objective-C 选择器](01-Interacting%20with%20Objective-C%20APIs.md#objective-c-%E9%80%89%E6%8B%A9%E5%99%A8) 小节查看在 Swift 中使用目标-动作模式的示例。
 
 <a name="Singleton"></a>
 ## 单例
@@ -413,7 +413,7 @@ class Singleton {
 }
 ```
 
-请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 的 [类型属性](http://wiki.jikexueyuan.com/project/swift/chapter2/10_Properties.html#type_properties) 小节获取更多信息。
+请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的 [类型属性](http://wiki.jikexueyuan.com/project/swift/chapter2/10_Properties.html#type_properties) 小节获取更多信息。
 
 <a name="Introspection"></a>
 ## 内省
@@ -439,7 +439,7 @@ if let button = object as? UIButton {
     // object 无法转换为 UIButton
 }
 ```
-请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 的 [类型转换](http://wiki.jikexueyuan.com/project/swift/chapter2/19_Type_Casting.html) 章节获取更多信息。
+请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的 [类型转换](http://wiki.jikexueyuan.com/project/swift/chapter2/19_Type_Casting.html) 章节获取更多信息。
 
 检查协议符合性以及转换到符合协议类型的语法和上述语法是完全一样的。下面是使用`as?`检查协议符合性的示例：
 
@@ -453,7 +453,7 @@ if let dataSource = object as? UITableViewDataSource {
 
 注意，经过转换之后，`dataSource`常量即是`UITableViewDataSource`类型，所以只能访问和调用`UITableViewDataSource`协议定义的属性和方法。想进行其他操作时，必须将其转换为其他类型。
 
-请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 的 [协议](http://wiki.jikexueyuan.com/project/swift/chapter2/22_Protocols.html) 章节获取更多信息。
+请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的 [协议](http://wiki.jikexueyuan.com/project/swift/chapter2/22_Protocols.html) 章节获取更多信息。
 
 <a name="Serializing"></a>
 ## 序列化

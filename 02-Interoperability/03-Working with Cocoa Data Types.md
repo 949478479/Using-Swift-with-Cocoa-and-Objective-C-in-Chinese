@@ -211,7 +211,7 @@ typedef SWIFT_ENUM(NSInteger, CustomError) {
 static NSString * const CustomErrorDomain = @"Project.CustomError";
 ```
 
-请参阅[错误处理](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C/blob/master/02-Interoperability/04-Adopting%20Cocoa%20Design%20Patterns.md#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86)获取更多有关 Swift 和 Objective-C API 中错误处理的信息。
+请参阅 [错误处理](04-Adopting%20Cocoa%20Design%20Patterns.md#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86) 小节获取更多有关 Swift 和 Objective-C API 中错误处理的信息。
 
 <a name = "foundation_data_types"></a>
 ## Foundation 数据类型
@@ -292,4 +292,4 @@ let memoryManagedResult = StringByAddingTwoStrings(str1, str2).takeUnretainedVal
 
 当然，也可以对一个非托管对象使用`retain()`，`release()`和`autorelease()`方法，但是这种做法并不推荐。
 
-要了解更多信息，请参阅 [*Memory Management Programming Guide for Core Foundation*](https://developer.apple.com/library/prerelease/ios/documentation/CoreFoundation/Conceptual/CFMemoryMgmt/CFMemoryMgmt.html#//apple_ref/doc/uid/10000127i) 中的 [*Core Foundation Object Lifecycle Management*](https://developer.apple.com/library/prerelease/ios/documentation/CoreFoundation/Conceptual/CFMemoryMgmt/Articles/lifecycle.html#//apple_ref/doc/uid/TP40002439-SW1) 部分。
+要了解更多信息，请参阅 [*Memory Management Programming Guide for Core Foundation*](https://developer.apple.com/library/prerelease/ios/documentation/CoreFoundation/Conceptual/CFMemoryMgmt/CFMemoryMgmt.html#//apple_ref/doc/uid/10000127i) 中的 [*Core Foundation Object Lifecycle Management*](https://developer.apple.com/library/prerelease/ios/documentation/CoreFoundation/Conceptual/CFMemoryMgmt/Articles/lifecycle.html#//apple_ref/doc/uid/TP40002439-SW1) 小节。
