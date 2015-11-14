@@ -42,13 +42,13 @@
 
 * 在必要的时候，通过`@objc(name)`特性为 Swift 中的属性或方法提供 Objective-C 名称。例如，可以像下面这样将`enabled`属性的 getter 在 Objective-C 中的名称更改为`isEnabled`：
 
-```swift
-var enabled: Bool {
-	@objc(isEnabled) get {
-		// ...
+	```swift
+	var enabled: Bool {
+		@objc(isEnabled) get {
+			// ...
+		}
 	}
-}
-```
+	```
 
 * 分别用`func`和`class func`来表示实例方法（`-`）和类方法（`+`）。
 
@@ -56,7 +56,7 @@ var enabled: Bool {
 
 ### 大功告成
 
-* 将 Objective-C 代码中的导入语句更改为`#import "ProductModuleName-Swift.h"`，请参阅 [在 App 的 target 内部导入代码](../03-Mix%20and%20Match/Swift%20and%20Objective-C%20in%20the%20Same%20Project.md#importing_code_from_within_the_same_app_target)。
+* 将 Objective-C 代码中对应的导入语句更改为`#import "ProductModuleName-Swift.h"`，请参阅 [在 App 的 target 内部导入代码](../03-Mix%20and%20Match/Swift%20and%20Objective-C%20in%20the%20Same%20Project.md#importing_code_from_within_the_same_app_target)。
 
 * 取消原始的 Objective-C `.m`文件在`Target Membership`选择框中的勾选，从而将其从 target 中移除。不要立刻删除`.m`和`.h`文件，以备解决问题时使用。
 
