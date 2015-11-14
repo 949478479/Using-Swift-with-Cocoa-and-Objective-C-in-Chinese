@@ -56,7 +56,7 @@
 
 ### 大功告成
 
-* 将 Objective-C 代码中对应的导入语句更改为`#import "ProductModuleName-Swift.h"`，请参阅 [在 App 的 target 内部导入代码](../03-Mix%20and%20Match/Swift%20and%20Objective-C%20in%20the%20Same%20Project.md#importing_code_from_within_the_same_app_target)。
+* 将 Objective-C 代码中对应的导入语句更改为`#import "ProductModuleName-Swift.h"`，更多信息请参阅 [在 App 的 target 内部导入代码](../03-Mix%20and%20Match/Swift%20and%20Objective-C%20in%20the%20Same%20Project.md#importing_code_from_within_the_same_app_target) 小节。
 
 * 取消原始的 Objective-C `.m`文件在`Target Membership`选择框中的勾选，从而将其从 target 中移除。不要立刻删除`.m`和`.h`文件，以备解决问题时使用。
 
