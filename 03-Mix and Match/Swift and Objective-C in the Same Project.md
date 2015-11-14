@@ -200,7 +200,7 @@ MySwiftClass *swiftObject = [[MySwiftClass alloc] init];
 [swiftObject swiftMethod];
 ```
 
-Swift 的类或协议必须标记`@objc`特性，才能在 Objective-C 中使用。这个特性向编译器表明对应的 Swift 代码可以在 Objective-C 中使用。如果 Swift 类是 Objective-C 类的子类，编译器会自动添加`@objc`特性。详情请参阅 [Swift 类型兼容性](../02-Interoperability/01-Interacting%20with%20Objective-C%20APIs.md#swift_type_compatibility)。
+Swift 的类或协议必须标记`@objc`特性，才能在 Objective-C 中使用。这个特性向编译器表明对应的 Swift 代码可以在 Objective-C 中使用。如果 Swift 类是 Objective-C 类的子类，编译器会自动添加`@objc`特性。详情请参阅 [Swift 类型兼容性](../02-Interoperability/01-Interacting%20with%20Objective-C%20APIs.md#swift_type_compatibility) 小节。
 
 可以访问在 Swift 类或协议中用`@objc`特性标记的任何东西，只要它兼容 Objective-C，这意味着以下的 Swift 独有特性不包括在内：
 
@@ -356,11 +356,11 @@ extension Color {
 
 - 如果使用 Objective-C 桥接头文件，确保`Build setting > Swift Compiler > Code Generation`中的头文件路径是头文件自身相对于工程的路径。
 
-- Xcode 根据产品模块名，而不是 target 的名称来命名 Objective-C 桥接头文件以及为 Swift 代码自动生成的头文件。详情请参阅 [命名产品模块](#naming_your_product_module)。
+- Xcode 根据产品模块名，而不是 target 的名称来命名 Objective-C 桥接头文件以及为 Swift 代码自动生成的头文件。详情请参阅 [命名产品模块](#naming_your_product_module) 小节。
 
 - 只有继承自 Objective-C 类的 Swift 类，以及标记了`@objc`的 Swift API，才能在 Objective-C 中使用。
 
-- 将 Swift 代码导入到 Objective-C 时，注意 Objective-C 无法转化 Swift 的独有特性。详细列表请参阅 [在 Objective-C 中使用 Swift](#using_swift_from_objective-c)。
+- 将 Swift 代码导入到 Objective-C 时，注意 Objective-C 无法转化 Swift 的独有特性。详细列表请参阅 [在 Objective-C 中使用 Swift](#using_swift_from_objective-c) 小节。
 
 - 如果在 Swift 代码中使用了自定义的 Objective-C 类型，在 Objective-C 中使用这部分 Swift 代码时，确保先导入相关的 Objective-C 类型的头文件，然后再将 Xcode 为 Swift 代码自动生成的头文件导入。
 
