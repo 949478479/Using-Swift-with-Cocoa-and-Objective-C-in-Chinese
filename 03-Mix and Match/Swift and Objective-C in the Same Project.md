@@ -351,12 +351,21 @@ extension Color {
 ## 故障排除贴士
 
 - 将 Swift 和 Objective-C 文件看作同一代码集合，注意命名冲突。
+
 - 如果使用 Framework，确保`Build setting > Packaging > Defines Module`设置为`Yes`。
+
 - 如果使用 Objective-C 桥接头文件，确保`Build setting > Swift Compiler > Code Generation`中的头文件路径是头文件自身相对于工程的路径。
+
 - Xcode 根据产品模块名，而不是 target 的名称来命名 Objective-C 桥接头文件以及为 Swift 代码自动生成的头文件。详情请参阅 [命名产品模块](#naming_your_product_module)。
+
 - 只有继承自 Objective-C 类的 Swift 类，以及标记了`@objc`的 Swift API，才能在 Objective-C 中使用。
+
 - 将 Swift 代码导入到 Objective-C 时，注意 Objective-C 无法转化 Swift 的独有特性。详细列表请参阅 [在 Objective-C 中使用 Swift](#using_swift_from_objective-c)。
+
 - 如果在 Swift 代码中使用了自定义的 Objective-C 类型，在 Objective-C 中使用这部分 Swift 代码时，确保先导入相关的 Objective-C 类型的头文件，然后再将 Xcode 为 Swift 代码自动生成的头文件导入。
+
 - 标记`private`修饰符的 Swift 声明不会出现在自动生成的头文件中，因为私有声明不会暴露给 Objective-C，除非它们被显式标记`@IBAction`，`@IBOutlet`或者`@objc`。
+
 - 对于 App 的 target，当存在 Objective-C 桥接头文件时，标记`internal`修饰符的声明也会出现在自动生成的头文件中。
+
 - 对于 Framework 的 target，只有标记`public`修饰符的声明才会出现在自动生成的头文件中，不过依然可以在 Framework 内部的 Objective-C 代码中使用标记`internal`修饰符的 Swift API，只要它们所在的类继承自 Objective-C 类。关于访问级别修饰符的更多信息，请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的 [访问控制](http://wiki.jikexueyuan.com/project/swift/chapter2/24_Access_Control.html) 章节。
