@@ -64,7 +64,7 @@ myCell.subtitle = "A custom cell"
 
 将 Swift 代码导入到 Objective-C 时，需要依靠 Xcode 生成的头文件将这些文件暴漏给 Objective-C（此头文件不是上小节描述的 Objective-C 桥接头文件，该头文件在工程目录下不可见，但是可以跳转进去查看）。这个自动生成的头文件是一个 Objective-C 头文件，声明了 target 内部的一些 Swift API。可以将这个 Objective-C 头文件看作 Swift 代码的保护伞头文件。该头文件以产品模块名跟上`“-Swift.h”`来命名。关于产品模块名的具体介绍，请参阅 [命名产品模块](#naming_your_product_module) 小节。
 
-默认情况下，这个头文件包含标记`public`修饰符的 Swift API。如果 target 内有一个 Objective-C 桥接头文件的话，它还会包含标记`internal`修饰符的 Swift API。标记`private`修饰符的 Swift API 不会出现在这个头文件中，因为私有声明不会暴露给 Objective-C，除非它们被显式标记`@IBAction`，`@IBOutlet`，或`@objc`。如果 App 的 target 启用了单元测试，单元测试的 target 在导入 App 的 target 时，编译器会在导入语句前加上`@testable`特性，从而可以在单元测试的 target 内访问 App 的 target 内任何标记`internal`修饰符的 API，犹如它们标记了`public`修饰符一般。
+默认情况下，这个头文件包含标记`public`修饰符的 Swift API。如果 target 内有一个 Objective-C 桥接头文件的话，它还会包含标记`internal`修饰符的 Swift API。标记`private`修饰符的 Swift API 不会出现在这个头文件中，因为私有声明不会暴露给 Objective-C，除非它们被显式标记`@IBAction`，`@IBOutlet`，或`@objc`。如果 App 的 target 启用了单元测试，在单元测试的 target 内导入 App 的 target 时，在`import`语句前加上`@testable`特性，从而可以在单元测试的 target 内访问 App 的 target 内任何标记`internal`修饰符的 API，犹如它们标记了`public`修饰符一般。
 
 关于访问级别修饰符的更多信息，请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的 [访问控制](http://wiki.jikexueyuan.com/project/swift/chapter2/24_Access_Control.html) 章节。
 
