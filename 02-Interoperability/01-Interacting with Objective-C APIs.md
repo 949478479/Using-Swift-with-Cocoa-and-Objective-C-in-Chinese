@@ -440,7 +440,7 @@ class Белка: NSObject {
 这个属性在迁徙被归档的 Objecive-C 类到 Swift 时会非常有用。由于被归档的对象存储了类名，如果 Swift 新类改了类名，则应该使用`@objc(name)`特性来声明被归档的 Objective-C 类的类名，这样才能正确地将该 Objective-C 类解档为新的 Swift 类。
 
 > 注意  
-> 相反，Swift 还提供了`@nonobjc`特性，从而使一个 Swift 声明在 Objective-C 中不可用。可以利用它来解决桥接方法循环，以及允许重载被标记`@objc`特性的类中的方法。如果一个 Objective-C 方法在 Swift 中被重载后，无法再以 Objective-C 的语言特性表示，例如将参数变为了可变参数，那么这个方法必须标记为`@nonobjc`。
+> 相反，Swift 还提供了`@nonobjc`特性，从而使一个 Swift 声明在 Objective-C 中不可用。可以利用它来解决桥接方法循环，以及允许重载被标记`@objc`特性的类中的方法。如果一个 Objective-C 方法在 Swift 中被重写后，无法再以 Objective-C 的语言特性表示，例如将参数变为了可变参数，那么这个方法必须标记为`@nonobjc`。
 
 ### 要求动态派发
 
