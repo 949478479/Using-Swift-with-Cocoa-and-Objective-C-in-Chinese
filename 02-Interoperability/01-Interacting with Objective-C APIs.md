@@ -389,11 +389,20 @@ self.closure = { [unowned self] in
 <a name="object_comparison"></a>
 ## 对象比较
 
-在 Swift，比较两个对象可以使用两种方式。第一种，使用 ==，比较两个对象内容是否相同。第二种，使用 === ，判断常量或者变量是否引用同一对象。
+在 Swift，比较两个对象可以使用两种方式。第一种，使用 `==` 运算符，比较两个对象内容是否相同。第二种，使用 `===` 运算符，判断常量或者变量是否引用同一对象。
 
-Swift 的 == 操作符为继承自`NSObject`类的对象提供了默认实现。在 == 操作符的实现中，Swift 调用`NSObject`类中定义的`isEqual:`方法。`NSObject`类的实现仅仅是比较两个对象地址是否相同，所以需要在自定义类中重新实现`isEqual:`方法。因为可以直接传递 Swift 对象（包括那些不继承自`NSObject`的）给 Objective-C API，所以如果希望比较两个对象的内容而不仅仅是比较其地址的话，则应该为这些对象实现`isEqual:`方法。
+Swift 为源自 `NSObject` 的类实现了 `Equatable` 协议，并提供了 `==` 运算符和 `===` 运算符的默认实现。`==` 运算符的默认实现会调用 `isEqual:` 方法，`===` 运算符的默认实现则会检查指针是否相同。你不应该为 Objective-C 类型重写这两个运算符。
 
-作为实现对象比较的另一部分内容，确保根据 [Object comparison](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/DevPedia-CocoaCore/ObjectComparison.html#//apple_ref/doc/uid/TP40008195-CH37) 中的规则实现对象的`hash`属性。如果希望类的实例能够作为字典中的键，还需要符合`Hashable`协议并实现`hashValues`属性。
+`NSObject` 类为 `isEqual:` 方法提供的基本实现仅仅是比较两个指针是否相同。可以根据需要在子类中重新实现 `isEqual:` 方法，基于对象内容进行比较，而不是比较指针。关于如何实现对象比较逻辑的更多信息，请参阅 [Object comparison](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/DevPedia-CocoaCore/ObjectComparison.html#//apple_ref/doc/uid/TP40008195-CH37)。
+
+> 注意  
+> Swift 为 `!=` 和 `!==` 运算符提供了实现，无需再进行重写。
+
+### 哈希
+
+Swift 为源自 `NSObject` 的类实现了 `Hashable` 协议，并提供了 `hashValue` 属性的默认实现，即调用 `NSObject` 的 `hash` 属性。
+
+`NSObject` 子类在重写 `isEquals:` 方法时，还应该重写 `hash` 属性。
 
 <a name="swift_type_compatibility"></a>
 ## Swift 类型兼容性
