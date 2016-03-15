@@ -11,7 +11,10 @@
 - [扩展](#extensions)
 - [闭包](#closures)
 - [对象比较](#object_comparison)
+    - [哈希](#Hashing)
 - [Swift 类型兼容性](#swift_type_compatibility)
+    - [配置 Swift 在 Objective-C 中的接口](#Configuring_Swift_Interfaces_in_Objective-C)
+    - [强制动态派发](#Requiring_Dynamic_Dispatch) 
 - [Objective-C 选择器](#objective_c_selectors)
 
 *互用性* 是能让 Swift 和 Objective-C 相接合的特性，这使你能够在一种语言编写的文件中使用另一种语言。当你准备开始把 Swift 融入到你的开发流程中时，学会如何利用互用性来重新定义，改善并增强你编写 Cocoa 应用的方式真是极好的。
@@ -398,6 +401,7 @@ Swift 为源自 `NSObject` 的类实现了 `Equatable` 协议，并提供了 `==
 > 注意  
 > Swift 为 `!=` 和 `!==` 运算符提供了实现，无需再进行重写。
 
+<a name="Hashing"></a>
 ### 哈希
 
 Swift 为源自 `NSObject` 的类实现了 `Hashable` 协议，并提供了 `hashValue` 属性的默认实现，即调用 `NSObject` 的 `hash` 属性。
@@ -407,55 +411,117 @@ Swift 为源自 `NSObject` 的类实现了 `Hashable` 协议，并提供了 `has
 <a name="swift_type_compatibility"></a>
 ## Swift 类型兼容性
 
-在 Swift 中子类化 Objective-C 类时，该 Swift 子类及其成员，即属性，方法，下标和构造器，都将兼容于 Objective-C，即它们在 Objective-C 中可直接使用。在某些情况下，需要更精确地控制如何将 Swift API 暴露给 Objective-C。如果 Swift 类不是 Objective-C 类的子类，又或者希望更改当前 Swift 接口暴露给 Objective-C 后的名称，可以使用`@objc`特性。如果需要使用诸如键值观察（KVO）这种需要动态替换方法实现的 API，则可使用`dynamic`修饰符标记成员变量，从而通过 Objective-C 运行时的动态派发来访问成员变量。
+在 Swift 中子类化 Objective-C 类时，该 Swift 子类及其成员，即属性、方法、下标和构造器，在 Objective-C 中均可直接使用。但这不包括一些 Swift 独有特性，如下列所示：
 
-### 暴露 Swift 接口给 Objective-C
+- 泛型
+- 元组
+- 原始值类型不是 `Int` 类型的枚举
+- 结构体
+- 顶级函数
+- 全局变量
+- 类型别名
+- 可变参数
+- 嵌套类型
+- 柯里化函数
 
-在 Swift 中子类化 Objective-C 类时，该 Swift 子类便会自动兼容于 Objective-C。如果 Swift 类不是 Objective-C 类的子类，同时希望能在 Objective-C 代码中使用该类的 API，则可以使用下面描述的`@objc`特性。
+Swift API 转换到 Objective-C 时：
 
-`@objc`特性可以将 Swift API 暴露给 Objective-C 以及 Objective-C 运行时。换言之，可以在任意 Swift 方法，属性，下标，构造器，类，协议，枚举前标记`@objc`，从而可以在 Objective-C 代码中使用它们。
+- Swift 可选类型会被标注 `__nullable`。
+- Swift 非可选类型会被标注 `__nonnull`。
+- Swift 常量存储属性和计算属性会成为 Objective-C 只读属性。
+- Swift 变量存储属性会成为 Objective-C 读写属性。
+- Swift 类型方法会成为 Objective-C 类方法。
+- Swift 构造器和实例方法会成为 Objective-C 实例方法。
+- Swift 中抛出错误的方法会成为接受 `NSError **` 参数的 Objective-C 方法。如果这种 Swift 方法没有指定返回类型，那么相应的 Objective-C 方法会拥有 `BOOL` 类型的返回值。
 
-> 注意  
-> 嵌套类型声明不能标记`@objc`特性。  
-> 只有原始值为整形的 Swift 枚举，例如`Int`，才能使用`@objc`特性。
-
-如果 Swift 类继承自 Objective-C 类，编译器会自动标记`@objc`特性。如果一个类标记了`@objc`特性，编译器就会在类中所有成员前标记`@objc`特性。使用`@IBOutlet`，`@IBAction`，或是`@NSManaged`特性时，`@objc`特性也会被自动标记。
-
-只有源自`NSObject`的类才可以在类声明前标记`@objc`特性，当然，编译器会自动标记。另外，也可以在不源自`NSObject`的类中的某个 API 前单独标记`@objc`特性。使用类似`NSTimer`或者`UIButton`中的一些使用 Objective-C 选择器的 API 时，就需要为 Swift 类中的相关方法标记`@objc`特性。
-
-> 注意  
-> 如果声明前标记了`private`访问级别修饰符，编译器将不会为声明自动标记`@objc`特性。
-
-在 Objective-C 中使用 Swift API 时，编译器通常会对语句做直接转化。例如，Swift API `func playSong(name: String)`在 Objective-C 中会被导入为`- (void)playSong:(NSString *)name`。然而，有一个例外：在 Objective-C 中使用 Swift 构造器时，编译器会在方法前添加“initWith”并将构造器第一个参数名的首字母大写。例如，Swift 构造器`init(songName: String, artist: String)`在 Objective-C 中将被转化为`- (instancetype)initWithSongName:(NSString *)songName artist:(NSString *)artist`。
-
-Swift 也提供了一个`@objc`特性的变体，通过它可以指定导入到 Objective-C 后的符号名。例如，如果 Swift 类的类名包含 Objective-C 中不支持的字符，就可以为其提供一个在 Objective-C 中的别名。如果要为 Swift 函数提供一个 Objective-C 选择器风格的别名，记得在参数名后添加冒号：
+例如，思考如下 Swift 声明：
 
 ```swift
-@objc(Squirrel)
-class Белка: NSObject {
+class Jukebox: NSObject {
 
-    @objc(initWithName:)
-    init (имя: String) { 
-        // ...
+    var library: Set<String>
+
+    var nowPlaying: String?
+
+    var isCurrentlyPlaying: Bool {
+        return nowPlaying != nil
     }
-    
-    @objc(hideNuts:inTree:)
-    func прячьОрехи(Int, вДереве: Дерево) {
-       // ...
+
+    init(songs: String...) {
+        self.library = Set<String>(songs)
+    }
+
+    func playSong(named name: String) throws {
+        // 播放歌曲，若歌曲不可用则抛出错误
     }
 }
 ```
 
-这个属性在迁徙被归档的 Objecive-C 类到 Swift 时会非常有用。由于被归档的对象存储了类名，如果 Swift 新类改了类名，则应该使用`@objc(name)`特性来声明被归档的 Objective-C 类的类名，这样才能正确地将该 Objective-C 类解档为新的 Swift 类。
+上述代码导入到 Objective-C 后如下所示：
+
+```Objective-C
+@interface Jukebox : NSObject
+@property (nonatomic, copy) NSSet<NSString *> * __nonnull library;
+@property (nonatomic, copy) NSString * __nullable nowPlaying;
+@property (nonatomic, readonly) BOOL isCurrentlyPlaying;
+- (nonnull instancetype)initWithSongs:(NSArray<NSString *> * __nonnull)songs OBJC_DESIGNATED_INITIALIZER;
+- (BOOL)playSong:(NSString * __nonnull)name error:(NSError * __nullable * __null_unspecified)error;
+@end
+```
 
 > 注意  
-> 相反，Swift 还提供了`@nonobjc`特性，从而使一个 Swift 声明在 Objective-C 中不可用。可以利用它来解决桥接方法循环，以及允许重载被标记`@objc`特性的类中的方法。如果一个 Objective-C 方法在 Swift 中被重写后，无法再以 Objective-C 的语言特性表示，例如将参数变为了可变参数，那么这个方法必须标记为`@nonobjc`。
+> 无法在 Objective-C 中继承一个 Swift 类。
 
-### 要求动态派发
+<a name="Configuring_Swift_Interfaces_in_Objective-C"></a>
+### 配置 Swift 在 Objective-C 中的接口
 
-`@objc`特性能将 Swift API 暴露给 Objective-C 运行时，但它并不能保证属性，方法，下标，或构造器的动态派发。Swift 编译器依旧可能绕过 Objective-C 运行时，通过消虚拟化或内联成员访问来优化代码的性能。当一个成员声明用`dynamic`修饰符标记时，对该成员的访问将始终是动态派发的。由于将声明标记`dynamic`修饰符后会用 Objective-C 运行时来动态派发，因此声明也会被隐式地标记`@objc`特性。
+在某些情况下，需要更精确地控制如何将 Swift API 暴露给 Objective-C。你可以使用 `@objc(name)` 特性来改变类、属性、方法、枚举类型，以及枚举用例暴露给 Objective-C 代码的声明。
 
-一般很少需要动态派发，但是，如果要在运行时替换一个 API 的实现，就必须使用`dynamic`修饰符。例如，可以使用 Objective-C 运行时的`method_exchangeImplementations`函数在应用程序运行过程中替换某个方法的实现。如果 Swift 编译器内联了方法的实现或者消虚拟化对它的访问，新的实现就不会被使用了。
+例如，如果 Swift 类的类名包含 Objective-C 中不支持的字符，就可以为其提供一个在 Objective-C 中的别名。如果要为 Swift 函数提供 Objective-C 别名，使用 Objective-C 选择器语法，并记得在选择器参数片段后添加冒号（`:`）。
+
+```swift
+@objc(Color)
+enum Цвет: Int {
+
+    @objc(Red)
+    case Красный
+
+    @objc(Black)
+    case Черный
+}
+
+@objc(Squirrel)
+class Белка: NSObject {
+
+    @objc(color)
+    var цвет: Цвет = .Красный
+
+    @objc(initWithName:)
+    init (имя: String) {
+        // ...
+    }
+
+    @objc(hideNuts:inTree:)
+    func прячьОрехи(количество: Int, вДереве дерево: Дерево) {
+        // ...
+    }
+}
+```
+
+对 Swift 类使用 `@objc(name)` 特性时，该类将在 Objective-C 中可用并且没有任何命名空间。因此，这个特性在迁徙被归档的 Objecive-C 类到 Swift 时会非常有用。由于归档文件中存储了被归档对象的类名，因此应该使用 `@objc(name)` 特性来指定被归档的 Objective-C 对象的类名，这样归档文件才能通过新的 Swift 类解档。
+
+> 注意  
+> 相反，Swift 还提供了 `@nonobjc` 特性，可以让一个 Swift 声明在 Objective-C 中不可用。可以利用它来解决桥接方法循环，以及允许重载 Objective-C 类中的方法。另外，如果一个 Objective-C 方法在 Swift 中被重写后，无法再以 Objective-C 的语言特性呈现，例如将参数变为了可变参数，那么这个方法必须标记为 `@nonobjc`。
+
+<a name="Requiring_Dynamic_Dispatch"></a>
+### 强制动态派发
+
+即使将 Swift API 暴露给 Objective-C 运行时，也无法保证调用属性、方法、下标或构造器时的动态派发。Swift 编译器依旧可能绕过 Objective-C 运行时，通过消虚拟化或内联成员访问来优化代码的性能。
+
+可以使用 `dynamic` 修饰符来强制通过运行时系统动态派发。一般很少需要强制动态派发，但是，如果要使用键值观察技术或者 `method_exchangeImplementations` 这种在运行时替换方法实现的函数，就必须使用动态派发。如果 Swift 编译器内联了方法的实现或者消虚拟化对它的访问，新的方法实现就不会被调用了。
+
+> 注意  
+> 标记 `dynamic` 修饰符的声明无法再标记 `@nonobjc` 特性。
 
 <a name="objective_c_selectors"></a>
 ## Objective-C 选择器
