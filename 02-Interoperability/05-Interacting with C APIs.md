@@ -6,9 +6,11 @@
 - [枚举](#enumerations)
 - [选项集合](#Option Sets)
 - [联合体](#Unions)
-- [位字段](#Bit Fields) 
+- [位字段](#Bit Fields)
+- [匿名结构体和联合体字段](#Unnamed_Structure_and_Union_Fields)
 - [指针](#pointer)
 - [计算数据类型大小](#Data Type Size Calculation)
+- [可变参数函数](#Variadic_Functions)
 - [全局常量](#global_constants)
 - [预处理指令](#preprocessor_directives)
 
@@ -175,6 +177,22 @@ public struct NSDecimal {
     _mantissa: (UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16))
 }
 ```
+
+<a name="Unnamed_Structure_and_Union_Fields"></a>
+## 匿名结构体和联合体字段
+
+C 结构体和联合体类型可能会作为匿名的结构体和联合体字段被定义。Swift 不支持匿名结构体，因此这些字段会被导入为嵌套类型，并以 `__Unnamed_fieldName` 的形式命名。
+
+例如，如下这个名为 `Pie` 的 C 结构体包含一个名为 `crust` 的匿名结构体类型字段，还包含一个名为 `filling` 的匿名联合体类型字段：
+
+```swift
+struct Pie {
+	struct { bool flakey; } crust;
+	union { int fruit; int meat; } filling;
+}
+```
+
+导入到 Swift 中时，`crust` 属性的类型为 `Pie.__Unnamed_crust`，`filling` 属性的类型为 `Pie.__Unnamed_filling`。
 
 <a name="pointer"></a>
 ## 指针
@@ -391,6 +409,29 @@ if setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &optval, optlen) == 0 {
 > 注意  
 > 只有符合 C 语言函数指针调用约定的 Swift 函数才能作为对应的函数指针参数。另外，如同 C 语言的函数指针，标记`@convention(c)`特性的 Swift 函数不具备捕获能力。   
 > 更多信息请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的 [类型特性](http://wiki.jikexueyuan.com/project/swift/chapter3/06_Attributes.html#type_attributes) 小节。
+
+<a name="Variadic_Functions"></a>
+## 可变参数函数
+
+在 Swift，可以调用 C 中的可变参数函数，例如 `vasprintf`，使用 `getVaList(_:)` 或 `withVaList(_:_:)` 函数。`getVaList(_:)` 函数接受一个 `CVarArgType` 类型的数组，返回一个 `CVaListPointer` 类型的值。相反，`withVaList(_:_:)` 函数在闭包体中通过闭包参数来提供该值，而不是直接返回它。最终，`CVaListPointer` 类型的值会传递给接受可变参数的 C 函数的 `va_list` 参数。
+
+例如，如下示例代码演示了如何在 Swift 中调用 `vasprintf` 函数：
+
+```swift
+func sprintf(format: String, _ args: CVarArgType...) -> String? {
+    return withVaList(args) { va_list in
+        var buffer: UnsafeMutablePointer<Int8> = nil
+        return format.withCString { CString in
+            guard vasprintf(&buffer, CString, va_list) != 0 else {
+                return nil
+            }
+            return String.fromCString(buffer)
+        }
+    }
+}
+print(sprintf("√2 ≅ %g", sqrt(2.0))!)
+// 打印输出 "√2 ≅ 1.41421"
+```
 
 <a name="global_constants"></a>
 ## 全局常量
