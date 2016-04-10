@@ -9,10 +9,18 @@
 - [位字段](#Bit Fields)
 - [匿名结构体和联合体字段](#Unnamed_Structure_and_Union_Fields)
 - [指针](#pointer)
+	- [常量指针](#Constant_Pointers)
+	- [可变指针](#Mutable_Pointers)
+	- [自动释放指针](#Autoreleasing_Pointers)
+	- [函数指针](#Function_Pointers)
 - [计算数据类型大小](#Data Type Size Calculation)
 - [可变参数函数](#Variadic_Functions)
 - [全局常量](#global_constants)
+- [一次性初始化](#One_Time_Initialization)
 - [预处理指令](#preprocessor_directives)
+	- [简单宏](#Simple_Macros)
+	- [复杂宏](#Complex_Macros)
+	- [编译配置](#Build_Configurations)
 
 为了更好地支持与 Objective-C 语言的互用性，Swift 对一些 C 语言的类型和特性保持了兼容性，提供了一些方式来配合常见的 C 语言设计和模式。
 
@@ -181,7 +189,7 @@ public struct NSDecimal {
 <a name="Unnamed_Structure_and_Union_Fields"></a>
 ## 匿名结构体和联合体字段
 
-C 结构体和联合体类型可能会作为匿名的结构体和联合体字段被定义。Swift 不支持匿名结构体，因此这些字段会被导入为嵌套类型，并以 `__Unnamed_fieldName` 的形式命名。
+C 结构体和联合体类型可能会被定义为匿名的结构体和联合体字段。Swift 不支持匿名结构体，因此这些字段会被导入为嵌套类型，并以 `__Unnamed_fieldName` 的形式命名。
 
 例如，如下这个名为 `Pie` 的 C 结构体包含一个名为 `crust` 的匿名结构体类型字段，还包含一个名为 `filling` 的匿名联合体类型字段：
 
@@ -197,7 +205,7 @@ struct Pie {
 <a name="pointer"></a>
 ## 指针
 
-Swift 尽可能地避免直接使用指针。然而，需要直接操作内存的时候，Swift 也提供了多种指针类型。下面的表使用`Type`作为类型名称的占位符来表示相应的映射语法。
+Swift 尽可能地避免直接使用指针。然而，需要直接操作内存的时候，Swift 也提供了多种指针类型。下面的表使用 `Type` 作为类型名称的占位符来表示相应的映射语法。
 
 对于返回类型，变量和参数，遵循如下映射：
 
@@ -214,15 +222,18 @@ Swift 尽可能地避免直接使用指针。然而，需要直接操作内存�
 | Type * __strong * | UnsafeMutablePointer\<Type\> |
 | Type ** | AutoreleasingUnsafeMutablePointer\<Type\> |
 
+<a name="Constant_Pointers"></a>
 ### 常量指针
 
-当一个函数声明为接受`UnsafePointer<Type>`参数时，该函数可以接受下列任意一种类型作为参数：
+如果函数接受 `UnsafePointer<Type>` 参数，那么该函数可以接受下列任意一种类型作为参数：
 
-* `nil`，作为空指针传入；
-* 一个`UnsafePointer<Type>`，`UnsafeMutablePointer<Type>`，或者`AutoreleasingUnsafeMutablePointer<Type>`类型的值，后面两种类型在必要时会转换成`UnsafePointer<Type>`；
-* 一个`String`类型的值，如果`Type`指代`Int8`或者`UInt8`。`String`类型的值会被自动转换为 UTF8 形式到一个缓冲区内，该缓冲区在本次调用期间内有效；
-* 一个左操作数为`Type`类型的`inout`表达式，左操作数的内存地址作为函数参数传入；
-* 一个`[Type]`类型的值，将作为该数组的起始指针传入，其生命周期会延续到本次调用结束。
+* `nil`，作为空指针传入。
+* 一个 `UnsafePointer<Type>`，`UnsafeMutablePointer<Type>`，或者 `AutoreleasingUnsafeMutablePointer<Type>` 类型的值，后面两种类型在必要时会转换成 `UnsafePointer<Type>`。
+* 一个 `String` 类型的值，如果 `Type` 指代 `Int8` 或者 `UInt8`。`String` 类型的值会被自动转换为 UTF8 形式到一个缓冲区内，该缓冲区的指针会被传递给函数。
+* 一个左操作数为 `Type` 类型的 `inout` 表达式，左操作数的内存地址作为函数参数传入。
+* 一个 `[Type]` 类型的值，将作为该数组的起始指针传入。
+
+传递给函数的指针仅保证在函数调用期间内有效，不要试图保留指针并在函数返回之后继续使用。
 
 如果定义了一个类似下面这样的函数：
 
@@ -243,7 +254,7 @@ takesAPointer(&x)
 takesAPointer([1.0, 2.0, 3.0])
 ```
 
-如果函数声明为接受`UnsafePointer<Void>`参数，那么该函数可以接受任意`UnsafePointer<Type>`类型的参数。
+如果函数接受 `UnsafePointer<Void>` 参数，那么该函数可以接受任意 `UnsafePointer<Type>` 类型的参数。
 
 如果定义了一个类似下面这样的函数：
 
@@ -268,14 +279,15 @@ let intArray = [1, 2, 3]
 takesAVoidPointer(intArray)
 ```
 
+<a name="Mutable_Pointers"></a>
 ### 可变指针
 
-当一个函数声明为接受`UnsafeMutablePointer<Type>`参数时，该函数可以接受下列任意一种类型作为参数：
+如果函数接受 `UnsafeMutablePointer<Type>` 参数，那么该函数可以接受下列任意一种类型作为参数：
 
-* `nil`，作为空指针传入；
-* 一个`UnsafeMutablePointer<Type>`类型的值；
-* 一个左操作数为`Type`类型的`inout`表达式，左操作数的内存地址作为函数参数传入；
-* 一个`inout [Type]`类型的值，将作为该数组的起始指针传入，其生命周期会延续到本次调用结束。
+* `nil`，作为空指针传入。
+* 一个 `UnsafeMutablePointer<Type>` 类型的值。
+* 一个左操作数为 `Type` 类型的 `inout` 表达式，左操作数的内存地址作为函数参数传入。
+* 一个 `inout [Type]` 类型的值，将作为该数组的起始指针传入，其生命周期会延续到本次调用结束。
 
 如果定义了一个类似下面这样的函数：
 
@@ -297,7 +309,7 @@ takesAMutablePointer(&x)
 takesAMutablePointer(&a)
 ```
 
-如果函数声明为接受`UnsafeMutablePointer<Void>`参数，那么该函数可以接受任意`UnsafeMutablePointer<Type>`类型的参数。
+如果函数接受 `UnsafeMutablePointer<Void>` 参数，那么该函数可以接受任意 `UnsafeMutablePointer<Type>` 类型的参数。
 
 如果定义了一个类似下面这样的函数：
 
@@ -322,13 +334,14 @@ takesAMutableVoidPointer(&a)
 takesAMutableVoidPointer(&b)
 ```
 
+<a name="Autoreleasing_Pointers"></a>
 ### 自动释放指针
 
-当一个函数声明为接受`AutoreleasingUnsafeMutablePointer<Type>`参数时，该函数可以接受下列任意一种类型作为参数：
+如果函数接受 `AutoreleasingUnsafeMutablePointer<Type>` 参数，那么该函数可以接受下列任意一种类型作为参数：
 
-* `nil`，作为空指针传入；
-* 一个`AutoreleasingUnsafeMutablePointer<Type>`类型的值；
-* 一个`inout`表达式，其操作数首先被拷贝到一个无拥有者的缓冲区，缓冲区的地址会作为函数参数传入。函数调用结束时，缓冲区中的值被加载并 retain，然后重新分配给操作数。
+* `nil`，作为空指针传入。
+* 一个 `AutoreleasingUnsafeMutablePointer<Type>` 类型的值。
+* 一个 `inout` 表达式，其操作数首先被拷贝到一个无主临时缓冲区，缓冲区的地址会作为函数参数传入。函数调用结束时，缓冲区中的值被加载并被 retain，然后重新分配给操作数。
 
 注意，上述列表中没有包含数组。
 
@@ -350,13 +363,14 @@ takesAnAutoreleasingPointer(p)
 takesAnAutoreleasingPointer(&x)
 ```
 
-二级指针的类型不会被桥接。例如，`NSString **`转换到 Swift 后，是`AutoreleasingUnsafeMutablePointer<NSString?>`，而不是`AutoreleasingUnsafeMutablePointer<String?>`。
+多级指针的类型不会被桥接。例如，`NSString **` 转换到 Swift 后，是 `AutoreleasingUnsafeMutablePointer<NSString?>`，而不是 `AutoreleasingUnsafeMutablePointer<String?>`。
 
+<a name="Function_Pointers"></a>
 ### 函数指针
 
-Swift 将 C 语言的函数指针导入为符合其调用约定的闭包，用`@convention(c)`特性表示。例如，一个类型为`int (*)(void)`的 C 语言函数指针，会以`@convention(c) () -> Int32`的形式导入到 Swift。
+Swift 将 C 语言的函数指针导入为符合其调用约定的闭包，使用 `@convention(c)` 特性来表示。例如，一个类型为 `int (*)(void)` 的 C 语言函数指针，会以 `@convention(c) () -> Int32` 的形式导入到 Swift。
 
-调用一个以函数指针为参数的函数时，可以传递一个顶级的 Swift 函数作为其参数，也可以传递闭包字面量，或者`nil`。例如，Core Foundation 的`CFArrayCreateMutable(_:_:_:)`函数接受一个`CFArrayCallBacks`结构体作为参数，这个`CFArrayCallBacks`结构体使用一些函数指针进行初始化：
+调用一个以函数指针为参数的函数时，可以传递一个顶级的 Swift 函数作为其参数，也可以传递闭包字面量，或者 `nil`。You can also pass a closure property of a generic type or a generic method as long as no generic type parameters are referenced in the closure’s argument list or body.例如，Core Foundation 的 `CFArrayCreateMutable(_:_:_:)` 函数接受一个 `CFArrayCallBacks` 结构体作为参数，这个 `CFArrayCallBacks` 结构体使用一些函数指针进行初始化：
 
 ```swift
 func customCopyDescription(p: UnsafePointer<Void>) -> Unmanaged<CFString>! {
@@ -376,7 +390,7 @@ let callbacks = CFArrayCallBacks(
 var mutableArray = CFArrayCreateMutable(nil, 0, &callbacks)
 ```
 
-上面的例子中，结构体`CFArrayCallBacks`的构造器使用`nil`作为参数`retain`和`release`的值，使用函数`customCopyDescription`作为参数`copyDescription`的值，以及使用一个闭包字面量作为参数`equal`的值。
+上面的例子中，结构体 `CFArrayCallBacks` 的构造器使用 `nil` 作为参数 `retain` 和 `release` 的值，使用函数 `customCopyDescription` 作为参数 `copyDescription` 的值，以及使用一个闭包字面量作为参数 `equal` 的值。
 
 <a name="Data Type Size Calculation"></a>
 ## 计算数据类型大小
@@ -413,7 +427,7 @@ if setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &optval, optlen) == 0 {
 <a name="Variadic_Functions"></a>
 ## 可变参数函数
 
-在 Swift，可以调用 C 中的可变参数函数，例如 `vasprintf`，使用 `getVaList(_:)` 或 `withVaList(_:_:)` 函数。`getVaList(_:)` 函数接受一个 `CVarArgType` 类型的数组，返回一个 `CVaListPointer` 类型的值。相反，`withVaList(_:_:)` 函数在闭包体中通过闭包参数来提供该值，而不是直接返回它。最终，`CVaListPointer` 类型的值会传递给接受可变参数的 C 函数的 `va_list` 参数。
+在 Swift，可以调用 C 中的可变参数函数，例如 `vasprintf` 函数，调用这种函数需使用 `getVaList(_:)` 或 `withVaList(_:_:)` 函数。`getVaList(_:)` 函数接受一个 `CVarArgType` 类型的数组，返回一个 `CVaListPointer` 类型的值。相反，`withVaList(_:_:)` 函数在闭包体中通过闭包参数来提供该值，而不是直接返回它。最终，`CVaListPointer` 类型的值会传递给接受可变参数的 C 函数的 `va_list` 参数。
 
 例如，如下示例代码演示了如何在 Swift 中调用 `vasprintf` 函数：
 
@@ -438,19 +452,27 @@ print(sprintf("√2 ≅ %g", sqrt(2.0))!)
 
 C 和 Objective-C 的源文件中定义的全局常量会自动被 Swift 编译器导入为 Swift 全局常量。
 
+<a name="One_Time_Initialization"></a>
+## 一次性初始化
+
+在 C 语言中，POSIX 的 `pthread_once()` 函数，以及 GCD 的 `dispatch_once()` 和 `dispatch_once_f()` 函数，提供了一种机制来保证初始化代码只会执行一次。在 Swift，全局常量和存储型类型属性可以确保相应的初始化过程只执行一次，即使从多个线程同时进行访问。Swift 从语言特性层面提供了这一功能，因此并未暴露相应的 POSIX 以及 GCD 函数的调用过程。
+
 <a name="preprocessor_directives"></a>
 ## 预处理指令
 
 Swift 编译器不包含预处理器，它能利用编译时特性，编译配置，以及语言特性来实现相同的功能。因此，预处理指令不会导入到 Swift。
 
+<a name="Simple_Macros"></a>
 ### 简单宏
 
 在 C 和 Objective-C，通常使用`#define`指令来定义一个简单的常数，在 Swift，可以使用全局常量来代替。例如，对于常量定义`#define FADE_ANIMATION_DURATION 0.35`，在 Swift 可以表示为`let FADE_ANIMATION_DURATION = 0.35`。由于用于定义常量的简单宏会被直接映射成 Swift 全局常量，因此 Swift 编译器会自动导入 C 或 Objective-C 源文件中定义的简单宏。
 
+<a name="Complex_Macros"></a>
 ### 复杂宏
 
 C 和 Objective-C 的复杂宏在 Swift 中没有相对应的东西。复杂宏是那些不是用来定义常量的宏，包括加括号的函数式宏。在 C 和 Objective-C 使用复杂的宏来避免类型检查的限制或避免重复键入大量样板代码。然而，宏也会让调试和重构变得更加困难。在 Swift，可以使用函数和泛型达到同样效果。因此，C 和 Objective-C 源文件中定义的复杂宏无法在 Swift 使用。
 
+<a name="Build_Configurations"></a>
 ### 编译配置
 
 Swift 的条件编译和 C 以及 Objective-C 不同，Swift 的条件编译基于对编译配置的评估。编译配置包括`true`和`false`字面值，命令行标志，以及下表中的平台测试函数。还可以使用`-D <＃Flag＃>`自定义命令行标志。
