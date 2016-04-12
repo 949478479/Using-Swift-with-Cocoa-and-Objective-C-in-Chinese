@@ -16,6 +16,7 @@
     - [配置 Swift 在 Objective-C 中的接口](#Configuring_Swift_Interfaces_in_Objective-C)
     - [强制动态派发](#Requiring_Dynamic_Dispatch) 
 - [Objective-C 选择器](#objective_c_selectors)
+    - [使用 performSelector 发送消息](#Sending_Messages_with_performSelector) 
 
 *互用性* 是能让 Swift 和 Objective-C 相接合的特性，这使你能够在一种语言编写的文件中使用另一种语言。当你准备开始把 Swift 融入到你的开发流程中时，学会如何利用互用性来重新定义，改善并增强你编写 Cocoa 应用的方式真是极好的。
 
@@ -526,7 +527,7 @@ class Белка: NSObject {
 <a name="objective_c_selectors"></a>
 ## Objective-C 选择器
 
-Objective-C 选择器是一种用于引用 Objective-C 方法名的类型。在 Swift，Objective-C 选择器用`Selector`结构体表示。可以通过字符串字面量创建一个选择器，例如`let mySelector: Selector = "tappedButton:"`。因为字符串字面量能够自动转换为选择器，可以将其直接传递给任何接受选择器的方法。
+Objective-C 选择器是一种用于引用 Objective-C 方法名的类型。在 Swift，Objective-C 选择器用 `Selector` 结构体表示。可以使用 `#selector` 表达式创建一个选择器，例如 `let mySelector = #selector(MyViewController.tappedButton)`，这里直接使用了一个 Objective-C 方法作为子表达式。被引用的 Objective-C 方法还可以加上圆括号，并使用 `as` 运算符来消除重载方法之间的歧义，例如 `let anotherSelector = #selector(((UIView.insertSubview(_:at:)) as (UIView) -> (UIView, Int) -> Void))`。
 
 ```swift
 import UIKit
@@ -536,7 +537,8 @@ class MyViewController: UIViewController {
     
     override init?(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        myButton.addTarget(self, action: "tappedButton:", forControlEvents: .TouchUpInside)
+        let action = #selector(MyViewController.tappedButton)
+        myButton.addTarget(self, action: action, forControlEvents: .TouchUpInside)
     }
     
     func tappedButton(sender: UIButton!) {
@@ -549,29 +551,31 @@ class MyViewController: UIViewController {
 }
 ```
 
-如果 Swift 类继承自 Objective-C 类，那么所有方法和属性都可以用于 Objective-C 选择器。反之，则需要在用于选择器的方法前面标记`@objc`特性，详情请参阅 [Swift 类型兼容性](#swift_type_compatibility) 小节。
-
+<a name="Sending_Messages_with_performSelector"></a>
 ### 使用 performSelector 发送消息
 
-可以使用`performSelector(_:)`方法以及它的变体向兼容于 Objective-C 的对象发送消息。
+可以使用 `performSelector(_:)` 方法以及它的变体向兼容 Objective-C 的对象发送消息。
 
-`performSelector`系列 API 可以向指定线程发送消息，或者延迟发送没有返回值的消息。该系列 API 同步执行，并返回隐式解包可选类型的非托管对象（`Unmanaged<AnyObject>!`），这是因为返回值的类型和所有权无法在编译期决定。请参阅 [非托管对象](03-Working%20with%20Cocoa%20Data%20Types.md#%E9%9D%9E%E6%89%98%E7%AE%A1%E5%AF%B9%E8%B1%A1) 小节获取更多信息。
+`performSelector` 系列 API 可以向指定线程发送消息，或者延迟发送没有返回值的消息。该系列 API 同步执行，并返回隐式解包可选类型的非托管对象（`Unmanaged<AnyObject>!`），这是因为返回值的类型和所有权无法在编译期决定。请参阅 [非托管对象](03-Working%20with%20Cocoa%20Data%20Types.md#%E9%9D%9E%E6%89%98%E7%AE%A1%E5%AF%B9%E8%B1%A1) 小节获取更多信息。
 
 ```swift
 let string: NSString = "Hello, Cocoa!"
-let selector: Selector = "lowercaseString"
-if let result = string.performSelector(selector) {
+let selector = #selector(NSString.lowercaseStringWithLocale(_:))
+let locale = NSLocale.currentLocale()
+if let result = string.performSelector(selector, withObject: locale) {
     print(result.takeUnretainedValue())
 }
-// prints "hello, cocoa!"
+// 打印输出 "hello, cocoa!"
 ```
 
-向一个对象发送无法识别的选择器将造成接收者调用`doesNotRecognizeSelector(_:)`方法，其默认实现是引发`NSInvalidArgumentException`异常。
+向一个对象发送无法识别的选择器将造成接收者调用 `doesNotRecognizeSelector(_:)` 方法，其默认实现是引发 `NSInvalidArgumentException` 异常。
 
 ```swift
 let array: NSArray = ["delta", "alpha", "zulu"]
-let invalidSelector: Selector = "invalid"
-array.performSelector(invalidSelector) // raises an exception
+// 下面这句代码不会导致编译错误，因为该选择器存在于 NSDictionary 中
+let selector = #selector(NSDictionary.allKeysForObject)
+// 下面这句代码将导致异常，因为 NSArray 无法响应该选择器
+array.performSelector(selector)
 ```
 
-在 Objective-C 运行时中直接向对象发送消息并非内在安全的，因为编译器无法保证消息发送的结果，或是消息是否能在第一时间被处理。同样不鼓励使用`performSelector`系列 API，除非代码确实依赖于 Objective-C 运行时提供的动态方法决议。否则，正如 [id 兼容性](#id_compatibility) 小节所描述的，将对象转换为`AnyObject`类型，再使用可选链语法调用方法会更为安全方便。
+在 Objective-C 运行时中直接向对象发送消息并非内在安全的，因为编译器无法保证消息发送的结果，也无法保证消息是否能在第一时间被处理。因此，并不鼓励使用 `performSelector` 系列 API，除非代码确实依赖于 Objective-C 运行时提供的动态方法决议。否则，正如 [id 兼容性](#id_compatibility) 小节所描述的，将对象转换为 `AnyObject` 类型，再使用可选链语法调用方法会更为安全和方便。
