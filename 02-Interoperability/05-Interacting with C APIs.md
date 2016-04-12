@@ -475,15 +475,16 @@ C 和 Objective-C 的复杂宏在 Swift 中没有相对应的东西。复杂宏�
 <a name="Build_Configurations"></a>
 ### 编译配置
 
-Swift 的条件编译和 C 以及 Objective-C 不同，Swift 的条件编译基于对编译配置的评估。编译配置包括`true`和`false`字面值，命令行标志，以及下表中的平台测试函数。还可以使用`-D <＃Flag＃>`自定义命令行标志。
+Swift 的条件编译和 C 以及 Objective-C 不同，Swift 的条件编译基于对编译配置的评估。编译配置包括 `true` 和 `false` 字面值，命令行标志，以及下表中的平台和语言版本测试函数。还可以使用 `-D <＃flag＃>` 自定义命令行标志。
 
 | 函数 | 有效参数 |
 | --- | --- |
 | os() | OSX，iOS，watchOS，tvOS |
 | arch() | x86_64，arm，arm64，i386 |
+| swift() | >= 指定的版本号 |
 
 > 注意  
-> 编译配置`arch(arm)`在 ARM 64 设备上不会返回`true`。编译配置`arch(i386)`在 32 位的 iOS 模拟器上会返回`true`。
+> 编译配置 `arch(arm)` 在 ARM 64 位的设备上不会返回 `true`。编译配置 `arch(i386)` 在 32 位的 iOS 模拟器上会返回 `true`。
 
 一个简单的条件编译语句形式如下：
 
@@ -495,7 +496,7 @@ Swift 的条件编译和 C 以及 Objective-C 不同，Swift 的条件编译基�
 #endif
 ```
 
-*statements* 由零个或多个有效的 Swift 语句组成，可以包括表达式，普通语句和控制流语句。可以使用`&&`和`||`操作符添加新的编译条件，使用`!`操作符对某编译条件取反，以及使用`#elseif`添加新的条件编译块：
+*statements* 由零个或多个有效的 Swift 语句组成，可以包括表达式，普通语句和控制流语句。可以使用 `&&` 和 `||` 运算符添加新的编译条件，使用 `!` 运算符对编译条件取反，以及使用 `#elseif` 添加新的条件编译块：
 
 ```swift
 #if build configuration && !build configuration
@@ -507,4 +508,4 @@ Swift 的条件编译和 C 以及 Objective-C 不同，Swift 的条件编译基�
 #endif
 ```
 
-与 C 语言预处理器的条件编译不同的是，Swift 的条件编译块中的语句必须是独立且语法有效的代码，因为所有的 Swift 代码都会进行语法检查，即使有的代码不会被编译。
+与 C 语言预处理器的条件编译不同的是，Swift 的条件编译块中的语句必须是独立且语法有效的代码，因为所有的 Swift 代码都会进行语法检查，即使某些代码不会被编译。
