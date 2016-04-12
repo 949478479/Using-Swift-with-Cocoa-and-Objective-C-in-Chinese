@@ -22,18 +22,32 @@ Swift 被设计用来无缝兼容 Cocoa 和 Objective-C。在 Swift，可以使�
 
 ##### 在 Xcode 中创建一个 Swift 项目
 
-1.选择`File > New > Project > (iOS, watchOS, tvOS, or OS X) > Application`，然后选择一个模板，例如 Simple View Application。
+1.选择 `File > New > Project > (iOS，watchOS，tvOS 或 OS X) > Application`，然后选择一个模板，例如 `Simple View Application`。
 
-2.点击 Language 下拉菜单并选择 Swift。
+2.点击 `Language` 下拉菜单并选择 Swift。
 
 ![](newproject_2x.png)
 
-Swift 项目的结构几乎和 Objective-C 项目一模一样，只有一个重要的区别：Swift 没有头文件。在接口和实现之间没有显式地划分，一个类中的所有信息都在一个单独的`.swift`文件中。关于这一点更详细的说明，请参阅 [在同一工程中使用 Swift 和 Objective-C](../03-Mix%20and%20Match/Swift%20and%20Objective-C%20in%20the%20Same%20Project.md) 章节。
+Swift 项目的结构几乎和 Objective-C 项目一模一样，只有一个重要的区别：Swift 没有头文件。在接口和实现之间没有显式划分，一个类中的所有信息都在一个单独的 `.swift` 文件中，详情请参阅 [在同一工程中使用 Swift 和 Objective-C](../03-Mix%20and%20Match/Swift%20and%20Objective-C%20in%20the%20Same%20Project.md) 章节。
 
-现在开始，你可以开始体验在`AppDelegate`中编写 Swift 代码，或者你可以通过选择`File > New > File > (iOS, watchOS, tvOS, or OS X) > Source > Swift`来创建一个新的 Swift 类。
+现在可以开始尝试在 `AppDelegate` 中编写 Swift 代码，或者可以选择 `File > New > File > (iOS，watchOS，tvOS 或 OS X) > Source > Swift` 来创建一个新的 Swift 文件。
+
+### 要求
+
+使用 Swift 2.2 创建应用需要使用 Xcode 7.3 或更高版本，而且使用的 SDK 有如下要求：
+
+
+平台 | SDK 要求
+:---: | :---:
+OSX | 10.11
+iOS | 9.0
+watchOS | 2.0
+tvOS | 9.0
+
+Swift 编译器和 Xcode 强制要求最低部署版本为 `iOS 7` 或 `OS X 10.9`，设置更早的部署版本会导致编译错误。
 
 > 注意  
-> Executables built from the command line expect to find the Swift libraries in their @rpath. If you plan to ship a Swift executable built from the command line, you’ll need to ship the Swift dynamic libraries as well. Swift executables built from within Xcode have the runtime statically linked. 
+> 由命令行构建的 Swift 可执行文件必须能在它的 `@rpath` 下找到 Swift 标准库，因此发布时需要同时包含 Swift 动态库。由 Xcode 构建的 Swift 可执行文件则会在运行时进行静态链接。
 
 <a name="understanding_the_swift_import_process"></a>
 ## 理解 Swift 导入过程
