@@ -7,7 +7,9 @@
 - [在 Framework 的 target 内部导入代码](#importing_code_from_within_the_same_framework_target)
 - [导入外部 Framework](#importing_external_frameworks)
 - [在 Objective-C 中使用 Swift](#using_swift_from_objective-c)
-- [为 Objective-C 接口重写 Swift 名称](#overriding_swift_names_for_Objective-C_interfaces)
+- [为 Objective-C 接口重写 Swift 命名](#overriding_swift_names_for_Objective-C_interfaces)
+    - [类工厂方法](#Class_Factory_Methods)
+    - [枚举](#Enumerations) 
 - [令 Objective-C 接口在 Swift 中不可用](#Making Objective-C Interfaces Unavailable in Swift)
 - [精炼 Objective-C 声明](#Refining Objective-C Declarations)
 - [命名产品模块](#naming_your_product_module)
@@ -255,34 +257,36 @@ Objective-C 类可以在实现文件中导入 Xcode 自动生成的头文件，�
 ```
 
 <a name="overriding_swift_names_for_Objective-C_interfaces"></a>
-## 为 Objective-C 接口重写 Swift 名称
+## 为 Objective-C 接口重写 Swift 命名
 
 Swift 编译器自动将 Objective-C 代码作为常规 Swift 代码导入，它将 Objective-C 类工厂方法导入为 Swift 构造器，还会缩短 Objective-C 枚举类型的名称。
 
-代码中也许会存在无法自动处理的边界情况。对于 Objective-C 方法，枚举值，或者选项集合的值，如果需要更改它们导入到 Swift 后的名称，可以使用`NS_SWIFT_NAME`宏来自定义名称。
+代码中也许会存在无法自动处理的边界情况。对于 Objective-C 方法，枚举值，或者选项集合的值，如果需要更改它们导入到 Swift 后的名称，可以使用 `NS_SWIFT_NAME` 宏来自定义名称。
 
+<a name="Class_Factory_Methods"></a>
 ### 类工厂方法
 
-如果 Swift 编译器无法识别类工厂方法，可以使用`NS_SWIFT_NAME`宏来指定构造器在 Swift 中的方法名，从而正确导入。例如：
+如果 Swift 编译器无法识别类工厂方法，可以使用 `NS_SWIFT_NAME` 宏来指定构造器在 Swift 中的方法名，从而正确导入。例如：
 
 ```objective-c
 + (instancetype)recordWithRPM:(NSUInteger)RPM NS_SWIFT_NAME(init(RPM:));
 ```
 
-如果 Swift 编译器错误地将一个方法识别为类工厂方法，可以使用`NS_SWIFT_NAME`宏来指定类方法在 Swift 中的方法名，从而正确导入。例如：
+如果 Swift 编译器错误地将一个方法识别为类工厂方法，可以使用 `NS_SWIFT_NAME` 宏来指定类方法在 Swift 中的方法名，从而正确导入。例如：
 
 ```objective-c
 + (id)recordWithQuality:(double)quality NS_SWIFT_NAME(record(quality:));
 ```
 
+<a name="Enumerations"></a>
 ### 枚举
 
-默认情况下，Swift 导入枚举时，会将枚举值的名称前缀截断。如果要自定义枚举值的名称，可以使用`NS_SWIFT_NAME`宏来指定枚举值在 Swift 中的名称。例如：
+默认情况下，Swift 导入枚举时，会将枚举值的名称前缀截断。如果要自定义枚举值的名称，可以使用 `NS_SWIFT_NAME` 宏来指定枚举值在 Swift 中的名称。例如：
 
 ```objective-c
 typedef NS_ENUM(NSInteger, ABCRecordSide) {
     ABCRecordSideA,
-    ABCRecordSideB NS_SWIFT_NAME("FlipSide"),
+    ABCRecordSideB NS_SWIFT_NAME(FlipSide),
 };
 ```
 
