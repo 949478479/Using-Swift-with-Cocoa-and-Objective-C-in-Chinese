@@ -5,12 +5,16 @@
 - [代理](#Delegation)
 - [惰性初始化](#Lazy Initialization)
 - [错误处理](#error_handling)
+    - [捕获和处理错误](#Catching_and_Handling_an_Error)
+    - [转换错误为可选值](#Converting_Errors_to_Optional_Values)
+    - [抛出错误](#Throwing_an_Error)
 - [键值观察](#Key-Value_Observing)
 - [撤销](#Undo)
 - [目标-动作](#Target_Action)
 - [单例](#Singleton)
 - [内省](#Introspection)
 - [序列化](#Serializing)
+    - [验证序列化数据](#Validating_Serialized_Representations)
 - [API 可用性](#API_Availability)
 - [处理命令行参数](#Processing Command-Line Arguments)
 
@@ -122,6 +126,7 @@ func removeItemAtURL(URL: NSURL) throws
 > 注意  
 > 使用`NS_SWIFT_NOTHROW`宏声明一个产生错误的 Objective-C 方法可以防止该方法作为`throws`方法导入到 Swift。
 
+<a name="Catching_and_Handling_an_Error"></a>
 ### 捕获和处理错误
 
 在 Objective-C，错误处理是可选的，这意味着方法产生的错误会被忽略，除非提供了一个错误指针。在 Swift，调用一个会抛出错误的方法时必须显式地进行错误处理。
@@ -164,6 +169,7 @@ do {
 }
 ```
 
+<a name="Converting_Errors_to_Optional_Values"></a>
 ### 转换错误为可选值
 
 在 Objective-C，可以向错误参数传递`NULL`来忽略错误。在 Swift，可以使用`try?`关键字将`throws`方法转换为返回可选类型的方法，然后检查返回值是否为`nil`。
@@ -195,6 +201,7 @@ if let tmpURL = try? fileManager.URLForDirectory(.CachesDirectory,
 }
 ```
 
+<a name="Throwing_an_Error"></a>
 ### 抛出错误
 
 如果一个错误发生在 Objective-C 方法中，那么错误对象会填充方法的错误指针参数：
@@ -531,6 +538,7 @@ print(venue.name)
 // 打印 Caffe Macs
 ```
 
+<a name="Validating_Serialized_Representations"></a>
 ### 验证序列化数据
 
 在先前的例子中，`Venue`的构造器只会在所有必要信息齐备的情况下返回一个`Venue`实例，否则只会简单地返回
