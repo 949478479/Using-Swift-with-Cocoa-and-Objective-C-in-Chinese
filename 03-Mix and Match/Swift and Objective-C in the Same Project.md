@@ -4,9 +4,15 @@
 
 - [混合搭配概述](#mix_and_match_overview)
 - [在 App 的 target 内部导入代码](#importing_code_from_within_the_same_app_target)
+    - [将 Objective-C 代码导入到 Swift](#Importing_Objective-C_into_Swift)
+    - [将 Swift 代码导入到 Objective-C](#Importing_Swift_into_Objective-C)
 - [在 Framework 的 target 内部导入代码](#importing_code_from_within_the_same_framework_target)
+    - [将 Objective-C 代码导入到 Swift](#Importing_Objective-C_into_Swift)
+    - [将 Swift 代码导入到 Objective-C](#Importing_Swift_into_Objective-C)
 - [导入外部 Framework](#importing_external_frameworks)
 - [在 Objective-C 中使用 Swift](#using_swift_from_objective-c)
+    - [在 Objective-C 头文件中引用 Swift 类或协议](#Referencing_a_Swift_Class_or_Protocol_in_an_Objective-C_Header)
+    - [在 Objective-C 的实现文件中采纳 Swift 协议](#Adopting_a_Swift_Protocol_in_an_Objective-C_Implementation)
 - [为 Objective-C 接口重写 Swift 命名](#overriding_swift_names_for_Objective-C_interfaces)
     - [类工厂方法](#Class_Factory_Methods)
     - [枚举](#Enumerations) 
@@ -31,6 +37,7 @@ Objective-C 和 Swift 文件可以在同一工程中并存，无论这个工程�
 
 在编写基于混合语言的 App 时，可能需要用 Swift 代码访问 Objective-C 代码，或者反过来。下面描述的流程适用于非 Framework 的 target 。
 
+<a name="Importing_Objective-C_into_Swift"></a>
 ### 将 Objective-C 代码导入到 Swift
 
 在 App 的 target 内部导入一系列 Objective-C 文件供 Swift 代码使用时，需要依靠 Objective-C 桥接头文件将这些文件暴露给 Swift。添加 Swift 文件到现有的 Objective-C App 时（或者反过来），Xcode 会自动创建 Objective-C 桥接头文件。
@@ -62,6 +69,7 @@ let myCell = XYZCustomCell()
 myCell.subtitle = "A custom cell"
 ```
 
+<a name="Importing_Swift_into_Objective-C"></a>
 ### 将 Swift 代码导入到 Objective-C
 
 将 Swift 代码导入到 Objective-C 时，需要依靠 Xcode 生成的头文件将这些文件暴漏给 Objective-C（此头文件不是上小节描述的 Objective-C 桥接头文件，该头文件在工程目录下不可见，但是可以跳转进去查看）。这个自动生成的头文件是一个 Objective-C 头文件，声明了 target 内部的一些 Swift API。可以将这个 Objective-C 头文件看作 Swift 代码的保护伞头文件。该头文件以产品模块名跟上`“-Swift.h”`来命名。关于产品模块名的具体介绍，请参阅 [命名产品模块](#naming_your_product_module) 小节。
@@ -92,6 +100,7 @@ target 内部的一些 Swift API 会暴露给包含这个导入语句的 Objecti
 
 在编写基于混合语言的 Framework 时，可能需要在 Swift 代码中访问 Objective-C 代码，或者反过来。
 
+<a name="Importing_Objective-C_into_Swift"></a>
 ### 将 Objective-C 代码导入到 Swift
 
 若要将 Objective-C 文件导入到 target 内部的 Swift 代码中，需要将这些 Objective-C 文件导入到 Objective-C 的保护伞头文件中。
@@ -115,6 +124,7 @@ let myOtherCell = XYZCustomCell()
 myOtherCell.subtitle = "Another custom cell"
 ```
 
+<a name="Importing_Swift_into_Objective-C"></a>
 ### 将 Swift 代码导入到 Objective-C
 
 若要将 Swift 文件导入到 target 内部的 Objective-C 代码中，不需要导入任何东西到保护伞头文件，而是将 Xcode 为 Swift 代码自动生成的头文件导入到要访问 Swift 代码的 Objective-C `.m`文件。
@@ -221,6 +231,7 @@ Swift 的类或协议必须标记`@objc`特性，才能在 Objective-C 中使用
 > 注意  
 > 不能在 Objective-C 中继承一个 Swift 类。
 
+<a name="Referencing_a_Swift_Class_or_Protocol_in_an_Objective-C_Header"></a>
 ### 在 Objective-C 头文件中引用 Swift 类或协议
 
 为避免循环引用，不要将 Swift 代码导入到 Objective-C 头文件（`.h`文件），而应该使用前向声明来引用一个 Swift 类或者协议。
@@ -239,6 +250,7 @@ Swift 的类或协议必须标记`@objc`特性，才能在 Objective-C 中使用
 
 Swift 类和协议的前向声明只能用于声明方法和属性。
 
+<a name="Adopting_a_Swift_Protocol_in_an_Objective-C_Implementation"></a>
 ### 在 Objective-C 的实现文件中采纳 Swift 协议
 
 Objective-C 类可以在实现文件中导入 Xcode 自动生成的头文件，然后使用类扩展来采纳 Swift 协议。
