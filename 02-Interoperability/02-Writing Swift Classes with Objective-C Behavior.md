@@ -3,11 +3,17 @@
 本页包含内容：
 
 - [继承 Objective-C 类](#inheriting_from_objective-c_classes)
+	- [NSCoding 协议](#NSCoding)
 - [采纳协议](#adopting_protocols)
 - [编写构造器和析构器](#writing_initializers_and_deinitializers)
 - [兼容使用 Swift 类名的 Objective-C API](#using_swift_class_names_with_objective_c_apis)
 - [与 Interface Builder 结合](#integrating_with_interface_builder)
+	- [使用 Outlets 和 Actions](#Working_with_Outlets_and_Actions)
+	- [实时渲染](#Live_Rendering)
 - [指定属性特性](#specifying_property_attributes)
+	- [强引用和弱引用](#Strong_and_Weak)
+	- [可读写和只读](#Read/Write_and_Read-Only)
+	- [拷贝语义](#Copy_Semantics)
 - [子类化 NSManagedObject](#implementing_core_data_managed_object_subclasses)
 
 *互用性* 让你可以编写融合了 Objective-C 语言特性的 Swift 类。在编写 Swift 类时，不仅可以继承 Objective-C 类，采纳 Objective-C 协议，还可以使用 Objective-C 的一些其它功能。这意味着可以基于 Objective-C 中耳熟能详的既有特性来编写 Swift 类，还可以充分利用 Swift 提供的更为强大的现代化语言特性。
@@ -26,6 +32,7 @@ class MySwiftViewController: UIViewController {
 
 可以从 Objective-C 父类中继承所有的功能。如果要覆盖父类中的实现，不要忘记使用`override`关键字。
 
+<a name="NSCoding"></a>
 ### NSCoding 协议
 
 `NSCoding`协议要求采纳协议的类型实现其所要求的构造器`init(coder:)`。直接采纳`NSCoding`协议的类必须实现这个方法。对于采纳`NSCoding`协议的类的子类，如果有一个或者多个自定义的构造器或者有不具有默认初始值的属性，也必须实现这个方法。Xcode 提供了下面这个 fix-it 来提供一个占位实现：
@@ -84,6 +91,7 @@ let myPersonClass: AnyClass？= NSClassFromString("MyGreatApp.Person")
 
 Swift 编译器包含一些特性，能让 Swift 类使用 Interface Builder 的一些特色功能。和 Objective-C 一样，在 Swift 也可使用 outlets，actions 和实时渲染。
 
+<a name="Working_with_Outlets_and_Actions"></a>
 ### 使用 Outlets 和 Actions
 
 使用 Outlets 和 Actions 可以连接源代码和 Interface Builder 中的 UI 对象，只需在属性或方法声明前标记`@IBOutlet`或`@IBAction`特性。声明一个 outlet 集合同样是用`@IBOutlet`特性，只不过会为该类型指定一个数组。
@@ -104,6 +112,7 @@ class MyViewController: UIViewController {
 
 在`buttonTapped`方法中，sender 参数没有用到，因此可以省略该参数名。
 
+<a name="Live_Rendering"></a>
 ### 实时渲染
 
 可以使用`@IBDesignable`和`@IBInspectable`特性开启实时渲染，在 Interface Builder 中对自定义视图进行交互式设计。继承`UIView`或者`NSView`来自定义一个视图时，可以在类声明前标记`@IBDesignable`特性。在 Interface Builder 里添加自定义的视图后（在 Identity Inspector 面板的 Class 输入框中进行设置），Interface Builder 将在画布上实时渲染自定义视图。
@@ -127,14 +136,17 @@ class MyCustomView: UIView {
 
 在 Objective-C，属性通常会有一系列用于指定该属性的一些附加信息的属性特性。在 Swift，将通过不同的方式指明这些属性特性。
 
+<a name="Strong_and_Weak"></a>
 ### 强引用和弱引用
 
 在 Swift，属性默认都是强引用，可以使用`weak`关键字指明某个属性持有其所指向对象的弱引用。该关键字仅能修饰可选的 class 类型。请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的 [类和结构](http://wiki.jikexueyuan.com/project/swift/chapter2/09_Classes_and_Structures.html) 章节了解更多信息。
 
+<a name="Read/Write_and_Read-Only"></a>
 ### 可读写和只读
 
 在 Swift，没有`readwrite`和`readonly`特性。声明一个存储型属性时，使用`let`使其只读；使用`var`使其可读写。声明一个计算型属性时，为其提供一个 getter 方法使其只读；同时提供 getter 方法和 setter 方法使其可读写。请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的 [属性](http://wiki.jikexueyuan.com/project/swift/chapter2/10_Properties.html) 章节了解更多信息。
 
+<a name="Copy_Semantics"></a>
 ### 拷贝语义
 
 在 Swift，Objective-C 的`copy`属性特性被转化为`@NSCopying`。这种类型的属性必须符合`NSCopying`协议。请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 中的 [类和结构](http://wiki.jikexueyuan.com/project/swift/chapter2/09_Classes_and_Structures.html) 章节了解更多信息。
