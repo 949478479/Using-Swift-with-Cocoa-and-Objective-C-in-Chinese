@@ -3,13 +3,18 @@
 本页包含内容：
 
 - [初始化](#initialization)
+    - [类工厂方法和便利构造器](#Class_Factory_Methods_and_Convenience_Initializers)
+    - [可失败初始化](#Failable_Initialization)
 - [访问属性](#accessing_properties)
 - [方法](#working_with_methods)
 - [id 兼容性](#id_compatibility)
+    - [无法识别的选择器和可选链语法](#Unrecognized_Selectors_and_Optional_Chaining)
+    - [将 AnyObject 向下转换](#Downcasting_AnyObject)
 - [为空性和可选类型](#Nullability_and_Optionals)
 - [轻量泛型](#Lightweight_Generics)
 - [扩展](#extensions)
 - [闭包](#closures)
+    - [避免强引用循环](#Avoiding_Strong_Reference_Cycles_When_Capturing_self)
 - [对象比较](#object_comparison)
     - [哈希](#Hashing)
 - [Swift 类型兼容性](#swift_type_compatibility)
@@ -69,6 +74,7 @@ let myTextField = UITextField(frame: CGRect(x: 0.0, y: 0.0, width: 200.0, height
 
 此处的`UITableView`和`UITextField`对象和你在 Objective-C 中实例化的一样。你可以用同样的方式使用它们，例如访问属性或者调用各自类中的方法。
 
+<a name="Class_Factory_Methods_and_Convenience_Initializers"></a>
 ### 类工厂方法和便利构造器
 
 为了统一和简洁，Objective-C 中的类工厂方法被导入为 Swift 中的便利构造器，从而能使用同样简洁的构造器语法。
@@ -85,6 +91,7 @@ UIColor *color = [UIColor colorWithRed:0.5 green:0.0 blue:0.5 alpha:1.0];
 let color = UIColor(red: 0.5, green: 0.0, blue: 0.5, alpha: 1.0)
 ```
 
+<a name="Failable_Initialization"></a>
 ### 可失败初始化
 
 在 Objective-C，构造器会直接返回它们初始化的对象。初始化失败时，为了告知调用者，Objective-C 构造器会返回`nil`。在 Swift，这种模式被内置到语言特性中，被称为*可失败初始化*。
@@ -171,7 +178,8 @@ let futureDate = myObject.dateByAddingTimeInterval(10)
 let timeSinceNow = myObject.timeIntervalSinceNow
 ```
 
-### 未识别的选择器和可选链语法
+<a name="Unrecognized_Selectors_and_Optional_Chaining"></a>
+### 无法识别的选择器和可选链语法
 
 因为`AnyObject`类型的值在运行时才能确定其真实类型，所以有可能在不经意间写出不安全代码。在 Swift，和在 Objective-C 一样，试图调用不存在的方法将引发未识别的选择器错误。
 
@@ -204,6 +212,7 @@ if let fifthCharacter = myObject.characterAtIndex?(5) {
 > 注意  
 > 尽管在使用`AnyObject`类型的值调用方法时不需要强制解包，但强制解包可以防止一些意料之外的行为。
 
+<a name="Downcasting_AnyObject"></a>
 ### 将 AnyObject 向下转换
 
 如果能确定`AnyObject`对象的具体类型，将其向下转换到具体类型是很有用的。然而，由于`AnyObject`类型可以表示任意类型的对象，因此向下转换到具体类型无法确保一定成功。
@@ -366,6 +375,7 @@ Swift 闭包与 Objective-C block 兼容，因此可以把一个 Swift 闭包传
 
 闭包与 block 有相似的捕获语义，但有个关键的不同：被捕获的变量可以直接修改，而 block 在默认情况下捕获的只是变量的值拷贝。换言之，Swift 闭包在默认情况下捕获的变量等效于 Objective-C 的`__block`变量。
 
+<a name="Avoiding_Strong_Reference_Cycles_When_Capturing_self"></a>
 ### 避免强引用循环
 
 在 Objective-C，如果 block 捕获了`self`，一定要慎重考虑内存管理问题。
