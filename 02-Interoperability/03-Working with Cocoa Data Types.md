@@ -3,6 +3,7 @@
 本节内容包括：
 
 - [字符串](#strings)
+    - [本地化](#Localization)
 - [数值](#numbers)
 - [集合类](#collection_classes)
     - [数组](#Arrays) 
@@ -12,6 +13,9 @@
 - [Foundation 数据类型](#foundation_data_types)
 - [Foundation 函数](#foundation_functions)
 - [Core Foundation](#core_foundation)
+    - [重映射类型](#Remapped_Types)
+    - [内存受管理的对象](#Memory_Managed_Objects)
+    - [非托管对象](#Unmanaged_Objects)
 
 Swift 提供了高效便捷的方式来处理 Cocoa 数据类型，从而增强与 Objective-C 之间的互用性。
 
@@ -47,6 +51,7 @@ if let integerValue = Int(myString as String) {
 > 注意  
 > 一个`String`实例无法用`AnyObject`表示，因为`AnyObject`只能表示 class 类型的实例，而`String`是个结构类型。然而，经过桥接后，`String`就可以赋值给`AnyObject`类型的常量或者变量，因为它已经被桥接为`NSString`。
 
+<a name="Localization"></a>
 ### 本地化
 
 在 Objective-C，通常用`NSLocalizedString`系列的宏来本地化字符串。这套宏包括`NSLocalizedString`，`NSLocalizedStringFromTable`，`NSLocalizedStringFromTableInBundle`，以及`NSLocalizedStringWithDefaultValue`。而在 Swift，只用一个函数就可以实现跟整套`NSLocalizedString`宏一样的功能，即`NSLocalizedString(key:tableName:bundle:value:comment:)`函数。该函数为`tableName`，`bundle`和`value`参数提供了默认值。可以用该函数取代以前的宏。
@@ -280,12 +285,14 @@ Swift 也提供了`print(_:separator:terminator:)`这样的打印函数。得益
 
 Core Foundation 类型会被自动导入为完备的 Swift 类。无论是否提供了内存管理注释，Swift 都会自动管理 Core Foundation 对象的内存，包括自己实例化的 Core Foundation 对象。在 Swift，可以将每一对可免费桥接的 Fundation 和 Core Foundation 类型互换使用。先将 Core Foundation 类型桥接为 Foundation 类型，就可以进一步桥接为 Swift 标准库类型。
 
+<a name="Remapped_Types"></a>
 ### 重映射类型
 
 Swift 导入 Core Foundation 类型时，会将这些类型的名字重映射，从类型名字的末端移除 *Ref*，所有的 Swift 类都是引用类型，因此该后缀是多余的。
 
 Core Foundation 的`CFTypeRef`类型会重映射为`Anyobject`类型。以前使用`CFTypeRef`的地方，现在该换成`AnyObject`了。
 
+<a name="Memory_Managed_Objects"></a>
 ### 内存受管理的对象
 
 对于从带内存管理注释的 API 返回的 Core Foundation 对象，Swift 会自动对其进行内存管理，不再需要调用`CFRetain`，`CFRelease`，或者`CFAutorelease`函数。
@@ -294,6 +301,7 @@ Core Foundation 的`CFTypeRef`类型会重映射为`Anyobject`类型。以前使
 
 如果只调用那些不会间接返回 Core Foundation 对象的带内存管理注释的 API，那么可以略过本节的剩余部分了。否则，需要进一步学习有关非托管 Core Foundation 对象的知识。
 
+<a name="Unmanaged_Objects"></a>
 ### 非托管对象
 
 Swift 导入那些没有内存管理注释的 API 时，将不会自动对返回的 Core Foundation 对象进行内存管理。Swift 将这些返回的 Core Foundation 对象包装在一个`Unmanaged<Instance>`结构中。所有被间接返回的 Core Foundation 对象也都是非托管对象。例如，这有个不带内存管理注释的 C 函数：
