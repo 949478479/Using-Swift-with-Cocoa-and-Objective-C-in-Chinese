@@ -28,26 +28,26 @@ Swift 被设计用来无缝兼容 Cocoa 和 Objective-C。在 Swift，可以使�
 
 ![](newproject_2x.png)
 
-Swift 项目的结构几乎和 Objective-C 项目一模一样，只有一个重要的区别：Swift 没有头文件。在接口和实现之间没有显式划分，一个类中的所有信息都在一个单独的 `.swift` 文件中，详情请参阅 [在同一工程中使用 Swift 和 Objective-C](../03-Mix%20and%20Match/Swift%20and%20Objective-C%20in%20the%20Same%20Project.md) 章节。
+Swift 项目的结构几乎和 Objective-C 项目一模一样，只有一个重要的区别：Swift 没有头文件。在接口和实现之间没有显式划分，一个类中的所有信息都在一个单独的 `.swift` 文件中，详情请参阅 [在项目中同时使用 Swift 和 Objective-C](../03-Mix%20and%20Match/Swift%20and%20Objective-C%20in%20the%20Same%20Project.md) 章节。
 
 现在可以开始尝试在 `AppDelegate` 中编写 Swift 代码，或者可以选择 `File > New > File > (iOS，watchOS，tvOS 或 OS X) > Source > Swift` 来创建一个新的 Swift 文件。
 
 ### 要求
 
-使用 Swift 2.2 创建应用需要使用 Xcode 7.3 或更高版本，而且使用的 SDK 有如下要求：
+使用 Swift 3.0 创建应用需要使用 Xcode 8.0 或更高版本，而且使用的 SDK 有如下要求：
 
 
 平台 | SDK 要求
 :---: | :---:
-OSX | 10.11
-iOS | 9.0
-watchOS | 2.0
-tvOS | 9.0
+macOS | 10.12
+iOS | 10.0
+watchOS | 3.0
+tvOS | 10.0
 
-Swift 编译器和 Xcode 强制要求最低部署版本为 `iOS 7` 或 `OS X 10.9`，设置更早的部署版本会导致编译错误。
+Swift 编译器和 Xcode 强制要求最低部署版本为 `iOS 7` 或 `macOS 10.9`，设置更早的部署版本会导致编译错误。
 
 > 注意  
-> 由命令行构建的 Swift 可执行文件必须能在它的 `@rpath` 下找到 Swift 标准库，因此发布时需要同时包含 Swift 动态库。由 Xcode 构建的 Swift 可执行文件则会在运行时进行静态链接。
+> 由命令行构建的 Swift 可执行文件必须能在它的 `@rpath` 下找到 Swift 标准库，因此发布时需要同时包含 Swift 动态库。由 Xcode 构建的 Swift 可执行文件则自带静态链接的运行时库。
 
 <a name="understanding_the_swift_import_process"></a>
 ## 理解 Swift 导入过程
@@ -75,4 +75,4 @@ import Foundation
 
 导入 Swift 模块到 Objective-C 和上述过程非常相似。Swift 公开它的 API，例如来自系统框架的 API，作为 Swift 模块。随着这些 Swift 模块还会生成 Objective-C 头文件。这些头文件公开了那些可以映射回 Objective-C 的 API。一些 Swift API 无法映射回 Objective-C，因为它们使用了 Objective-C 中不存在的语言特性。
 
-想了解更多信息，请参阅 [在同一工程中使用 Swift 和 Objective-C](../03-Mix%20and%20Match/Swift%20and%20Objective-C%20in%20the%20Same%20Project.md) 章节。
+想了解更多信息，请参阅 [在项目中同时使用 Swift 和 Objective-C](../03-Mix%20and%20Match/Swift%20and%20Objective-C%20in%20the%20Same%20Project.md) 章节。
