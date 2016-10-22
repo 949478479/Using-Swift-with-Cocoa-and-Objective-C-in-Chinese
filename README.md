@@ -11,7 +11,7 @@
 -  [与 C 语言 API 交互](02-Interoperability/05-Interacting%20with%20C%20APIs.md)
 
 #### 混合搭配
--  [在同一工程中使用 Swift 和 Objective-C](03-Mix%20and%20Match/Swift%20and%20Objective-C%20in%20the%20Same%20Project.md)
+-  [在项目中同时使用 Swift 和 Objective-C](03-Mix%20and%20Match/Swift%20and%20Objective-C%20in%20the%20Same%20Project.md)
 
 #### 迁移
 -  [将 Objective-C 代码迁移到 Swift](04-Migration/Migrating%20Your%20Objective-C%20Code%20to%20Swift.md)
