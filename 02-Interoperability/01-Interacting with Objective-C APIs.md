@@ -24,7 +24,7 @@
     - [Objective-C 方法的不安全调用](#unsafe_invocation_of_objective_c_methods)
 - [键和键路径](#keys_and_key_paths)
 
-`互用性`是能让 Swift 和 Objective-C 相接合的特性，这使你能够在一种语言编写的文件中使用另一种语言。当你准备开始把 Swift 融入到你的开发流程中时，学会如何利用互用性来重新定义、改善并提高你编写 Cocoa 应用的方法，不失为一个好主意。
+**互用性**是能让 Swift 和 Objective-C 相接合的特性，这使你能够在一种语言编写的文件中使用另一种语言。当你准备开始把 Swift 融入到你的开发流程中时，学会如何利用互用性来重新定义、改善并提高你编写 Cocoa 应用的方法，不失为一个好主意。
 
 互用性很重要的一点就是允许你在编写 Swift 代码时使用 Objective-C API。导入一个 Objective-C 框架后，可以使用原生的 Swift 语法实例化这些类并与之交互。
 

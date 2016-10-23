@@ -5,7 +5,7 @@
 
 #### 互用性
 -  [与 Objective-C API 交互](02-Interoperability/01-Interacting%20with%20Objective-C%20APIs.md)
--  [使用 Objective-C 特性编写 Swift 类](02-Interoperability/02-Writing%20Swift%20Classes%20with%20Objective-C%20Behavior.md)
+-  [使用 Objective-C 特性编写 Swift 类和协议](02-Interoperability/02-Writing%20Swift%20Classes%20and%20Protocols%20with%20Objective-C%20Behavior.md)
 -  [与 Cocoa 数据类型协作](02-Interoperability/03-Working%20with%20Cocoa%20Data%20Types.md)
 -  [采用 Cocoa 设计模式](02-Interoperability/04-Adopting%20Cocoa%20Design%20Patterns.md)
 -  [与 C 语言 API 交互](02-Interoperability/05-Interacting%20with%20C%20APIs.md)
