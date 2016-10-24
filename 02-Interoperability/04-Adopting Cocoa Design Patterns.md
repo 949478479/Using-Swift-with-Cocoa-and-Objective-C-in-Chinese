@@ -249,7 +249,7 @@ class SerializedDocument: NSDocument {
 
 键值观察是一种能让某个对象在其他对象特定属性变化时得到通知的机制。只要 Swift 类源自 NSObject 类，就可以在 Swift 中通过如下三步来实现键值观察：
 
-1. 为想要观察的属性添加`dynamic`修改符。关于`dynamic`的更多信息，请参阅 [要求动态派发](01-Interacting%20with%20Objective-C%20APIs.md#%E8%A6%81%E6%B1%82%E5%8A%A8%E6%80%81%E6%B4%BE%E5%8F%91) 小节。
+1. 为想要观察的属性添加`dynamic`修改符。关于`dynamic`的更多信息，请参阅 [强制动态派发](01-Interacting%20with%20Objective-C%20APIs.md#%E5%BC%BA%E5%88%B6%E5%8A%A8%E6%80%81%E6%B4%BE%E5%8F%91) 小节。
 
 	```swift
 	class MyObjectToObserve: NSObject {
@@ -366,7 +366,7 @@ func mark(task: Task, asCompleted completed: Bool) {
 <a name="target_action"></a>
 ## 目标-动作
 
-目标-动作是一种常见的 Cocoa 设计模式，可以在特定事件发生时，让某个对象向另一个对象发送消息。Swift 和 Objective-C 的目标-动作模式基本类似。在 Swift，可以使用`Selector`类型引用 Objective-C 的选择器。请参阅 [Objective-C 选择器](01-Interacting%20with%20Objective-C%20APIs.md#objective-c-%E9%80%89%E6%8B%A9%E5%99%A8) 小节查看在 Swift 中使用目标-动作模式的示例。
+目标-动作是一种常见的 Cocoa 设计模式，可以在特定事件发生时，让某个对象向另一个对象发送消息。Swift 和 Objective-C 的目标-动作模式基本类似。在 Swift，可以使用`Selector`类型引用 Objective-C 的选择器。请参阅 [选择器](01-Interacting%20with%20Objective-C%20APIs.md#%E9%80%89%E6%8B%A9%E5%99%A8) 小节查看在 Swift 中使用目标-动作模式的示例。
 
 <a name="singleton"></a>
 ## 单例
