@@ -275,7 +275,7 @@ NS_ASSUME_NONNULL_END
 
 导入到 Swift 后将如下所示：
 
-```Swift
+```swift
 var nullableProperty: Any?
 var nonNullProperty: Any
 var unannotatedProperty: Any!
