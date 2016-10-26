@@ -7,8 +7,8 @@ Swift 可无缝兼容 Cocoa 和 Objective-C。在 Swift，可以使用 Objective
 
 这篇指南包括了三个有关兼容性的重要方面，能够帮你更好地利用这种兼容性来开发 Cocoa 应用：
 
-- **互用性** 可以将 Swift 和 Objective-C 相接合，在 Objective-C 中使用 Swift 类，并利用熟悉的 Cocoa 类、设计模式以及各种实践经验。
-- **混合搭配** 可以创建结合了 Swift 和 Objective-C 文件的混合语言应用，并且它们能跟彼此进行通信。
+- **交互** 可以将 Swift 和 Objective-C 相接合，在 Objective-C 中使用 Swift 类，并利用熟悉的 Cocoa 类、设计模式以及各种实践经验。
+- **混搭** 可以创建结合了 Swift 和 Objective-C 文件的混合语言应用，并且它们能跟彼此进行通信。
 - **迁移** 由于以上两点，从现有的 Objective-C 代码迁移到 Swift 会非常简单，这使运用最新的 Swift 特性取代你的 Objective-C 应用中的部分内容成为了可能。
 
 在开始学习这些特性前，需要对如何搭建 Swift 环境来使用 Cocoa 系统框架有个大致了解。
