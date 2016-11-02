@@ -10,6 +10,7 @@
     - [动态方法查找](#dynamic_method_lookup)
     - [无法识别的选择器和可选链语法](#unrecognized_selectors_and_optional_chaining)
 - [为空性和可选类型](#nullability_and_optionals)
+	- [将可选值桥接为 NSNull 实例](#bridging_optionals_to_nonnullable_objects)
 - [协议限定类](#protocol_qualified_classes)
 - [轻量泛型](#lightweight_generics)
 - [扩展](#extensions)
@@ -291,6 +292,35 @@ func takesUnannotatedParameter(value: Any!)
 ```
 
 大多数 Objective-C 系统框架，包括 Foundation，都已经提供了为空性标注，这使你能以更加类型安全的方式去操作各种值。
+
+<a name="bridging_optionals_to_nonnullable_objects"></a>
+### 将可选值桥接为 NSNull 实例
+
+Swift 会根据可选值是否有值来决定是否将其桥接为 Objective-C 的`NSNull`实例。如果可选值的值为`nil`，Swift 会将`nil`值桥接为`NSNull`实例。否则，Swift 会将可选值桥接为它所包装的值。例如，当一个可选值传给一个接受非空`id`类型参数的 Objective-C API 时，或者将一个元素为可选类型的数组（`[T?]`）桥接为`NSArray`时。
+
+如下代码展示了`String?`实例如何根据它是否有值来桥接到 Objective-C。
+
+```objective-c
+@implementation OptionalBridging
++ (void)logSomeValue:(nonnull id)valueFromSwift {
+    if ([valueFromSwift isKindOfClass: [NSNull class]]) {
+        os_log(OS_LOG_DEFAULT, "Received an NSNull value.");
+    } else {
+        os_log(OS_LOG_DEFAULT, "%s", [valueFromSwift UTF8String]);
+    }
+}
+@end
+```
+
+因为`valueFromSwift`参数的类型是`id`，它会作为`Any`类型导入到 Swift。由于很少将可选值传递给`Any`类型，因此在将可选值传递给类方法`logSomeValue(_:)`时需要将参数显式转换为`Any`类型，从而消除编译警告。
+
+```swift
+let someValue: String? = "Bridge me, please."
+let nilValue: String? = nil
+
+OptionalBridging.logSomeValue(someValue as Any)  // Bridge me, please.
+OptionalBridging.logSomeValue(nilValue as Any)   // Received an NSNull value.
+```
 
 <a name="protocol_qualified_classes"></a>
 ## 协议限定类

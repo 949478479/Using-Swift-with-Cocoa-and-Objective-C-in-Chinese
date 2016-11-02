@@ -17,6 +17,7 @@
 	- [可变指针](#mutable_pointers)
 	- [自动释放指针](#autoreleasing_pointers)
 	- [函数指针](#function_pointers)
+	- [缓冲区指针](#buffer_pointers)
 	- [空指针](#null_pointers)
 	- [指针运算](#pointer_arithmetic)
 - [数据类型大小计算](#data_type_size_calculation)
@@ -545,6 +546,22 @@ var mutableArray = CFArrayCreateMutable(nil, 0, &callbacks)
 > 只有使用 C 函数指针调用约定的 Swift 函数才可以作为函数指针参数。如同 C 函数指针，使用`@convention(c)`特性的 Swift 函数同样不具有捕获周围作用域上下文的能力。
 
 更多信息请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift/) 的[类型特性](http://wiki.jikexueyuan.com/project/swift/chapter3/06_Attributes.html#type_attributes)小节。
+
+<a name="buffer_pointers"></a>
+### 缓冲区指针
+
+可以利用缓冲区指针以底层方式访问内存区域。例如，你可以使用缓冲区指针来高效地在应用程序与服务器之间通讯和处理数据。
+
+Swift 有如下缓冲区指针类型：
+
+- `UnsafeBufferPointer`
+- `UnsafeMutableBufferPointer`
+- `UnsafeRawBufferPointer`
+- `UnsafeMutableRawBufferPointer`
+
+`UnsafeBufferPointer`和`UnsafeMutableBufferPointer`是类型化的缓冲区指针类型，能让你将一块连续的内存作为集合来访问或修改，每一个元素都是缓冲区类型的`Element`泛型类型参数所表示的类型的实例。
+
+`UnsafeRawBufferPointer`和`UnsafeMutableRawBufferPointer`是原始缓冲区指针类型，能让你将一块连续的内存作为`UInt8`值的集合来访问或修改，每个元素都对应着一字节的内存。这些类型让你能使用底层编程模式，例如抛弃编译器类型检查带来的安全性，直接操作原始内存，或者将同一块内存转换为各种不同的类型。
 
 <a name="null_pointers"></a>
 ### 空指针

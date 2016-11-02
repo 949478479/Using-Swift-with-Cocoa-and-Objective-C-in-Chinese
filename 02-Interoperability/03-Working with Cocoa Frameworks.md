@@ -13,6 +13,7 @@
     - [内存受管理的对象](#memory_managed_objects)
     - [非托管对象](#unmanaged_objects)
 - [统一日志](#unified_logging)
+- [Cocoa 结构体](#cocoa_structures)
 
 为了便于与 Objective-C 进行交互，Swift 提供了高效便捷的方式来使用 Cocoa 框架。
 
@@ -293,3 +294,26 @@ os_log("This is info that may be helpful during development or debugging.", log:
 ```
 
 想要了解更多关于统一日志的信息，请参阅 [Logging](https://developer.apple.com/reference/os/1891852-logging)。
+
+<a name="cocoa_structures"></a>
+## Cocoa 结构体
+
+在 Swift，Coach 和 Foundation 中的一些内建结构体可以和`NSValue`桥接：
+
+- `CATransform3D`
+- `CLLocationCoordinate2D`
+- `CGAffineTransform`
+- `CGPoint`
+- `CGRect`
+- `CGSize`
+- `CGVector`
+- `CMTimeMapping`
+- `CMTimeRange`
+- `CMTime`
+- `MKCoordinateSpan`
+- `NSRange`
+- `SCNMatrix4`
+- `SCNVector3`
+- `SCNVector4`
+- `UIEdgeInsets`
+- `UIOffset`
