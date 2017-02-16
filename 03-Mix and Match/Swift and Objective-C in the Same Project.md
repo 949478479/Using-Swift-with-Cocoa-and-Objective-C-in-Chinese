@@ -17,8 +17,8 @@
     - [类工厂方法](#class_factory_methods)
     - [枚举](#enumerations) 
 - [让 Objective-C 接口在 Swift 中不可用](#making_objective_c_interfaces_unavailable_in_swift)
-- [改善 Objective-C 声明](#refining_objective_c_declarations)
-- [命名你的产品模块](#naming_your_product_module)
+- [优化 Objective-C 声明](#refining_objective_c_declarations)
+- [为产品模块命名](#naming_your_product_module)
 - [故障排除贴士](#troubleshooting_tips_and_reminders)
 
 由于 Swift 与 Objective-C 的兼容性，你可以在项目中同时使用两种语言，开发基于混合语言的应用程序。利用这种特性，你可以用 Swift 的最新语言特性实现应用程序的部分功能，并无缝并入现有的 Objective-C 代码中。
@@ -44,7 +44,7 @@ Objective-C 和 Swift 文件可以在项目中并存，无论这个项目原本�
 
 ![](bridgingheader_2x.png)
 
-如果选择创建，Xcode 会随着源文件的创建生成 Objective-C 桥接头文件，并用产品模块名拼接上`"-Bridging-Header.h"`作为 Objective-C 桥接头文件的文件名。关于产品模块名的具体介绍，请参阅[命名你的产品模块](#naming_your_product_module)小节。
+如果选择创建，Xcode 会随着源文件的创建生成 Objective-C 桥接头文件，并用产品模块名拼接上`"-Bridging-Header.h"`作为 Objective-C 桥接头文件的文件名。关于产品模块名的具体介绍，请参阅[为产品模块命名](#naming_your_product_module)小节。
 
 或者，可以选择`File > New > File > （iOS，watchOS，tvOS，macOS） > Source > Header File`来手动创建 Objective-C 桥接头文件。
 
@@ -60,7 +60,7 @@ Objective-C 和 Swift 文件可以在项目中并存，无论这个项目原本�
     #import "XYZCustomViewController.h"
     ```
 
-2. 确保在`Build Settings > Swfit Compiler - Code Generation > Objective-C Bridging Header`中设置了 Objective-C 桥接头文件的路径。该路径形式类似`Info.plist`在`Build Settings`中指定的路径，相对于项目，而不是相对于其所在目录。Xcode 自动生成 Objective-C 桥接头文件时会自动设置该路径，因此大多数情况下你不需要专门去设置它。
+2. 确保在`Build Settings > Swfit Compiler - Code Generation > Objective-C Bridging Header`中设置了 Objective-C 桥接头文件的路径。该路径相对于项目，类似`Info.plist`在`Build Settings`中指定的路径。Xcode 自动生成 Objective-C 桥接头文件时会自动设置该路径，因此大多数情况下你不需要专门去设置它。
 
 在 Objective-C 桥接头文件中导入的所有 Objective-C 头文件都会暴露给 Swift。target 中所有 Swift 文件都可以使用这些 Objective-C 头文件中的内容，不需要任何导入语句。不但如此，你还能用 Swift 语法使用这些自定义的 Objective-C 代码，就像使用系统的 Swift 类一样。
 
@@ -72,7 +72,7 @@ myCell.subtitle = "A custom cell"
 <a name="importing_swift_into_objective_c"></a>
 ### 将 Swift 代码导入到 Objective-C
 
-将 Swift 代码导入到 Objective-C 时，需要依靠 Xcode 自动生成的头文件将这些 Swift 文件暴漏给 Objective-C（此头文件不是上小节描述的 Objective-C 桥接头文件，该头文件在项目目录下不可见，但是可以跳转进去查看）。这个自动生成的头文件是一个 Objective-C 头文件，声明了 target 中的一些 Swift 接口。可以将这个 Objective-C 头文件看作 Swift 代码的保护伞头文件。该头文件以产品模块名拼接上`"-Swift.h"`来命名。关于产品模块名的具体介绍，请参阅[命名你的产品模块](#naming_your_product_module)小节。
+将 Swift 代码导入到 Objective-C 时，需要依靠 Xcode 自动生成的头文件将这些 Swift 文件暴露给 Objective-C（此头文件不是上小节描述的 Objective-C 桥接头文件，该头文件在项目目录下不可见，但是可以跳转进去查看）。这个自动生成的头文件是一个 Objective-C 头文件，声明了 target 中的一些 Swift 接口。可以将这个 Objective-C 头文件看作 Swift 代码的保护伞头文件。该头文件以产品模块名拼接上`"-Swift.h"`来命名。关于产品模块名的具体介绍，请参阅[为产品模块命名](#naming_your_product_module)小节。
 
 默认情况下，这个头文件包含所有标记`public`或`open`修饰符的 Swift 声明。如果 target 中有 Objective-C 桥接头文件的话，它还会包含标记`internal`修饰符的 Swift 声明。标记`private`或`fileprivate`修饰符的 Swift 声明不会出现在这个头文件中。私有声明不会暴露给 Objective-C，除非它们被标记`@IBAction`，`@IBOutlet`，`@objc`。如果应用程序的 target 启用了单元测试，在单元测试的 target 中导入应用程序的 target 时，在`import`语句前加上`@testable`特性，就可以在单元测试的 target 中访问应用程序的 target 中任何标记`internal`修饰符的声明，犹如它们标记了`public`修饰符一般。
 
@@ -149,7 +149,7 @@ class Foo: NSObject {
 >  
 ```objective-c
 // Objective-C 代码部分
-// 为了解决符号未定义的错误，手动写个接口声明，Swift 代码中需要写 @objc(Foo)，否则类名不匹配
+// 为了解决符号未定义的错误，手动写个接口声明，注意 Swift 代码中的 @objc(Foo)，否则会导致类名不匹配
 @interface Foo : NSObject
 - (void)hello;
 @end
@@ -164,7 +164,8 @@ class Foo: NSObject {
 2. 使用如下语法将 Swift 代码导入到 target 中的 Objective-C `.m`文件：
 
 ```objective-c
-#import <ProductName/ProductModuleName-Swift.h> // 分别用产品名和产品模块名替换 ProductName 和 ProductModuleName
+// 分别用产品名和产品模块名替换 ProductName 和 ProductModuleName
+#import <ProductName/ProductModuleName-Swift.h> 
 ```
 
 target 中的一些 Swift 声明会暴露给包含这个导入语句的 Objective-C `.m`文件。关于如何在 Objective-C 中使用 Swift，请参阅[在 Objective-C 中使用 Swift](#using_swift_from_objective-c)小节。
@@ -178,7 +179,7 @@ target 中的一些 Swift 声明会暴露给包含这个导入语句的 Objectiv
 <a name="importing_external_frameworks"></a>
 ## 导入外部框架
 
-你可以导入位于其他 target 中的外部框架，无论它是基于 Objective-C，Swift，还是基于混合语言的。导入流程都是一样的，只需确保`Build Setting > Pakaging > Defines Module`设置为`Yes`。
+你可以导入位于其他 target 中的外部框架，无论它是基于 Objective-C，Swift，还是基于混合语言的。导入流程都是一样的，只需确保被导入框架的`Build Setting > Pakaging > Defines Module`设置为`Yes`。
 
 使用如下语法将外部框架导入到 Swift 文件：
 
@@ -186,7 +187,7 @@ target 中的一些 Swift 声明会暴露给包含这个导入语句的 Objectiv
 import FrameworkName
 ```
 
-用如下语法将外部框架导入到 Objective-C `.m`文件：
+使用如下语法将外部框架导入到 Objective-C `.m`文件：
 
 ```objective-c
 @import FrameworkName;
@@ -326,15 +327,15 @@ typedef NS_ENUM(NSInteger, ABCRecordSide) {
 
 ```objective-c
 + (instancetype)collectionWithValues:(NSArray *)values 
-                             forKeys:(NSArray<NSCopying> *)keys NS_SWIFT_UNAVAILABLE("Use a dictionary literal instead");
+                             forKeys:(NSArray<NSCopying> *)keys NS_SWIFT_UNAVAILABLE("使用字典字面量替代");
 ```
 
 试图在 Swift 中调用`+collectionWithValues:forKeys:`方法将导致编译错误。
 
 <a name="refining_objective_c_declarations"></a>
-## 改善 Objective-C 声明
+## 优化 Objective-C 声明
 
-可以使用`NS_REFINED_FOR_SWIFT`宏标记 Objective-C 方法的声明，然后在 Swift 中通过扩展提供一个经过改善的 Swift 接口，通过该接口去调用方法的原始实现。例如，接收一个或者多个指针参数的 Objective-C 方法可以改善为一个返回元组值的 Swift 方法。使用该宏标记的方法导入到 Swift 后会做如下处理：
+可以使用`NS_REFINED_FOR_SWIFT`宏标记 Objective-C 方法的声明，然后在 Swift 中通过扩展提供一个优雅的 Swift 接口，通过该接口去调用方法的原始实现。例如，接收一个或者多个指针参数的 Objective-C 方法可以优化为一个返回元组值的 Swift 方法。使用该宏标记的方法导入到 Swift 后会做如下处理：
 
 - 对于初始化方法，在第一个外部参数名前加双下划线（`__`）。
 - 对于对象下标方法，只要设值或取值方法被标记`NS_REFINED_FOR_SWIFT`宏，这对下标方法就会变为 Swift 中的普通方法。被标记宏的下标方法会在方法名前加双下划线（`__`）。
@@ -353,7 +354,7 @@ typedef NS_ENUM(NSInteger, ABCRecordSide) {
 @end
 ```
 
-可以通过 Swift 扩展来提供一个改善后的接口：
+可以通过 Swift 扩展来提供一个优化后的接口：
 
 ```swift
 extension Color {
@@ -369,7 +370,7 @@ extension Color {
 ```
 
 <a name="naming_your_product_module"></a>
-## 命名你的产品模块
+## 为产品模块命名
 
 无论是 Xcode 为 Swift 代码自动生成的头文件，还是 Objective-C 桥接头文件，都会根据产品模块名来命名。默认情况下，产品模块名和产品名一样。然而，如果产品名包含特殊字符（只能是字母、数字、下划线），例如点号（`.`），作为产品模块名时，这些特殊字符会被下划线（`_`）替换。如果产品名以数字开头，作为产品模块名时，第一个数字也会被下划线替换。
 
@@ -383,11 +384,11 @@ extension Color {
 
 - 将 Swift 和 Objective-C 文件看作同一代码集，注意命名冲突。
 
-- 如果使用框架，确保`Build setting > Packaging > Defines Module`设置为`Yes`。
+- 如果使用框架，确保框架的`Build setting > Packaging > Defines Module`（`DEFINES_MODULE`）设置为`Yes`。
 
-- 如果使用 Objective-C 桥接头文件，确保`Build setting > Swift Compiler > Code Generation`中的头文件路径是头文件自身相对于项目的路径，例如`MyApp/MyApp-Bridging-Header.h`。
+- 如果使用 Objective-C 桥接头文件，确保`Build setting > Swift Compiler > Code Generation`（`SWIFT_OBJC_BRIDGING_HEADER`）中的头文件路径是头文件自身相对于项目的路径，例如`MyApp/MyApp-Bridging-Header.h`。
 
-- Xcode 会根据产品模块名，而不是 target 的名称来命名 Objective-C 桥接头文件以及为 Swift 代码自动生成的头文件。详情请参阅[命名你的产品模块](#naming_your_product_module)小节。
+- Xcode 会根据产品模块名（`PRODUCT_MODULE_NAME`），而不是 target 的名称（`TARGET_NAME`）来命名 Objective-C 桥接头文件以及为 Swift 代码自动生成的头文件。详情请参阅[为产品模块命名](#naming_your_product_module)小节。
 
 - 只有继承自 Objective-C 类的 Swift 类，以及标记了`@objc`（包括各种被隐式标记的情况）的 Swift 声明，才能在 Objective-C 中使用。
 
