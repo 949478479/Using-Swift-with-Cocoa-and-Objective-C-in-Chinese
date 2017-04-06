@@ -357,18 +357,47 @@ Swift 会将结构体中的位字段导入为结构体的计算型属性，例�
 <a name="unnamed_structure_and_union_fields"></a>
 ## 匿名结构体和联合体字段
 
-C 结构体和联合体类型可能会被定义为匿名的结构体和联合体而作为某种类型的字段。Swift 不支持匿名结构体，因此这些字段会被导入为嵌套类型，并以`__Unnamed_fieldName`的形式命名。
+C `struct` 和 `union` 类型既可以定义匿名字段，也可以定义具有匿名类型的字段。匿名字段由内部所嵌套的拥有命名字段的 `struct` 或 `union` 类型构成。
 
-例如，如下这个名为`Pie`的 C 结构体包含一个名为`crust`的匿名结构体类型字段，还包含一个名为`filling`的匿名联合体类型字段：
+例如，在如下这个 C 结构体 `Cake` 中，`layers` 和 `height` 两个字段嵌套在匿名 `union` 类型中，`toppings` 字段则是一个匿名 `struct` 类型：
 
 ```objective-c
-struct Pie {
-	struct { bool flakey; } crust;
-	union { int fruit; int meat; } filling;
-}
+struct Cake {
+	union {
+ 		int layers;
+		double height;
+	};
+     
+	struct {
+		bool icing;
+		bool sprinkles;
+	} toppings;
+};
 ```
 
-导入到 Swift 后，`crust`属性的类型为`Pie.__Unnamed_crust`，`filling`属性的类型为`Pie.__Unnamed_filling`。
+导入到 Swift 后，可以像如下这样创建和使用它：
+
+```swift
+var simpleCake = Cake()
+simpleCake.layers = 5
+print(simpleCake.toppings.icing)
+```
+
+`Cake` 结构体被导入后会拥有一个逐一成员构造器，可以通过该构造器将结构体的字段初始化为自定义的值，就像下面这样：
+
+```swift
+let cake = Cake(
+	.init(layers: 2),
+	toppings: .init(icing: true, sprinkles: false)
+)
+     
+print("The cake has \(cake.layers) layers.")
+// 打印 "The cake has 2 layers."
+print("Does it have sprinkles?", cake.toppings.sprinkles ? "Yes." : "No.")
+// 打印 "Does it have sprinkles? No."
+```
+
+因为 `Cake` 结构体第一个字段是匿名的，因此构造器的第一个参数没有标签。由于 `Cake` 结构体的字段是匿名类型，因此使用 `.init` 构造器，这将借助类型推断来为结构体的每个匿名字段设置初始值。
 
 <a name="pointer"></a>
 ## 指针
