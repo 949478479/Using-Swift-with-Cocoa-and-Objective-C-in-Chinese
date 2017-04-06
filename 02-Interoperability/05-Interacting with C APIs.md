@@ -363,15 +363,15 @@ C `struct` 和 `union` 类型既可以定义匿名字段，也可以定义具有
 
 ```objective-c
 struct Cake {
-	union {
- 		int layers;
-		double height;
-	};
-     
-	struct {
-		bool icing;
-		bool sprinkles;
-	} toppings;
+    union {
+        int layers;
+        double height;
+    };
+
+    struct {
+        bool icing;
+        bool sprinkles;
+    } toppings;
 };
 ```
 
@@ -387,10 +387,10 @@ print(simpleCake.toppings.icing)
 
 ```swift
 let cake = Cake(
-	.init(layers: 2),
-	toppings: .init(icing: true, sprinkles: false)
+    .init(layers: 2),
+    toppings: .init(icing: true, sprinkles: false)
 )
-     
+
 print("The cake has \(cake.layers) layers.")
 // 打印 "The cake has 2 layers."
 print("Does it have sprinkles?", cake.toppings.sprinkles ? "Yes." : "No.")
