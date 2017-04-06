@@ -347,7 +347,41 @@ let string = data.base64EncodedString(options: options)
 <a name="unions"></a>
 ## 联合体
 
-Swift 不完全支持 C 语言的`union`类型。在导入 C 联合体时，Swift 无法使用不支持的字段。但是，参数或者返回值包含这些类型的 C 和 Objective-C 的 API 是可以在 Swift 中使用的。
+Swift 将 C 联合体导入为 Swift 结构体。尽管 Swift 不支持联合体，但 C 联合体导入为 Swift 结构体后仍将保持类似 C 联合体的行为。例如，思考如下名为`SchroedingersCat`的 C 联合体，它拥有`isAlive`和`isDead`两个字段：
+
+```swift
+union SchroedingersCat {
+    bool isAlive;
+    bool isDead;
+};
+
+它被导入到 Swift 后如下所示：
+
+struct SchroedingersCat {
+    var isAlive: Bool { get set }
+    var isDead: Bool { get set }
+
+    init(isAlive: Bool)
+    init(isDead: Bool)
+
+    init()
+}
+```
+
+由于 C 联合体所有字段共享同一块内存，因此联合体作为结构体导入到 Swift 后，所有计算属性也会共享同一块内存。这将导致修改任意计算属性的值都会改变其他计算属性的值。
+
+在上述例子中，修改结构体`SchroedingersCat`的计算属性`isAlive`的值也会改变计算属性`isDead`的值：
+
+```swift
+var mittens = SchroedingersCat(isAlive: false)
+
+print(mittens.isAlive, mittens.isDead)
+// 打印 "false false"
+
+mittens.isAlive = true
+print(mittens.isDead)
+// 打印 "true"
+```
 
 <a name="bit_fields"></a>
 ## 位字段
@@ -357,9 +391,9 @@ Swift 会将结构体中的位字段导入为结构体的计算型属性，例�
 <a name="unnamed_structure_and_union_fields"></a>
 ## 匿名结构体和联合体字段
 
-C `struct` 和 `union` 类型既可以定义匿名字段，也可以定义具有匿名类型的字段。匿名字段由内部所嵌套的拥有命名字段的 `struct` 或 `union` 类型构成。
+C `struct`和`union`类型既可以定义匿名字段，也可以定义具有匿名类型的字段。匿名字段由内部所嵌套的拥有命名字段的`struct`或`union`类型构成。
 
-例如，在如下这个 C 结构体 `Cake` 中，`layers` 和 `height` 两个字段嵌套在匿名 `union` 类型中，`toppings` 字段则是一个匿名 `struct` 类型：
+例如，在如下这个 C 结构体`Cake`中，`layers`和`height`两个字段嵌套在匿名`union`类型中，`toppings`字段则是一个匿名`struct`类型：
 
 ```objective-c
 struct Cake {
@@ -383,7 +417,7 @@ simpleCake.layers = 5
 print(simpleCake.toppings.icing)
 ```
 
-`Cake` 结构体被导入后会拥有一个逐一成员构造器，可以通过该构造器将结构体的字段初始化为自定义的值，就像下面这样：
+`Cake`结构体被导入后会拥有一个逐一成员构造器，可以通过该构造器将结构体的字段初始化为自定义的值，就像下面这样：
 
 ```swift
 let cake = Cake(
@@ -397,7 +431,7 @@ print("Does it have sprinkles?", cake.toppings.sprinkles ? "Yes." : "No.")
 // 打印 "Does it have sprinkles? No."
 ```
 
-因为 `Cake` 结构体第一个字段是匿名的，因此构造器的第一个参数没有标签。由于 `Cake` 结构体的字段是匿名类型，因此使用 `.init` 构造器，这将借助类型推断来为结构体的每个匿名字段设置初始值。
+因为`Cake`结构体第一个字段是匿名的，因此构造器的第一个参数没有标签。由于`Cake`结构体的字段是匿名类型，因此使用`.init`构造器，这将借助类型推断来为结构体的每个匿名字段设置初始值。
 
 <a name="pointer"></a>
 ## 指针
