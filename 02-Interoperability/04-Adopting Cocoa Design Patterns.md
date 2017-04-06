@@ -746,14 +746,14 @@ func useShinyNewFeature() {
 
 在`macOS`，通常通过点击 Dock 或者 Launchpad 上的应用程序图标启动应用程序，也可以双击 Finder 中的应用程序图标。然而，也可以使用终端通过编程的方式打开应用程序，并可以为其传递一些命令行参数。
 
-可以访问类型属性`Process.arguments`获取应用程序启动时指定的一系列命令行参数。这等同于访问`NSProcessInfo.processInfo()`的`arguments`属性。
+可以访问类型属性`CommandLine.arguments`获取应用程序启动时指定的一系列命令行参数。
 
 ```
 $ /path/to/app --argumentName value
 ```
 
 ```swift
-for argument in Process.arguments {
+for argument in CommandLine.arguments {
     print(argument)
 }
 // 打印 /path/to/app
@@ -761,5 +761,7 @@ for argument in Process.arguments {
 // 打印 value
 ```
 
+`CommandLine.arguments`的第一个元素总是可执行文件的路径。从`Process.arguments[1]`开始才是启动时指定的命令行参数。
+
 > 注意  
-> `Process.arguments`的第一个元素总是可执行文件的路径。从`Process.arguments[1]`开始才是启动时指定的命令行参数。
+> 这等同于访问`ProcessInfo.processInfo`的`arguments`属性。
