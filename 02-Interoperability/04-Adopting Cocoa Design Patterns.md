@@ -253,9 +253,7 @@ class SerializedDocument: NSDocument {
 
 	```swift
 	class MyObjectToObserve: NSObject {
-	
 	    dynamic var myDate = NSDate()
-	    
 	    func updateDate() {
 	        myDate = NSDate()
 	    }
@@ -275,7 +273,7 @@ class SerializedDocument: NSDocument {
 	    var objectToObserve = MyObjectToObserve()
 	    override init() {
 	        super.init()
-	        objectToObserve.addObserver(self, forKeyPath: "myDate", options: .new, context: &myContext)
+	        objectToObserve.addObserver(self, forKeyPath: #keyPath(MyObjectToObserve.myDate), options: .new, context: &myContext)
 	    }
 	
 	    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -289,7 +287,7 @@ class SerializedDocument: NSDocument {
 	    }
 	
 	    deinit {
-	        objectToObserve.removeObserver(self, forKeyPath: "myDate", context: &myContext)
+	        objectToObserve.removeObserver(self, forKeyPath: #keyPath(MyObjectToObserve.myDate), context: &myContext)
 	    }
 	}
 	```
