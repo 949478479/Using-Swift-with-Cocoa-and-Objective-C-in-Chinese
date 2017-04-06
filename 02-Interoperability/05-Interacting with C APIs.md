@@ -61,9 +61,9 @@ C 和 Objective-C 的源文件中定义的全局常量会自动被 Swift 编译�
 <a name="imported_constant_enumerations_and_structures"></a>
 ### 导入常量作为枚举和结构体
 
-在 Objective-C，常量通常用来为属性或者方法参数提供一系列合适的值。你可以用`NS_STRING_ENUM`或`NS_EXTENSIBLE_STRING_ENUM `宏标注 Objective-C `typedef` 声明，这样 Swift 就会将该类型导入为枚举或结构体，同时该类型的各种常量会变成类型成员。
+在 Objective-C，常量通常用来为属性或者方法参数提供一系列合适的值。你可以用`NS_STRING_ENUM`或`NS_EXTENSIBLE_STRING_ENUM `宏标注 Objective-C `typedef`声明，这样 Swift 就会将该类型导入为枚举或结构体，同时该类型的各种常量会变成类型成员。使用`NS_STRING_ENUM`宏标注表示不会再扩充新值的常量声明。使用`NS_EXTENSIBLE_STRING_ENUM`宏标注的常量声明可以通过 Swift 扩展来扩充新值。
 
-那些表示固定一套值的常量在标注`NS_STRING_ENUM`宏之后会被 Swift 导入为枚举。例如，思考如下字符串常量类型`TrafficLightColor` 的 Objective-C 声明：
+表示不可扩充新值的常量声明在标注`NS_STRING_ENUM`宏之后会被 Swift 导入为结构体。例如，思考如下字符串常量类型`TrafficLightColor`的 Objective-C 声明：
 
 ```objective-c
 typedef NSString * TrafficLightColor NS_STRING_ENUM;
@@ -76,14 +76,19 @@ TrafficLightColor const TrafficLightColorGreen;
 Swift 会以如下形式导入它们：
 
 ```swift
-enum TrafficLightColor : String {
-    case red
-    case yellow
-    case green
+struct TrafficLightColor: RawRepresentable {
+    typealias RawValue = String
+
+    init(rawValue: RawValue)
+    var rawValue: RawValue { get }
+
+    static var red: TrafficLightColor { get }
+    static var yellow: TrafficLightColor { get }
+    static var green: TrafficLightColor { get }
 }
 ```
 
-那些表示可扩充的一套值的常量在标注`NS_EXTENSIBLE_STRING_ENUM`宏之后会被 Swift 导入为结构体。例如，思考如下字符串常量类型`StateOfMatter` 的 Objective-C 声明：
+表示可扩充新值的常量声明在标注`NS_EXTENSIBLE_STRING_ENUM`宏之后也会被 Swift 导入为结构体。例如，思考如下字符串常量类型`StateOfMatter`的 Objective-C 声明：
 
 ```objective-c
 typedef NSString * StateOfMatter NS_EXTENSIBLE_STRING_ENUM;
@@ -96,9 +101,10 @@ StateOfMatter const StateOfMatterGas;
 Swift 会以如下形式导入它们：
 
 ```swift
-struct StateOfMatter : RawRepresentable {
+struct StateOfMatter: RawRepresentable {
     typealias RawValue = String
 
+    init(_ rawValue: RawValue)
     init(rawValue: RawValue)
     var rawValue: RawValue { get }
 
@@ -108,12 +114,14 @@ struct StateOfMatter : RawRepresentable {
 }
 ```
 
-标注`NS_EXTENSIBLE_STRING_ENUM`宏的一套常量可在 Swift 代码中添加新的常量值：
+可以看到，使用可扩充形式的常量声明在导入后会获得一个额外的构造器，这使得调用者可以在扩充新值时省略参数标签。
+
+标注`NS_EXTENSIBLE_STRING_ENUM`宏的常量声明可在 Swift 代码中扩充新的常量值：
 
 ```swift
 extension StateOfMatter {
     static var plasma: StateOfMatter {
-        return StateOfMatter(rawValue: "plasma")
+        return StateOfMatter("plasma")
     }
 }
 ```
