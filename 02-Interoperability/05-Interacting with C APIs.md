@@ -461,7 +461,16 @@ Swift 尽可能地避免直接使用指针。不过，Swift 也提供了多种�
 | Type * __strong * | UnsafeMutablePointer\<Type\> |
 | Type ** | AutoreleasingUnsafeMutablePointer\<Type\> |
 
-Swift 使用`UnsafeRawPointer`和`UnsafeMutableRawPointer`类型表示指向原始内存的无类型指针。如果指针的类型在 Swift 中无法表示，例如某个不完备的结构体类型，Swift 会将之导入为`OpaquePointer`。
+对于指向原始内存的无类型指针，遵循如下映射：
+
+| C 语法 | Swift 语法 |
+| ------ | ------ |
+| const void * | UnsafeRawPointer |
+| void * | UnsafeMutableRawPointer |
+
+Swift 还提供了用于操作缓冲区的指针类型，如[缓冲区指针](buffer_pointers)所述。
+
+如果指针的类型在 Swift 中无法表示，例如某个不完备的结构体类型，Swift 会将之导入为`OpaquePointer`。
 
 <a name="constant_pointers"></a>
 ### 常量指针
