@@ -16,7 +16,7 @@
 - [本地化](#localization)
 - [自动释放池](#autorelease_pools)
 - [API 可用性](#API_Availability)
-- [处理命令行参数](#Processing Command-Line Arguments)
+- [处理命令行参数](#Processing_Command-Line_Arguments)
 
 使用 Cocoa 既有的设计模式，能帮助开发者开发出设计巧妙、扩展性强的应用程序。这些模式很多都依赖于在 Objective-C 中定义的类。由于 Swift 与 Objective-C 的互用性，你依然可以在 Swift 中使用这些设计模式。在许多情况下，你甚至可以使用 Swift 的语言特性扩展或简化这些 Cocoa 设计模式，使这些设计模式更加强大易用。
 
@@ -739,7 +739,7 @@ func useShinyNewFeature() {
 > 注意  
 > 使用`@available`特性标记的方法可以安全地使用满足指定平台要求的 API 而不用再进行可用性检查。
 
-<a name="Processing Command-Line Arguments"></a>
+<a name="Processing_Command-Line_Arguments"></a>
 ## 处理命令行参数
 
 在`macOS`，通常通过点击 Dock 或者 Launchpad 上的应用程序图标启动应用程序，也可以双击 Finder 中的应用程序图标。然而，也可以使用终端通过编程的方式打开应用程序，并可以为其传递一些命令行参数。
