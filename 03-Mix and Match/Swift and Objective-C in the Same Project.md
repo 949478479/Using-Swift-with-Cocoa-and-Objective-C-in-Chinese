@@ -172,7 +172,7 @@ target 中的一些 Swift 声明会暴露给包含这个导入语句的 Objectiv
 
 |              | 导入到 Swift | 导入到 Objective-C |
 | :-------------:|:-----------:|:------------:| 
-| Swift 代码 | 不需要导入语句 | #import "ProductName/ProductModuleName-Swift.h" |
+| Swift 代码 | 不需要导入语句 | #import <ProductName/ProductModuleName-Swift.h> |
 | Objective-C 代码 | 不需要导入语句；需要 Objective-C 保护伞头文件 | #import "Header.h" |
 
 
