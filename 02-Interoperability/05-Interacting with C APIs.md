@@ -2,7 +2,7 @@
 
 - [基本类型](#primitive_types)
 - [全局常量](#global_constants)
-    - [导入常量作为枚举和结构体](#imported_constant_enumerations_and_structures)
+    - [导入的常量枚举和结构体](#imported_constant_enumerations_and_structures)
 - [函数](#functions)
     - [变参函数](#variadic_functions)
 - [结构体](#structures)
@@ -59,14 +59,14 @@ Swift 提供了一些与 C 语言基本数值类型（例如`char`，`int`，`fl
 C 和 Objective-C 的源文件中定义的全局常量会自动被 Swift 编译器导入为 Swift 全局常量。
 
 <a name="imported_constant_enumerations_and_structures"></a>
-### 导入常量作为枚举和结构体
+### 导入的常量枚举和结构体
 
-在 Objective-C，常量通常用来为属性或者方法参数提供一系列合适的值。你可以用`NS_STRING_ENUM`或`NS_EXTENSIBLE_STRING_ENUM `宏标注 Objective-C `typedef`声明，这样 Swift 就会将该类型导入为枚举或结构体，同时该类型的各种常量会变成类型成员。使用`NS_STRING_ENUM`宏标注表示不会再扩充新值的常量声明。使用`NS_EXTENSIBLE_STRING_ENUM`宏标注的常量声明可以通过 Swift 扩展来扩充新值。
+在 Objective-C，常量通常用来为属性或者方法参数提供一系列合适的值。你可以用 `NS_TYPED_ENUM` 或 `NS_TYPED_EXTENSIBLE_ENUM` 宏标注 Objective-C `typedef` 声明，这样 Swift 就会将该类型导入为枚举或结构体，而该类型的各种常量会变成相应的类型成员。使用 `NS_TYPED_ENUM` 宏标注一套不会再扩充新值的常量声明。使用 `NS_TYPED_EXTENSIBLE_ENUM` 宏标注一套可以通过 Swift 扩展来扩充新值的常量声明。
 
-表示不可扩充新值的常量声明在标注`NS_STRING_ENUM`宏之后会被 Swift 导入为结构体。例如，思考如下字符串常量类型`TrafficLightColor`的 Objective-C 声明：
+表示一组固定值的常量声明在标注 `NS_TYPED_ENUM` 宏之后会以结构体形式导入到 Swift。例如，请考虑如下整形常量类型 `TrafficLightColor` 的 Objective-C 声明：
 
 ```objective-c
-typedef NSString * TrafficLightColor NS_STRING_ENUM;
+typedef long TrafficLightColor NS_TYPED_ENUM;
 
 TrafficLightColor const TrafficLightColorRed;
 TrafficLightColor const TrafficLightColorYellow;
@@ -76,8 +76,8 @@ TrafficLightColor const TrafficLightColorGreen;
 Swift 会以如下形式导入它们：
 
 ```swift
-struct TrafficLightColor: RawRepresentable {
-    typealias RawValue = String
+struct TrafficLightColor: RawRepresentable, Equatable, Hashable {
+    typealias RawValue = Int
 
     init(rawValue: RawValue)
     var rawValue: RawValue { get }
@@ -88,43 +88,49 @@ struct TrafficLightColor: RawRepresentable {
 }
 ```
 
-表示可扩充新值的常量声明在标注`NS_EXTENSIBLE_STRING_ENUM`宏之后也会被 Swift 导入为结构体。例如，思考如下字符串常量类型`StateOfMatter`的 Objective-C 声明：
+表示一套可扩充新值的常量的声明在标注 `NS_TYPED_EXTENSIBLE_ENUM` 宏之后也会作为结构体导入到 Swift。例如，考虑以下 Objective-C 声明，它们表示交通信号灯的颜色组合：
 
 ```objective-c
-typedef NSString * StateOfMatter NS_EXTENSIBLE_STRING_ENUM;
+typedef TrafficLightColor TrafficLightCombo [3] NS_TYPED_EXTENSIBLE_ENUM;
 
-StateOfMatter const StateOfMatterSolid;
-StateOfMatter const StateOfMatterLiquid;
-StateOfMatter const StateOfMatterGas;
+TrafficLightCombo const TrafficLightComboJustRed;
+TrafficLightCombo const TrafficLightComboJustYellow;
+TrafficLightCombo const TrafficLightComboJustGreen;
+
+TrafficLightCombo const TrafficLightComboRedYellow;
 ```
 
 Swift 会以如下形式导入它们：
 
 ```swift
-struct StateOfMatter: RawRepresentable {
-    typealias RawValue = String
+struct TrafficLightCombo: RawRepresentable, Equatable, Hashable {
+    typealias RawValue = (TrafficLightColor, TrafficLightColor, TrafficLightColor)
 
     init(_ rawValue: RawValue)
     init(rawValue: RawValue)
     var rawValue: RawValue { get }
 
-    static var solid: StateOfMatter { get }
-    static var liquid: StateOfMatter { get }
-    static var gas: StateOfMatter { get }
+    static var justRed: TrafficLightCombo { get }
+    static var justYellow: TrafficLightCombo { get }
+    static var justGreen: TrafficLightCombo { get }
+    static var redYellow: TrafficLightCombo { get }
 }
 ```
 
-可以看到，使用可扩充形式的常量声明在导入后会获得一个额外的构造器，这使得调用者可以在扩充新值时省略参数标签。
+可以看到，使用可扩充形式的常量声明在导入后会额外获得一个构造器，这使得调用者可以在扩充新值时省略参数标签。
 
-标注`NS_EXTENSIBLE_STRING_ENUM`宏的常量声明可在 Swift 代码中扩充新的常量值：
+标注 `NS_TYPED_EXTENSIBLE_ENUM` 宏的常量声明可在 Swift 代码中进行扩充以添加新值：
 
 ```swift
-extension StateOfMatter {
-    static var plasma: StateOfMatter {
-        return StateOfMatter("plasma")
+extension TrafficLightCombo {
+    static var all: TrafficLightCombo {
+        return TrafficLightCombo((.red, .yellow, .green))
     }
 }
 ```
+
+> 注意  
+> 你可能会遇到使用 `NS_STRING_ENUM` 和 `NS_EXTENSIBLE_STRING_ENUM` 旧版宏的 Objective-C 代码，这些宏用于组织字符串常量。组织任意类型的相关常量（包括字符串常量）时，请使用 `NS_TYPED_ENUM` 和 `NS_TYPED_EXTENSIBLE_ENUM`。
 
 <a name="functions"></a>
 ## 函数
