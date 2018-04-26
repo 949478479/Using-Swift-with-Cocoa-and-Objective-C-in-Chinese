@@ -102,9 +102,11 @@ if let integerValue = Int(stringLiteral as String) {
 <a name = "numbers"></a>
 ### 数值
 
-Swift 会在`NSNumber`类和 Swift 算术类型之间桥接，包括`Int`，`Double`，`Bool`。
+Swift 会在 `NSNumber` 类和 Swift 算术类型之间桥接，包括 `Int`，`Double`，`Bool`。
 
-你可以使用`as`运算符将 Swift 数值转换为`NSNumber`对象。因为`NSNumber`可以包含多种不同类型，将其转换为 Swift 数值时必须使用`as?`运算符。你也可以通过提供类型标注的方式利用浮点数，整数，布尔字面量创建`NSNumber`对象。
+你可以使用 `as` 运算符转换 Swift 数值来创建 `NSNumber` 对象。由于 `NSNumber` 可以包含多种不同类型，将其转换为 Swift 数值时必须使用 `as?` 运算符。例如，将表示数字500的 `NSNumber` 值转换为 Swift 类型 `Int8` 将会失败并返回 `nil`，因为 `Int8` 值可表示的最大值是127。
+
+你还可以通过显式提供类型标注，使用浮点数、整数或布尔字面量创建 `NSNumber` 对象。
 
 ```swift
 import Foundation
@@ -117,7 +119,7 @@ let booleanLiteral: NSNumber = true
 ```
 
 > 注意  
-> Objective-C 中具有平台适应性的整数类型，例如`NSInteger`和`NSUInteger`，会被桥接为`Int`。
+> Objective-C 中具有平台适应性的整数类型，例如 `NSUInteger` 和 `NSInteger`，会被桥接为 `Int`。
 
 <a name="arrays"></a>
 ### 数组
