@@ -699,18 +699,31 @@ array.performSelector(selector)
 <a name="keys_and_key_paths"></a>
 ## 键和键路径
 
-在 Objective-C，键是一个表示某个对象特定属性的字符串。键路径是一个由多个键构成的字符串，键之间用点分隔，表示一条能访问到某个对象特定属性的路径。键和键路径经常用于键值编码（KVC），这是一种通过字符串来访问某个对象的属性的机制。键和键路径也常用于键值监听（KVO），这是一种能让某个对象在另一个对象的特定属性改变时获得通知的机制。
+在 Objective-C，键是一个表示某个对象特定属性的字符串。键路径是一个由多个键构成的字符串，键之间用点分隔，表示一条能访问到某个对象特定属性的路径。键和键路径经常用于*键值编码*（KVC），这是一种通过字符串来访问某个对象的属性的机制。键和键路径也常用于*键值监听*（KVO），这是一种能让某个对象在另一个对象的特定属性改变时获得通知的机制。
 
-在 Swift，可以使用`#keyPath`表达式来生成可被编译器检查的键和键路径，可用于类似`value(forKey:)`和`value(forKeyPath:)`的 KVC 方法，以及类似`addObserver(_:forKeyPath:options:context:)`的 KVO 方法。`#keyPath`表达式接受链式的方法或属性引用，例如`#keyPath(Person.bestFriend.name)`。
+在 Swift，可以用 key-path 表达式创建键路径来访问属性。例如，可以用 `\Animal.name` 这样的 key-path 表达式来访问 `Animal` 类中的 `name` 属性。键路径通过 key-path 表达式创建，其中包含了属性所在类型的类型信息。对一个实例使用键路径所得到的结果就如同直接访问该实例的对应属性一样。key-path 表达式接受属性引用以及链式属性引用，例如 `\Animal.name.count`。
+
+```swift
+let llama = Animal(name: "Llama")
+let nameAccessor = \Animal.name
+let nameCountAccessor = \Animal.name.count
+
+llama[keyPath: nameAccessor]
+// "Llama"
+llama[keyPath: nameCountAccessor]
+// "5"
+```
+
+在 Swift，还可以用 `#keyPath` 字符串表达式生成可被编译器检查的键和键路径，并可将之用于 KVC 方法 `value(forKey:)` 和  `value(forKeyPath:)`，以及 KVO 方法 `addObserver(_:forKeyPath:options:context:)`。`#keyPath` 字符串表达式接受链式的方法或属性引用。它还支持可选值链式引用，例如 `#keyPath(Person.bestFriend.name)`。与使用 key-path 表达式这种创建方式不同的是，`#keyPath` 字符串表达式不会将属性或方法所属类型的类型信息传递给接受键路径的 API。
 
 > 注意  
-> `#keyPath`表达式语法类似`#selector`表达式语法，请参阅 [选择器](#selectors)。
+> `#keyPath` 表达式语法类似 `#selector` 表达式语法，请参阅 [选择器](#selectors)。
 
 ```swift
 class Person: NSObject {
-    var name: String
-    var friends: [Person] = []
-    var bestFriend: Person? = nil
+    @objc var name: String
+    @objc var friends: [Person] = []
+    @objc var bestFriend: Person? = nil
 
     init(name: String) {
         self.name = name
@@ -723,10 +736,16 @@ let yuanyuan = Person(name: "Yuanyuan")
 gabrielle.friends = [jim, yuanyuan]
 gabrielle.bestFriend = yuanyuan
 
-#keyPath(Person.name) // "name"
-gabrielle.value(forKey: #keyPath(Person.name)) // "Gabrielle"
-#keyPath(Person.bestFriend.name) // "bestFriend.name"
-gabrielle.value(forKeyPath: #keyPath(Person.bestFriend.name)) // "Yuanyuan"
-#keyPath(Person.friends.name) // "friends.name"
-gabrielle.value(forKeyPath: #keyPath(Person.friends.name)) // ["Yuanyuan", "Jim"]
+#keyPath(Person.name)
+// "name"
+gabrielle.value(forKey: #keyPath(Person.name))
+// "Gabrielle"
+#keyPath(Person.bestFriend.name)
+// "bestFriend.name"
+gabrielle.value(forKeyPath: #keyPath(Person.bestFriend.name))
+// "Yuanyuan"
+#keyPath(Person.friends.name)
+// "friends.name"
+gabrielle.value(forKeyPath: #keyPath(Person.friends.name))
+// ["Yuanyuan", "Jim"]
 ```
