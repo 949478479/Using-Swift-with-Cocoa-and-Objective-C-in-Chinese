@@ -4,8 +4,10 @@
 - [惰性初始化](#lazy_initialization)
 - [错误处理](#error_handling)
     - [捕获和处理错误](#catching_and_handling_an_error)
-    - [转换错误为可选值](#converting_errors_to_optional_values)
+    - [将错误转换为可选值](#converting_errors_to_optional_values)
     - [抛出错误](#throwing_an_error)
+    - [处理异常](#handling_exceptions)
+    - [捕获和处理自定义错误](#catching_and_handling_custom_errors)
 - [键值观察](#key_value_observing)
 - [撤销](#undo)
 - [目标-动作](#target_action)
@@ -92,12 +94,12 @@ lazy var currencyFormatter: NumberFormatter = {
 <a name="error_handling"></a>
 ## 错误处理
 
-在 Cocoa 中，产生错误的方法将`NSError`指针参数作为最后一个参数，当错误产生时，该参数会被`NSError`对象填充。Swift 会自动将 Objective-C 中产生错误的方法转换为根据 Swift 原生错误处理机制抛出错误的方法。
+在 Cocoa 中，会产生错误的方法将 `NSError` 指针参数作为最后一个参数，当产生错误时，该参数会被 `NSError` 对象填充。Swift 会自动将 Objective-C 中会产生错误的方法转换为根据 Swift 原生错误处理机制抛出错误的方法。
 
 > 注意  
-> 某些产生错误的方法，例如代理方法，或者接受一个带有`NSError`参数的块作为参数的方法，不会被 Swift 导入为`throws`方法。
+> 某些接受错误的方法，例如委托方法，或者接受一个带有 `NSError` 参数的块作为参数的方法，不会被 Swift 导入为抛出方法。
 
-例如，思考如下来自于`NSFileManager`的 Objective-C 方法：
+例如，请考虑如下来自于 `NSFileManager` 的 Objective-C 方法：
 
 ```objective-c
 - (BOOL)removeItemAtURL:(NSURL *)URL
@@ -110,23 +112,23 @@ lazy var currencyFormatter: NumberFormatter = {
 func removeItem(at: URL) throws
 ```
 
-注意`removeItem(at:)`方法被 Swift 导入时，返回值类型为`Void`，没有`error`参数，并且还有一个`throws`声明。
+注意 `removeItem(at:)` 方法被 Swift 导入时，返回值类型为 `Void`，没有 `error` 参数，并且还有一个 `throws` 声明。
 
-如果 Objective-C 方法的最后一个非块类型的参数是`NSError **`类型，Swift 会将之替换为`throws`关键字，以表明该方法可以抛出一个错误。如果 Objective-C 方法的错误参数是它的第一个参数，Swift 会尝试删除选择器第一部分中的`WithError`或`AndReturnError`后缀来进一步简化方法名。如果简化后的方法名会和其他方法名冲突，则不会对方法名进行简化。
+如果 Objective-C 方法的最后一个非块类型的参数是 `NSError **` 类型，Swift 会将之替换为 `throws` 关键字，以表明该方法可以抛出一个错误。如果 Objective-C 方法的错误参数也是它的第一个参数，Swift 会尝试删除选择器的第一部分中的 “WithError” 或 “AndReturnError” 后缀（如果存在）来进一步简化方法名。如果简化后的方法名会和其他方法名冲突，则不会对方法名进行简化。
 
-如果产生错误的 Objective-C 方法返回一个用来表示方法调用成功或失败的`BOOL`值，Swift 会把返回值转换为`Void`。同样的，如果产生错误的 Objective-C 方法返回一个`nil`值来表明方法调用失败，Swift 会把返回值转换为非可选类型。
+如果产生错误的 Objective-C 方法返回一个用来表示方法调用成功或失败的 `BOOL` 值，Swift 会把返回值转换为 `Void`。同样，如果产生错误的 Objective-C 方法返回一个`nil` 值来表明方法调用失败，Swift 会把返回值转换为非可选类型。
 
-否则，如果没有约定可被推断，则该方法保持不变。
+否则，如果不能推断任何约定，则该方法保持不变。
 
 > 注意  
-> 使用`NS_SWIFT_NOTHROW`宏声明一个产生错误的 Objective-C 方法可以防止该方法作为`throws`方法导入到 Swift。
+> 在一个产生错误的 Objective-C 方法声明上使用 `NS_SWIFT_NOTHROW` 宏可以防止该方法被 Swift 作为抛出方法导入。
 
 <a name="catching_and_handling_an_error"></a>
 ### 捕获和处理错误
 
-在 Objective-C，错误处理是可选的，这意味着方法产生的错误会被忽略，除非提供了一个错误指针。在 Swift，调用一个会抛出错误的方法时必须明确进行错误处理。
+在 Objective-C，错误处理是可选的，这意味着除非提供了一个错误指针，否则方法产生的错误会被忽略。在 Swift，调用一个会抛出错误的方法时必须明确进行错误处理。
 
-下面演示了如何在 Objective-C 中处理调用方法时产生的错误：
+以下示例演示了在 Objective-C 中调用方法时如何处理错误：
 
 ```objective-c
 NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -139,7 +141,7 @@ if (!success) {
 }
 ```
 
-Swift 中等价的代码如下所示：
+Swift 中等效的代码如下所示：
 
 ```swift
 let fileManager = FileManager.default
@@ -152,7 +154,7 @@ do {
 }
 ```
 
-此外，还可以使用`catch`子句来匹配特定的错误代码从而方便区分不同的失败条件：
+此外，你可以使用 `catch` 子句来匹配特定的错误代码以便区分可能的失败情况：
 
 ```swift
 do {
@@ -165,11 +167,11 @@ do {
 ```
 
 <a name="converting_errors_to_optional_values"></a>
-### 转换错误为可选值
+### 将错误转换为可选值
 
-在 Objective-C，可以向错误参数传递`NULL`来忽略错误。在 Swift，可以使用`try?`关键字将`throws`方法转换为返回可选类型的方法，然后检查返回值是否为`nil`。
+在 Objective-C 中，当你只关心是否有错误，而不是发生什么特定错误时，你可以传递 `NULL` 作为错误参数。在 Swift，你可以使用 `try?` 关键字将抛出表达式转换为返回可选值的表达式，然后检查返回值是否为 `nil`。
 
-例如，`NSFileManager`的实例方法`URLForDirectory(_:inDomain:appropriateForURL:create:)`会根据指定搜索路径和域返回一个 URL，如果 URL 不存在也无法被创建，将会产生一个错误。在 Objective-C，可以检查返回的 URL 是否有值来判断此方法成功或是失败。
+例如，`NSFileManager` 的实例方法 `URLForDirectory(_:inDomain:appropriateForURL:create:)` 会返回指定搜索路径和域中的 URL，或者如果适当的 URL 不存在且不能创建，则会产生错误。在 Objective-C 中，此方法成功或是失败可以通过是否返回 URL 对象来判断。
 
 ```objective-c
 NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -184,7 +186,7 @@ if (tmpURL != nil) {
 }
 ```
 
-在 Swfit 则应该这样做：
+在 Swfit 中你可以像下面这样做：
 
 ```swift
 let fileManager = FileManager.default
@@ -196,7 +198,7 @@ if let tmpURL = try? fileManager.url(for: .cachesDirectory, in: .userDomainMask,
 <a name="throwing_an_error"></a>
 ### 抛出错误
 
-如果一个错误发生在 Objective-C 方法中，那么错误对象会填充方法的错误指针参数：
+如果在一个 Objective-C 方法中发生错误，则使用错误对象来填充该方法的错误指针参数：
 
 ```objective-c
 // 发生一个错误
@@ -207,16 +209,16 @@ if (errorPtr) {
 }
 ```
 
-如果一个错误发生在 Swift 方法中，那么错误会被抛出，并且自动传递给调用者：
+如果在一个 Swift 方法中发生错误，则错误会被抛出，并且自动传播给调用者：
 
 ```swift
 // 发生一个错误
 throw NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotOpenFile, userInfo: nil)
 ```
 
-如果 Objective-C 代码调用会抛出错误的 Swift 方法，那么发生错误时，该错误会自动填充到桥接而来的 Objective-C 方法的错误指针参数。
+如果 Objective-C 代码调用会抛出错误的 Swift 方法，则该错误会自动填充到桥接的 Objective-C 方法的错误指针参数。
 
-例如，思考`NSDocument`中的`read(from:ofType:)`方法。在 Objective-C，这个方法的最后一个参数是`NSError **`。在 Swift 的`NSDocument`子类中重写该方法时，该方法会以抛出错误的方式替代错误指针参数。
+例如，考虑 `NSDocument` 中的 `read(from:ofType:)` 方法。在 Objective-C 中，此方法的最后一个参数是 `NSError **` 类型。在 Swift 的 `NSDocument` 子类中重写此方法时，该方法会以抛出错误的方式替代错误指针参数。
 
 ```swift
 class SerializedDocument: NSDocument {
@@ -238,10 +240,56 @@ class SerializedDocument: NSDocument {
 }
 ```
 
-如果方法无法使用正规的文件内容来创建一个对象，就会抛出一个`NSError`对象。如果该方法在 Swift 中调用，那么该错误会被传递到它的调用域。如果该方法在 Objective-C 中调用，错误会填充到错误指针参数。
+如果该方法无法使用文档的常规文件内容来创建对象，就会抛出一个 `NSError` 对象。如果该方法在 Swift 中调用，则错误会传播到它的调用域。如果该方法在 Objective-C 中调用，则错误会填充错误指针参数。
 
-> 注意  
-> 尽管 Swift 的错误处理类似 Objective-C 的异常处理，但它是完全不同的功能。如果一个 Objective-C 方法在运行时抛出了一个异常，对于 Swift 来说，则会触发一个运行时错误。无法直接在 Swift 中重新获得来自 Objective-C 的异常。任何异常处理行为必须在 Objective-C 代码中实现。
+<a name="handling_exceptions"></a>
+### 处理异常
+
+在 Objective-C 中，异常与错误不同。Objective-C 异常处理使用 `@try`，`@catch` 和 `@throw` 语法来标明不可恢复的程序错误。这与司空见惯的 Cocoa 错误模式截然不同，后者使用一个尾随的 `NSError` 参数来标明你在开发过程中设计的可恢复错误。
+
+在 Swift 中，你可以从使用 Cocoa 错误模式传递的错误中恢复，如前文[错误处理](#error_handling)中所述。然而，没有可靠的方法可以从 Swift 中的 Objective-C 异常中恢复。要处理 Objective-C 异常，则需编写 Objective-C 代码，以便在异常到达任何 Swift 代码之前捕获异常。
+
+关于 Objective-C 异常的更多信息，请参阅 [*Exception Programming Topics*](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Exceptions/Exceptions.html#//apple_ref/doc/uid/10000012i)。
+
+<a name="catching_and_handling_custom_errors"></a>
+### 捕获和处理自定义错误
+
+Objective-C 框架可以使用自定义错误域和枚举来组织相关的错误类别。
+
+下面的例子展示了使用 Objective-C 中的 `NS_ERROR_ENUM` 宏定义的自定义错误类型：
+
+```objective-c
+extern NSErrorDomain const MyErrorDomain;
+typedef NS_ERROR_ENUM(MyErrorDomain, MyError) {
+    specificError1 = 0,
+    specificError2 = 1
+};
+```
+
+如下示例展示了如何在 Swift 中使用该自定义错误类型生成错误：
+
+```swift
+func customThrow() throws {
+    throw NSError(
+        domain: MyErrorDomain,
+        code: MyError.specificError2.rawValue,
+        userInfo: [
+            NSLocalizedDescriptionKey: "A customized error from MyErrorDomain."
+        ]
+    )
+}
+
+do {
+    try customThrow()
+} catch MyError.specificError1 {
+    print("Caught specific error #1")
+} catch let error as MyError where error.code == .specificError2 {
+    print("Caught specific error #2, ", error.localizedDescription)
+    // Prints "Caught specific error #2. A customized error from MyErrorDomain."
+} let error {
+    fatalError("Some other error: \(error)")
+}
+```
 
 <a name="key_value_observing"></a>
 ## 键值观察
