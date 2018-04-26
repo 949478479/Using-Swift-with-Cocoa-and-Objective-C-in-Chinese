@@ -649,7 +649,7 @@ class Белка: NSObject {
 
 你可以使用 `@objc` 特性和 `dynamic` 修饰符来要求通过 Objective-C 运行时动态分派对成员的访问操作。一般很少需要这种动态分派，但是，在使用类似键值监听（KVO）这类 API，以及使用 Objective-C 运行时库中的 `method_exchangeImplementations` 这类需要在运行时动态替换方法实现的函数时，则必须使用动态分派。
 
-使用 `dynamic` 修饰符标记的声明还必须显式标记 `@objc` 特性，除非声明所在的上下文为其隐式添加了 `@objc` 特性。关于 `@objc` 特性何时会被隐式添加的相关信息，请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift) 中的[声明特性](http://wiki.jikexueyuan.com/project/swift/chapter3/06_Attributes.html)章节。
+使用 `dynamic` 修饰符标记的声明还必须显式标记 `@objc` 特性，除非声明所在的上下文为其隐式添加了 `@objc` 特性。关于 `@objc` 特性何时会被隐式添加的相关信息，请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift) 中的[声明特性](http://wiki.jikexueyuan.com/project/swift/chapter3/06_Attributes.html#declaration_attributes)部分。
 
 <a name="selectors"></a>
 ## 选择器
