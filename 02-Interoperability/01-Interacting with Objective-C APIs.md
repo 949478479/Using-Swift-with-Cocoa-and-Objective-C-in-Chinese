@@ -20,7 +20,7 @@
     - [哈希](#hashing)
 - [Swift 类型兼容性](#swift_type_compatibility)
     - [配置 Swift 在 Objective-C 中的接口](#configuring_swift_interfaces_in_objective_c)
-    - [强制动态派发](#requiring_dynamic_dispatch)
+    - [需要动态分派](#requiring_dynamic_dispatch)
 - [选择器](#selectors)
     - [Objective-C 方法的不安全调用](#unsafe_invocation_of_objective_c_methods)
 - [键和键路径](#keys_and_key_paths)
@@ -631,14 +631,13 @@ class Белка: NSObject {
 > 相反，Swift 还提供了`@nonobjc`特性，可以让一个 Swift 声明在 Objective-C 中不可用。可以利用它来解决桥接方法循环，以及重载由 Objective-C 中导入的类中的方法。另外，如果一个 Objective-C 方法在 Swift 中被重写后，无法再以 Objective-C 的语言特性呈现，例如将参数变为了 Swift 中的可变参数，那么这个方法必须标记为`@nonobjc`。
 
 <a name="requiring_dynamic_dispatch"></a>
-### 强制动态派发
+### 需要动态分派
 
-即使将 Swift API 暴露给 Objective-C 运行时，也无法保证调用属性、方法、下标或构造器时进行动态派发。Swift 编译器依旧可能绕过 Objective-C 运行时，通过消虚拟化或内联成员访问来优化代码的性能。
+可在 Objective-C 中调用的 Swift API 必须通过动态分派提供。不过，在 Swift 中调用这些 API 时，动态分派的可用性并不妨碍 Swift 编译器选择更高效的分派方法。
 
-可以使用`dynamic`修饰符来强制通过运行时系统进行动态派发。一般很少需要强制动态派发，但是，如果要使用键值观察技术或者`method_exchangeImplementations`这种需要在运行时替换方法实现的函数，就必须使用动态派发。如果 Swift 编译器内联了方法的实现或者消虚拟化，新的方法实现就不会被调用了。
+你可以使用 `@objc` 特性和 `dynamic` 修饰符来要求通过 Objective-C 运行时动态分派对成员的访问操作。一般很少需要这种动态分派，但是，在使用类似键值监听（KVO）这类 API，以及使用 Objective-C 运行时库中的 `method_exchangeImplementations` 这类需要在运行时动态替换方法实现的函数时，则必须使用动态分派。
 
-> 注意  
-> 标记`dynamic`修饰符的声明无法再标记`@nonobjc`特性。
+使用 `dynamic` 修饰符标记的声明还必须显式标记 `@objc` 特性，除非声明所在的上下文为其隐式添加了 `@objc` 特性。关于 `@objc` 特性何时会被隐式添加的相关信息，请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift) 中的[声明特性](http://wiki.jikexueyuan.com/project/swift/chapter3/06_Attributes.html)章节。
 
 <a name="selectors"></a>
 ## 选择器
