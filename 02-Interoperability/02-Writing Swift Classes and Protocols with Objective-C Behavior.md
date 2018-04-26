@@ -25,13 +25,15 @@
 ```swift
 import UIKit
 class MySwiftViewController: UIViewController {
-	// 定义类
+    // 定义类
 }
 ```
 
 Swift 子类可以从 Objective-C 父类中继承所有的功能。
 
-如果要覆盖父类中的实现，可以使用`override`关键字。编译器会根据 Swift 方法名来自动推断被重写的父类方法。也可以使用`@objc(name)`特性来明确指定相对应的 Objective-C 符号。
+如果要覆盖父类中的实现，可以使用 `override` 修饰符。编译器会根据 Swift 方法名来自动推断被重写的父类方法。也可以使用 `@objc(name)` 特性来明确指定相对应的 Objective-C 符号。
+
+当 Swift 类引入了许多需要 Objective-C 运行时行为的新方法或属性时，请在该类的声明中使用 `@objcMembers` 特性。对类使用 `@objcMembers` 特性会隐式地将 `@objc` 特性添加到类中所有兼容 Objective-C 的成员。由于使用 `@objc` 特性会增加应用程序编译后的体积并对性能产生不利影响，因此只有在每个成员都需要使用 `@objc` 特性时才应在类声明中使用 `@objcMembers` 特性。
 
 <a name="NSCoding"></a>
 ### NSCoding 协议
@@ -40,7 +42,7 @@ Swift 子类可以从 Objective-C 父类中继承所有的功能。
 
 ```swift
 required init(coder aDecoder: NSCoder) {
-	fatalError("init(coder:) has not been implemented")
+    fatalError("init(coder:) has not been implemented")
 }
 ```
 
@@ -125,9 +127,9 @@ class MyViewController: UIViewController {
 ```swift
 @IBDesignable
 class MyCustomView: UIView {
-	@IBInspectable var textColor: UIColor
-	@IBInspectable var iconHeight: CGFloat
-	// ...
+    @IBInspectable var textColor: UIColor
+    @IBInspectable var iconHeight: CGFloat
+    // ...
 }
 ```
 
@@ -165,13 +167,13 @@ Core Data 提供了底层存储以及`NSManagedObject`子类的属性实现，�
 ```swift
 import CoreData
 class Person: NSManagedObject {
-	@NSManaged var name: String
+    @NSManaged var name: String
     @NSManaged var friends: NSSet
         
-	@NSManaged func addFriendsObject(friend: Person)
-	@NSManaged func removeFriendsObject(friend: Person)
-	@NSManaged func addFriends(friends: NSSet)
-	@NSManaged func removeFriends(friends: NSSet)
+    @NSManaged func addFriendsObject(friend: Person)
+    @NSManaged func removeFriendsObject(friend: Person)
+    @NSManaged func addFriends(friends: NSSet)
+    @NSManaged func removeFriends(friends: NSSet)
 }
 ```
 
