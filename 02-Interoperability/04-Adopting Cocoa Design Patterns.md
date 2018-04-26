@@ -247,49 +247,47 @@ class SerializedDocument: NSDocument {
 <a name="key_value_observing"></a>
 ## 键值观察
 
-键值观察是一种能让某个对象在其他对象特定属性变化时得到通知的机制。只要 Swift 类源自 NSObject 类，就可以在 Swift 中通过如下三步来实现键值观察：
+键值观察是一种能让某个对象在其他对象指定属性变化时得到通知的机制。只要 Swift 类继承自 `NSObject` 类，就可以在 Swift 中通过如下两步实现键值观察。
 
-1. 为想要观察的属性添加`dynamic`修改符。关于`dynamic`的更多信息，请参阅 [强制动态派发](01-Interacting%20with%20Objective-C%20APIs.md#%E5%BC%BA%E5%88%B6%E5%8A%A8%E6%80%81%E6%B4%BE%E5%8F%91) 小节。
+1. 为想要观察的属性添加 `dynamic` 修改符和 `@objc` 属性。关于 `dynamic` 修饰符的更多信息，请参阅[强制动态派发](01-Interacting%20with%20Objective-C%20APIs.md#%E5%BC%BA%E5%88%B6%E5%8A%A8%E6%80%81%E6%B4%BE%E5%8F%91)小节。
 
 	```swift
 	class MyObjectToObserve: NSObject {
-	    dynamic var myDate = NSDate()
+	    @objc dynamic var myDate = NSDate()
 	    func updateDate() {
 	        myDate = NSDate()
 	    }
 	}
 	```
 
-2. 创建一个全局的上下文变量。
+2. 为键路径创建一个对应的观察者并调用 `observe(_:options:changeHandler)` 方法。关于键路径的更多信息，请参阅[键和键路径](https://github.com/949478479/Using-Swift-with-Cocoa-and-Objective-C-in-Chinese/blob/master/02-Interoperability/01-Interacting%20with%20Objective-C%20APIs.md#%E9%94%AE%E5%92%8C%E9%94%AE%E8%B7%AF%E5%BE%84)小节。
 
 	```swift
-	private var myContext = 0
-	```
+	class MyObjectToObserve: NSObject {
+	    @objc dynamic var myDate = NSDate()
+	    func updateDate() {
+            myDate = NSDate()
+	    }
+    }
 
-3. 为键路径添加一个观察者，重写`observeValue(for:of:change:context:)`方法，并在`deinit`中移除观察者。
+    class MyObserver: NSObject {
+	    @objc var objectToObserve: MyObjectToObserve
+	    var observation: NSKeyValueObservation?
 
-	```swift
-	class MyObserver: NSObject {
-	    var objectToObserve = MyObjectToObserve()
-	    override init() {
-	        super.init()
-	        objectToObserve.addObserver(self, forKeyPath: #keyPath(MyObjectToObserve.myDate), options: .new, context: &myContext)
-	    }
-	
-	    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-	        if context == &myContext {
-	            if let newValue = change?[.newKey] {
-	                print("Date changed: \(newValue)")
-	            }
-	        } else {
-	            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
-	        }
-	    }
-	
-	    deinit {
-	        objectToObserve.removeObserver(self, forKeyPath: #keyPath(MyObjectToObserve.myDate), context: &myContext)
-	    }
-	}
+        init(object: MyObjectToObserve) {
+            objectToObserve = object
+            super.init()
+
+            observation = observe(\.objectToObserve.myDate) { object, change in
+                print("Observed a change to \(object.objectToObserve).myDate, updated to: \(object.objectToObserve.myDate)")
+            }
+        }
+    }
+
+    let observed = MyObjectToObserve()
+    let observer = MyObserver(object: observed)
+
+    observed.updateDate()
 	```
 
 <a name="undo"></a>
