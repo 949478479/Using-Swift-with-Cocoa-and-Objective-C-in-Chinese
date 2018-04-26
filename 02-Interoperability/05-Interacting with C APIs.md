@@ -744,10 +744,12 @@ print("Flag enabled.")
 | `canImport()` | 模块名 |
 | `targetEnvironment()` | `simulator` |
 
-> 注意  
-> 平台条件`arch(arm)`在 ARM 64 位的设备上不会返回`true`，而`arch(i386)`在 32 位的 iOS 模拟器上会返回`true`。
+关于平台条件的更多信息，请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift) 中的[条件编译块](http://wiki.jikexueyuan.com/project/swift/chapter3/10_Statements.html#build_config_statements)部分。
 
-你可以使用`&&`和`||`运算符来组合编译条件，使用`!`运算符来对编译条件取反，使用`#elseif`和`#else`条件编译指令添加新的条件编译分支。你还可以在条件编译块中嵌套其他条件编译块。
+> 注意  
+> 平台条件 `arch(arm)` 在 ARM 64 位的设备上不会返回 `true`。`arch(i386)` 在32位的 iOS 模拟器上会返回 `true`。
+
+你可以使用 `&&` 和 `||` 运算符来组合编译条件，使用 `!` 运算符来对编译条件取反，使用 `#elseif` 和 `#else` 条件编译指令添加新的条件编译分支。你还可以在条件编译块中嵌套其他条件编译块。
 
 ```swift
 #if arch(arm) || arch(arm64)
@@ -763,4 +765,4 @@ print("Using 64-bit x86 code.)
 #endif
 ```
 
-与 C 语言预处理器的条件编译不同的是，Swift 的条件编译块中的语句必须是独立且语法有效的代码，因为所有的 Swift 代码都会进行语法检查，即使某些代码不会被编译。不过也有例外情况，就是当编译条件中包含`swift()`平台条件时：只有编译器的 Swift 版本与平台条件中指定的 Swift 版本一致时，条件编译块中的代码才会被解析。这个例外能确保旧版本编译器不会去试图解析新版本的 Swift 语法。
+与 C 语言预处理器的条件编译不同的是，Swift 的条件编译块中的语句必须是独立且语法有效的代码，因为所有的 Swift 代码都会进行语法检查，即使某些代码不会被编译。不过也有例外情况，就是当编译条件中包含 `swift()` 平台条件时：只有编译器的 Swift 版本与平台条件中指定的 Swift 版本一致时，条件编译块中的代码才会被解析。这个例外能确保旧版本编译器不会去试图解析新版本的 Swift 语法。
