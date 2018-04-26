@@ -746,7 +746,7 @@ print("Flag enabled.")
 
 关于平台条件的更多信息，请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift) 中的[条件编译块](http://wiki.jikexueyuan.com/project/swift/chapter3/10_Statements.html#build_config_statements)部分。
 
-> 注意  
+> 注意  
 > 平台条件 `arch(arm)` 在 ARM 64 位的设备上不会返回 `true`。`arch(i386)` 在32位的 iOS 模拟器上会返回 `true`。
 
 你可以使用 `&&` 和 `||` 运算符来组合编译条件，使用 `!` 运算符来对编译条件取反，使用 `#elseif` 和 `#else` 条件编译指令添加新的条件编译分支。你还可以在条件编译块中嵌套其他条件编译块。
