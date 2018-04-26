@@ -12,7 +12,6 @@
 - [单例](#singleton)
 - [内省](#introspection)
 - [序列化](#serializing)
-    - [验证序列化数据](#validating_serialized_representations)
 - [本地化](#localization)
 - [自动释放池](#autorelease_pools)
 - [API 可用性](#API_Availability)
@@ -450,170 +449,60 @@ if let dataSource = object as? UITableViewDataSource {
 
 通过序列化，可以在应用程序中编码和解码对象，将其转换为独立于体系结构的数据形式，例如 JSON 或属性列表，并能从这类数据形式转换回对象。这类数据形式可以写入文件，传给其他本地进程，以及通过网络进行传递。
 
-在 Objective-C，可以使用 Foundation 框架的`NSJSONSerialiation`类和`NSPropertyListSerialization`类，利用 JSON 或者属性列表来实例化对象，通常这种对象会是`NSDictionary<NSString *, id>`类型。Swift 也支持此功能，但由于 Swift 是类型安全的，因此需要一些额外的类型转换。
+在 Objective-C 中，可以使用 Foundation 框架的 `NSJSONSerialiation` 类或 `NSPropertyListSerialization` 类从 JSON 或者属性列表来实例化对象，通常这种对象会是 `NSDictionary<NSString *, id>` 类型。
 
-例如，思考下面的`Venue`结构，它有一个名为`name`的`String`类型的属性，一个名为`coordinates`的
-`CLLocationCoordinate2D`类型的属性，以及一个名为`category`的`Category`枚举类型的属性，并且枚举类型是嵌套类型：
+在 Swift 中，标准库定义了一套标准化方法来编码和解码数据。若要使用这套方法，你可以让自定义类型遵守 `Encodable` 或 `Decodable` 协议，若要同时遵守这两种协议，更便捷的方式是直接遵守 `Codable` 协议。你可以通过 Foundation 库中的 `JSONEncoder` 和 `PropertyListEncoder` 类将某个实例转化为 JSON 或属性列表数据。与此相似，你可以用 `JSONDecoder` 和 `PropertyListDecoder` 类从 JSON 或属性列表数据解码并初始化实例。
+
+例如，一个应用从 web 服务器接收到一些表示食品杂货店商品的 JSON 数据，如下所示：
 
 ```swift
-import Foundation
-import CoreLocation
-
-struct Venue {
-    enum Category: String {
-        case entertainment
-        case food
-        case nightlife
-        case shopping
-    }
-
-    var name: String
-    var coordinates: CLLocationCoordinate2D
-    var category: Category
-}
-```
-
-使用`Venue`结构的应用程序可能会从一个网络服务器接收到如下这些 JSON 数据：
-
-```
 {
-    "name": "Caffe Macs",
-    "coordinates": {
-        "lat": 37.330576,
-        "lng": -122.029739
-    },
-    "category": "Food"
+    "name": "Banana",
+    "points": 200,
+    "description": "A banana grown in Ecuador.",
+    "varieties": [
+    	"yellow",
+    	"green",
+    	"brown"
+    ]
 }
 ```
 
-可以提供一个可失败的`Venue`构造器，接受一个`[String: Any]`类型的`attributes`参数，也就是`NSJSONSerialiation`或`NSPropertyListSerialization`的返回值类型：
+如下代码演示了如何编写一个表示食品杂货店商品的 Swift 类型，该类型可以使用任何提供了编码器和解码器的序列化格式：
 
 ```swift
-init?(attributes: [String: Any]) {
-    guard let name = attributes["name"] as? String,
-        let coordinates = attributes["coordinates"] as? [String: Double],
-        let latitude = coordinates["lat"],
-        let longitude = coordinates["lng"],
-        let category = Category(rawValue: attributes["category"] as? String ?? "Invalid")
-        else {
-            return nil
-    }
-
-    self.name = name
-    self.coordinates = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-    self.category = category
+struct GroceryProduct: Codable {
+    let name: String
+    let points: Int
+    let description: String
+    let varieties: [String]
 }
 ```
 
-`guard`语句包含多个可选绑定表达式，从而确保`attributes`参数提供的所有值都符合预期的类型。如果任意一个可选绑定表达式在赋值给常量时失败，`guard`语句会立即停止评估剩余的条件，并执行`else`分支返回`nil`。
-
-可以使用`NSJSONSerialization`利用 JSON 数据创建一个字典，然后将该字典传给`Venue`的构造器，从而创建一个
-`Venue`实例：
+你可以从 JSON 数据形式创建 `GroceryProduct` 实例，只需创建一个 `JSONDecoder` 实例，然后传入 `GroceryProduct.self` 类型以及相应的 JSON 数据：
 
 ```swift
-let JSON = "{\"name\": \"Caffè Macs\",\"coordinates\": {\"lat\": 37.330576,\"lng\": -122.029739},\"category\": \"food\"}"
-let data = JSON.data(using: String.Encoding.utf8)!
-let attributes = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
-
-let venue = Venue(attributes: attributes)!
-print(venue.name)
-// 打印 Caffè Macs
-```
-
-<a name="validating_serialized_representations"></a>
-### 验证序列化数据
-
-在先前的例子中，`Venue`的构造器只会在所有必要信息齐备的情况下返回一个`Venue`实例，否则只会简单地返回`nil`。
-
-像上述例子这样根据一系列值构造实例时，如果能在构造失败时判断出失败原因并向外传递会很有帮助。为了实现这一点，可以将可失败构造器重构为一个抛出错误的构造器：
-
-```swift
-enum ValidationError: Error {
-    case missing(String)
-    case invalid(String)
-}
-
-init(attributes: [String: Any]) throws {
-    guard let name = attributes["name"] as? String else {
-        throw ValidationError.missing("name")
+let json = """
+    {
+         "name": "Banana",
+         "points": 200,
+         "description": "A banana grown in Ecuador.",
+         "varieties": [
+             "yellow",
+             "green",
+             "brown"
+          ]
     }
+""".data(using: .utf8)!
 
-    guard let coordinates = attributes["coordinates"] as? [String: Double] else {
-        throw ValidationError.missing("coordinates")
-    }
+let decoder = JSONDecoder()
+let banana = try decoder.decode(GroceryProduct.self, from: json)
 
-    guard let latitude = coordinates["lat"],
-        let longitude = coordinates["lng"]
-        else {
-            throw ValidationError.invalid("coordinates")
-    }
-
-    guard let categoryName = attributes["category"] as? String else {
-        throw ValidationError.missing("category")
-    }
-
-    guard let category = Category(rawValue: categoryName) else {
-        throw ValidationError.invalid("category")
-    }
-
-    self.name = name
-    self.coordinates = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-    self.category = category
-}
+print("\(banana.name) (\(banana.points) points): \(banana.description)")
+// Prints "Banana (200 points): A banana grown in Ecuador."
 ```
 
-之前的构造器使用一个`guard`语句一次性检查`attributes`中的所有值，而新的构造器单独检查每个值，如果某个值不存在或者无效，则抛出相应错误。
-
-例如，如果 JSON 数据未提供`name`字段及其对应的值，构造器会抛出枚举值`ValidationError.Missing`，并将`name`字段作为其关联值：
-
-```
-{
-    "coordinates": {
-        "lat": 37.77492,
-        "lng": -122.419
-    },
-    "category": "Shopping"
-}
-```
-
-```swift
-let JSON = "{\"coordinates\": {\"lat\": 37.7842, \"lng\": -122.4016}, \"category\": \"Convention Center\"}"
-let data = JSON.data(using: String.Encoding.utf8)!
-let attributes = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
-
-do {
-    let venue = try Venue(attributes: attributes)
-} catch ValidationError.missing(let field) {
-    print("Missing Field: \(field)")
-}
-// 打印 Missing Field: name
-```
-
-或者，如果 JSON 数据提供了所有字段，但是`category`字段对应的值不匹配`Category`枚举中的任何原始值，构造器会抛出枚举值`ValidationError.Invalid`，并将`category`字段作为其关联值：
-
-```
-{
-    "name": "Moscone West",
-    "coordinates": {
-        "lat": 37.7842,
-        "lng": -122.4016
-    },
-    "category": "Convention Center"
-}
-```
-
-```swift
-let JSON = "{\"name\": \"Moscone West\", \"coordinates\": {\"lat\": 37.7842, \"lng\": -122.4016}, \"category\": \"Convention Center\"}"
-let data = JSON.data(using: String.Encoding.utf8)!
-let attributes = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
-
-do {
-    let venue = try Venue(attributes: attributes)
-} catch ValidationError.invalid(let field) {
-    print("Invalid Field: \(field)")
-}
-// 打印 Invalid Field: category
-```
+关于如何编码和解码更复杂的自定义类型的相关信息，请参阅 [Encoding and Decoding Custom Types](https://developer.apple.com/documentation/foundation/archives_and_serialization/encoding_and_decoding_custom_types)。关于如何编码和解码 JSON 的更多信息，请参阅 [Using JSON with Custom Types](https://developer.apple.com/documentation/foundation/archives_and_serialization/using_json_with_custom_types)。
 
 <a name="localization"></a>
 ## 本地化
