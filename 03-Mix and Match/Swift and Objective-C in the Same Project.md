@@ -18,6 +18,7 @@
     - [枚举](#enumerations) 
 - [让 Objective-C 接口在 Swift 中不可用](#making_objective_c_interfaces_unavailable_in_swift)
 - [优化 Objective-C 声明](#refining_objective_c_declarations)
+- [将可用性信息添加到 Objective-C API](#adding_availability_information_to_objective_c_apis)
 - [为产品模块命名](#naming_your_product_module)
 - [故障排除贴士](#troubleshooting_tips_and_reminders)
 
@@ -368,6 +369,52 @@ extension Color {
     }
 }
 ```
+
+<a name="adding_availability_information_to_objective_c_apis"></a>
+## 将可用性信息添加到 Objective-C API
+
+在 Swift 中为特定平台编译应用时，你可以使用 `@available` 特性来控制一个声明是否可用。同样，你可以使用可用性条件 `#available` 根据所需平台和版本有条件地执行代码。
+
+两种可用性说明符在 Objective-C 中都有提供，使用以下示例中展示的相应语法即可。
+
+如下示例展示了如何为 Swift 声明添加可用性信息：
+
+```swift
+@available(iOS 11, macOS 10.13, *)
+func newMethod() {
+    // 使用 iOS 11 API
+}
+```
+
+如下示例展示了如何在 Objective-C 中添加相同的可用性信息：
+
+```objective-c
+@interface MyViewController : UIViewController
+- (void) newMethod API_AVAILABLE(ios(11), macosx(10.13));
+@end
+```
+
+如下示例展示了如何在 Swift 条件语句中使用可用性信息：
+
+```swift
+if #available(iOS 11, *) {
+    // 使用 iOS 11 API
+} else {
+    // 早期版本的 iOS 的替代代码
+}
+```
+
+如下示例展示了如何在 Objective-C 中使用相同的可用性信息：
+
+```objective-c
+if (@available(iOS 11, *)) {
+    // 使用 iOS 11 API
+} else {
+    // 早期版本的 iOS 的替代代码
+}
+```
+
+关于指定平台可用性的更多信息，请参阅 [*The Swift Programming Language 中文版*](http://wiki.jikexueyuan.com/project/swift) 中的[声明特性](http://wiki.jikexueyuan.com/project/swift/chapter3/06_Attributes.html#declaration_attributes)部分。
 
 <a name="naming_your_product_module"></a>
 ## 为产品模块命名
