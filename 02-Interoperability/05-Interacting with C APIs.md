@@ -726,7 +726,7 @@ C 和 Objective-C 的复杂宏在 Swift 中没有相对应的东西。复杂宏�
 <a name="conditional_compilation_blocks"></a>
 ### 条件编译块
 
-区别于 C 以及 Objective-C，Swift 代码以不同的方式进行条件编译。Swift 可以使用条件编译块来进行条件编译。例如，如果你使用`swift -D DEBUG_LOGGING`设置了条件编译标志`DEBUG_LOGGING`，那么编译器就会编译条件编译块中的代码，如下所示：
+区别于 C 以及 Objective-C，Swift 代码以不同的方式进行条件编译。Swift 可以使用条件编译块来进行条件编译。例如，如果你使用 `swift -D DEBUG_LOGGING` 设置了条件编译标志 `DEBUG_LOGGING`，那么编译器就会编译条件编译块中的代码，如下所示：
 
 ```swift
 #if DEBUG_LOGGING
@@ -734,13 +734,15 @@ print("Flag enabled.")
 #endif
 ```
 
-编译条件可以包含`true`和`false`字面值，自定义的条件编译标志（使用`-D <＃flag＃>`来指定），以及如下表格中的平台条件。
+编译条件可以包含 `true` 和 `false` 字面值，自定义的条件编译标志（使用 `-D <＃flag＃>` 来指定），以及下表中列出的平台条件。
 
-| 函数 | 有效参数 |
+| 平台条件 | 有效参数 |
 | --- | --- |
-| os() | macOS，iOS，watchOS，tvOS，Linux |
-| arch() | x86_64，arm，arm64，i386 |
-| swift() | >= 紧接版本号 |
+| `os()` | `macOS`, `iOS`, `watchOS`, `tvOS`, `Linux` |
+| `arch()` | `i386`, `x86_64`, `arm`, `arm64` |
+| `swift()` | `>=`紧接版本号 |
+| `canImport()` | 模块名 |
+| `targetEnvironment()` | `simulator` |
 
 > 注意  
 > 平台条件`arch(arm)`在 ARM 64 位的设备上不会返回`true`，而`arch(i386)`在 32 位的 iOS 模拟器上会返回`true`。
