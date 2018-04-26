@@ -325,13 +325,25 @@ OptionalBridging.logSomeValue(nilValue as Any)   // Received an NSNull value.
 <a name="protocol_qualified_classes"></a>
 ## 协议限定类
 
-Objective-C 中的协议限定类会被导入为 Swift 中的协议类型值。例如，如下 Objective-C 方法会在特定类上执行一个操作：
+Objective-C 中被一个或多个协议限定的类会作为协议组合类型导入到 Swift。例如，如下 Objective-C 属性引用一个视图控制器：
+
+```objective-c
+@property UIViewController<UITableViewDataSource, UITableViewDelegate> * myController;
+```
+
+该属性会以如下形式导入到 Swift：
 
 ```swift
+var myController: UIViewController & UITableViewDataSource & UITableViewDelegate
+```
+
+Objective-C 中的协议限定元类会作为协议元类导入到 Swift。例如，如下 Objective-C 方法会在指定类上执行一个操作：
+
+```objective-c
 - (void)doSomethingForClass:(Class<NSCoding>)codingClass;
 ```
 
-该方法将以如下形式导入到 Swift：
+如下代码展示了 Swift 如何导入它：
 
 ```swift
 func doSomething(for codingClass: NSCoding.Type)
